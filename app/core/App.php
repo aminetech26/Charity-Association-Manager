@@ -22,7 +22,6 @@ class App
 			$this->controller = ucfirst($URL[0]);
 			unset($URL[0]);
 		}else{
-
 			$filename = "../app/controllers/_404.php";
 			require $filename;
 			$this->controller = "_404";
