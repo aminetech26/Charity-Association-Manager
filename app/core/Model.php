@@ -6,7 +6,7 @@ Trait Model
 
 	protected $limit 		= 10;
 	protected $offset 		= 0;
-	protected $order_type 	= "desc";
+	protected $order_type 	= "ASC";
 	protected $order_column = "id";
 	public $errors 		= [];
 
@@ -69,7 +69,7 @@ Trait Model
 	public function insert($data)
 	{
 		
-		/** remove unwanted data **/
+		
 		if(!empty($this->allowedColumns))
 		{
 			foreach ($data as $key => $value) {
