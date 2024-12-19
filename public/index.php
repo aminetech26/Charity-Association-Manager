@@ -1,6 +1,7 @@
 <?php 
 
 session_start();
+define('ROOTPATH', __DIR__ . DIRECTORY_SEPARATOR);
 
 require "../app/core/init.php";
 
