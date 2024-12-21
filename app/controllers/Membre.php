@@ -104,4 +104,51 @@ class Membre {
 
         return $erreurs;
     }
+
+    public function signIn() {
+        $erreurs = [];
+        $this->model('Membre');
+        $this->model('Abonnement');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $membre = new MembreModel();
+            $abonnement = new AbonnementModel();
+    
+            if (empty($_POST['email']) || empty($_POST['mot_de_passe'])) {
+                $erreurs[] = "L'adresse e-mail et le mot de passe sont requis.";
+            } else {
+                $utilisateur = $membre->first(['email' => $_POST['email']]);
+                if ($utilisateur && password_verify($_POST['mot_de_passe'], $utilisateur->mot_de_passe)) {
+                    if (session_status() === PHP_SESSION_NONE) {
+                        session_start();
+                    }
+
+                    $_SESSION['id'] = $utilisateur->id;
+                    $_SESSION['nom'] = $utilisateur->nom;
+                    $_SESSION['prenom'] = $utilisateur->prenom;
+                    $_SESSION['email'] = $utilisateur->email;
+
+                    // If the user has an abonnement_id, retrieve additional details
+                    if (!empty($utilisateur->abonnement_id)) {
+                        $detailsAbonnement = $abonnement->first(['id' => $utilisateur->abonnement_id]);
+                        if ($detailsAbonnement) {
+                            $_SESSION['type_abonnement'] = $detailsAbonnement->type_abonnement;
+                            $_SESSION['statut_abonnement'] = $detailsAbonnement->statut;
+                            $_SESSION['is_active'] = $detailsAbonnement->is_active;
+                        }
+                    }
+                    echo json_encode(['status' => 'success', 'message' => 'Connexion réussie !']);
+                    exit();
+                } else {
+                    $erreurs[] = "Adresse e-mail ou mot de passe incorrect.";
+                }
+            }
+        }
+    
+        // Return errors if any
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+    
+
 }
