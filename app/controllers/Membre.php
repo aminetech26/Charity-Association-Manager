@@ -30,6 +30,7 @@ class Membre {
                         'piece_identite' => $idPath,
                         'adresse' => $_POST['adresse'],
                         'numero_de_telephone' => $_POST['numero_de_telephone'],
+                        'abonnement_id' => null
                     ];
 
                     if (isset($_FILES['recu_paiement']) && $_FILES['recu_paiement']['error'] === 0) {
@@ -39,15 +40,13 @@ class Membre {
                             'type_abonnement' => 'CLASSIQUE', // mis à jour par l'admin
                             'date_debut' => date('Y-m-d'), // mis à jour par l'admin
                             'date_fin' => date('Y-m-d', strtotime('+1 year')), // mis à jour par l'admin
-                            'is_active' => false,
                             'recu_paiement' => $recuPath,
                             'statut' => 'EN_COURS'
                         ];
 
                         $abonnementId = $abonnement->insert($donneesAbonnement);
-                        $donneesMembre['abonnement_id'] = $abonnementId;
+                        $donneesMembre['abonnement_id'] = $abonnement->first(['recu_paiement' => $recuPath])->id;
                     }
-
                     // Création du compte membre
                     $membre->insert($donneesMembre);
 

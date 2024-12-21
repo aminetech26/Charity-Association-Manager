@@ -7,7 +7,6 @@ class AbonnementModel {
         'type_abonnement',
         'date_debut',
         'date_fin',
-        'is_active',
         'recu_paiement',
         'statut'
     ];
