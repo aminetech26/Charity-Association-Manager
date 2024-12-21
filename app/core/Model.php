@@ -1,5 +1,5 @@
 <?php 
-defined('ROOTPATH') OR exit('Access Denied!');
+//defined('ROOTPATH') OR exit('Access Denied!');
 Trait Model
 {
 	use Database;

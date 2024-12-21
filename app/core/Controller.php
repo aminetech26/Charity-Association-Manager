@@ -1,11 +1,11 @@
 <?php 
-defined('ROOTPATH') OR exit('Access Denied!');
+//defined('ROOTPATH') OR exit('Access Denied!');
 Trait Controller
 {
 
-	public function view($name)
+	public function view($viewName)
 	{
-		$filename = "../app/views/".$name.".view.php";
+		$filename = "../app/views/".$viewName.".view.php";
 		if(file_exists($filename))
 		{
 			require $filename;
@@ -14,4 +14,11 @@ Trait Controller
 			require $filename;
 		}
 	}
+
+	public function model($modelName)
+    {
+        $filename = "../app/models/" . ucfirst($modelName) . ".model.php";
+        require_once $filename;
+    }
+
 }

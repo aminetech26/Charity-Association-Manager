@@ -1,5 +1,5 @@
 <?php
-defined('ROOTPATH') OR exit('Access Denied!');
+//defined('ROOTPATH') OR exit('Access Denied!');
 require_once 'config.php';
 require_once 'functions.php';
 require_once 'Database.php';

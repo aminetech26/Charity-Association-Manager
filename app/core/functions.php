@@ -1,5 +1,5 @@
 <?php 
-defined('ROOTPATH') OR exit('Access Denied!');
+//defined('ROOTPATH') OR exit('Access Denied!');
 function show($stuff)
 {
 	echo "<pre>";
@@ -17,4 +17,57 @@ function redirect($path)
 {
 	header("Location: " . ROOT."/".$path);
 	die;
+}
+
+function clean_string($string, $force_lowercase = true, $anal = false, $trunc = 0) {
+    $strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "=", "+", "[", "{", "]",
+                   "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;",
+                   "â€\"", "â€\"", ",", "<", ">", "/", "?");
+    $clean = trim(str_replace($strip, "", strip_tags($string)));
+    $clean = preg_replace('/\s+/', "-", $clean);
+    $clean = ($anal ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean);
+    $clean = ($force_lowercase) ? strtolower($clean) : $clean;
+    
+    if($trunc > 0) {
+        $clean = substr($clean, 0, $trunc);
+    }
+    
+    $clean = preg_replace('/-+/', '-', $clean);
+    
+    $clean = trim($clean, '-');
+    
+    $clean = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $clean);
+    
+    return $clean;
+}
+
+function sanitize_filename($filename) {
+    $filename = basename($filename);
+    
+    return clean_string($filename);
+}
+
+function generate_unique_filename($original_filename, $extension = '') {
+    if(empty($extension)) {
+        $extension = pathinfo($original_filename, PATHINFO_EXTENSION);
+    }
+    
+    $base = clean_string(pathinfo($original_filename, PATHINFO_FILENAME));
+    return $base . '_' . uniqid() . '.' . $extension;
+}
+
+function handleFileUpload($file, $directory) {
+    if(!is_dir($directory)) {
+        mkdir($directory, 0777, true);
+    }
+    
+    // Generate a unique, clean filename
+    $filename = generate_unique_filename($file['name']);
+    $destination = $directory . $filename;
+    
+    if(!move_uploaded_file($file['tmp_name'], $destination)) {
+        throw new Exception("Error uploading file");
+    }
+    
+    return $destination;
 }

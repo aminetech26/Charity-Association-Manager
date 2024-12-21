@@ -11,4 +11,4 @@
     define('APP_DESC', "");
 
     define('DEBUG', true);
-	defined('ROOTPATH') OR exit('Access Denied!');
+	//defined('ROOTPATH') OR exit('Access Denied!');

@@ -1,53 +1,73 @@
 <?php 
-defined('ROOTPATH') OR exit('Access Denied!');
+//defined('ROOTPATH') OR exit('Access Denied!');
 Trait Database
 {
+    private static $connection = null;
 
-	private function connect()
-	{
-		$string = "mysql:hostname=".DBHOST.";dbname=".DBNAME;
-		$con = new PDO($string,DBUSER,DBPASS);
-		return $con;
-	}
+    private function connect()
+    {
+        if(self::$connection === null) {
+            $string = "mysql:hostname=".DBHOST.";dbname=".DBNAME;
+            self::$connection = new PDO($string, DBUSER, DBPASS);
+            self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        }
+        return self::$connection;
+    }
 
-	public function query($query, $data = [])
-	{
+    public function query($query, $data = [])
+    {
+        $con = $this->connect();
+        $stm = $con->prepare($query);
 
-		$con = $this->connect();
-		$stm = $con->prepare($query);
+        $check = $stm->execute($data);
+        if($check)
+        {
+            $result = $stm->fetchAll(PDO::FETCH_OBJ);
+            if(is_array($result) && count($result))
+            {
+                return $result;
+            }
+        }
 
-		$check = $stm->execute($data);
-		if($check)
-		{
-			$result = $stm->fetchAll(PDO::FETCH_OBJ);
-			if(is_array($result) && count($result))
-			{
-				return $result;
-			}
-		}
+        return false;
+    }
 
-		return false;
-	}
+    public function get_row($query, $data = [])
+    {
+        $con = $this->connect();
+        $stm = $con->prepare($query);
 
-	public function get_row($query, $data = [])
-	{
+        $check = $stm->execute($data);
+        if($check)
+        {
+            $result = $stm->fetchAll(PDO::FETCH_OBJ);
+            if(is_array($result) && count($result))
+            {
+                return $result[0];
+            }
+        }
 
-		$con = $this->connect();
-		$stm = $con->prepare($query);
+        return false;
+    }
 
-		$check = $stm->execute($data);
-		if($check)
-		{
-			$result = $stm->fetchAll(PDO::FETCH_OBJ);
-			if(is_array($result) && count($result))
-			{
-				return $result[0];
-			}
-		}
-
-		return false;
-	}
-	
+    public function beginTransaction() {
+        $con = $this->connect();
+        if (!$con->inTransaction()) {
+            $con->beginTransaction();
+        }
+    }
+    
+    public function commit() {
+        $con = $this->connect();
+        if ($con->inTransaction()) {
+            $con->commit();
+        }
+    }
+    
+    public function rollback() {
+        $con = $this->connect();
+        if ($con->inTransaction()) {
+            $con->rollBack();
+        }
+    }
 }
-
-
