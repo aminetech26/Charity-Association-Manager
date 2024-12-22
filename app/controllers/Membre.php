@@ -30,7 +30,8 @@ class Membre {
                         'piece_identite' => $idPath,
                         'adresse' => $_POST['adresse'],
                         'numero_de_telephone' => $_POST['numero_de_telephone'],
-                        'abonnement_id' => null
+                        'abonnement_id' => null,
+                        'is_approved' => 0
                     ];
 
                     if (isset($_FILES['recu_paiement']) && $_FILES['recu_paiement']['error'] === 0) {
