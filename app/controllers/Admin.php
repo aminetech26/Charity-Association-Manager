@@ -645,12 +645,5 @@ class Admin {
         exit();
     }
 
-    
-
-
-    
-
-    
-    
-
+    // Offer management
 }
