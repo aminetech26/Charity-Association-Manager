@@ -263,7 +263,7 @@ class Admin {
         exit();
     }
 
-    // Partenaire management
+    // Category management
 
     public function addCategory(){
         $this->checkIfAdminOrSuperAdmin();
@@ -296,6 +296,40 @@ class Admin {
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
     }
+
+    public function deleteCategory(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Categorie');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['categorie_id'])) {
+                $erreurs[] = "ID de la catégorie requis.";
+            } else {
+                try {
+                    $categorie = new CategorieModel();
+                    $categorieToDelete = $categorie->first(['id' => $_POST['categorie_id']]);
+
+                    if (!$categorieToDelete) {
+                        $erreurs[] = "Catégorie non trouvée.";
+                    } else {
+                        $categorie->delete($_POST['categorie_id']);
+                        echo json_encode(['status' => 'success', 'message' => 'Catégorie supprimée avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    // Partenaire management
+
 
     public function addPartner() {
         $this->checkIfAdminOrSuperAdmin();
@@ -508,7 +542,114 @@ class Admin {
         exit();
     }
 
+    public function createPartnerAccount(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('ComptePartenaire');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $comptePartenaire = new ComptePartenaireModel();
+            $erreurs = $this->validatePartnerData($_POST);
+
+            if (empty($erreurs)) {
+                try {
+                    $donneesComptePartenaire = [
+                        'partenaire_id' => $_POST['partenaire_id'],
+                        'email' => $_POST['email'],
+                        'mot_de_passe' => password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT),
+                        'created_by' => $_SESSION['admin_id'],
+                        'statut' => 'ACTIVE'
+                    ];
+
+                    $comptePartenaire->insert($donneesComptePartenaire);
+                    echo json_encode(['status' => 'success', 'message' => 'Compte partenaire créé avec succès !']);
+                    exit();
+
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function validatePartnerData($post) {
+        $erreurs = [];
+        $this->model('Partenaire');
+        $comptePartenaire = new ComptePartenaireModel();
+        $partenaire = new PartenaireModel();
+
+        $champsObligatoires = ['partenaire_id', 'email', 'mot_de_passe'];
+        foreach ($champsObligatoires as $champ) {
+            if (empty($post[$champ])) {
+                $erreurs[] = ucfirst($champ) . " est requis.";
+            }
+        }
+
+        if(!$partenaire->getPartenaireById($post['partenaire_id'])){
+            $erreurs[] = "Partenaire non trouvé.";
+        }
+
+        if (!filter_var($post['email'], FILTER_VALIDATE_EMAIL)) {
+            $erreurs[] = "Adresse e-mail invalide.";
+        }
+
+        if ($comptePartenaire->first(['email' => $post['email']])) {
+            $erreurs[] = "Cette adresse e-mail est déjà utilisée.";
+        }
+
+        if (strlen($post['mot_de_passe']) < 6) {
+            $erreurs[] = "Le mot de passe doit contenir au moins 6 caractères.";
+        }
+
+        return $erreurs;
+    }
+
+    public function updateStatutComptePartenaire(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('ComptePartenaire');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['compte_partenaire_id']) || empty($_POST['new_statut'])) {
+                $erreurs[] = "ID du compte partenaire et le nouveau statut sont requis.";
+            } else {
+                try {
+                    $comptePartenaire = new ComptePartenaireModel();
+                    $comptePartenaireToUpdate = $comptePartenaire->first(['id' => $_POST['compte_partenaire_id']]);
+
+                    if (!$comptePartenaireToUpdate) {
+                        $erreurs[] = "Compte partenaire non trouvé.";
+                    } else {
+                        // Verify the new status is valid
+                        $validStatuses = ['ACTIVE', 'BLOCKED'];
+                        if (!in_array($_POST['new_statut'], $validStatuses)) {
+                            $erreurs[] = "Statut invalide.";
+                        } else {
+                            $comptePartenaire->update($_POST['compte_partenaire_id'], ['statut' => $_POST['new_statut']]);
+                            echo json_encode(['status' => 'success', 'message' => 'Statut mis à jour avec succès !']);
+                            exit();
+                        }
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
     
+
+
+    
+
     
     
 
