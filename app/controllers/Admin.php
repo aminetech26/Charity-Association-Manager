@@ -527,12 +527,12 @@ class Admin {
         $erreurs = [];
         $this->model('Partenaire');
 
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            if (empty($_POST['partenaire_id'])) {
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+            if (empty($_GET['partenaire_id'])) {
                 $erreurs[] = "ID du partenaire requis.";
             } else {
                 $partenaire = new PartenaireModel();
-                $partenaireDetails = $partenaire->getPartenaireById($_POST['partenaire_id']);
+                $partenaireDetails = $partenaire->getPartenaireById($_GET['partenaire_id']);
                 echo json_encode(['status' => 'success', 'data' => $partenaireDetails]);
                 exit();
             }
@@ -646,4 +646,195 @@ class Admin {
     }
 
     // Offer management
+
+    public function addPartnerOffer(){
+    $this->checkIfAdminOrSuperAdmin();
+    $this->model('Offre');
+    $this->model('Partenaire');
+
+    $erreurs = [];
+
+    if ($_SERVER['REQUEST_METHOD'] === "POST") {
+        $offre = new OffreModel();
+        $partenaire = new PartenaireModel();
+
+        $erreurs = $this->validateOfferData($_POST, $partenaire);
+
+        if (empty($erreurs)) {
+            try {
+                $thumbnailPath = null;
+                if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === 0) {
+                    $thumbnailPath = handleFileUpload($_FILES['thumbnail'], 'thumbnails/');
+                }
+
+                $donneesOffre = [
+                    'partenaire_id' => $_POST['partenaire_id'],
+                    'type_offre' => $_POST['type_offre'],
+                    'valeur' => $_POST['valeur'],
+                    'description' => $_POST['description'],
+                    'date_debut' => $_POST['date_debut'],
+                    'date_fin' => $_POST['date_fin'],
+                    'is_special' => $_POST['is_special'] ?? 0,
+                    'thumbnail_path' => $thumbnailPath ?? null
+                ];
+
+                $offre->insert($donneesOffre);
+
+                echo json_encode(['status' => 'success', 'message' => 'Offre ajoutée avec succès']);
+                exit();
+            } catch (Exception $e) {
+                $erreurs[] = "Une erreur s'est produite lors de l'ajout de l'offre : " . $e->getMessage();
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'errors' => $erreurs]);
+        exit();
+    }
+    }
+
+    private function validateOfferData($post){
+        $erreurs = [];
+        $this->model('Partenaire');
+        $partenaireModel = new PartenaireModel();
+
+        $champsObligatoires = ['partenaire_id', 'type_offre', 'valeur', 'description', 'date_debut', 'date_fin'];
+        foreach ($champsObligatoires as $champ) {
+            if (empty($post[$champ])) {
+                $erreurs[] = ucfirst($champ) . " est requis.";
+                return $erreurs;
+            }
+        }
+
+        if (!$partenaireModel->getPartenaireById($post['partenaire_id'])) {
+            $erreurs[] = "Partenaire non trouvé.";
+            return $erreurs;
+        }
+
+        if (!in_array($post['type_offre'], ['CLASSIQUE', 'JEUNE', 'PREMIUM'])) {
+            $erreurs[] = "Type d'offre invalide.";
+            return $erreurs;
+        }
+
+        if (!empty($post['valeur']) && ($post['valeur'] <= 0 || $post['valeur'] >= 100)) {
+            $erreurs[] = "La valeur de la remise doit être comprise entre 0 et 100.";
+            return $erreurs;
+        }
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $post['date_debut'])) {
+            $erreurs[] = "Date de début invalide. Format attendu : YYYY-MM-DD.";
+            return $erreurs;
+        }
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $post['date_fin'])) {
+            $erreurs[] = "Date de fin invalide. Format attendu : YYYY-MM-DD.";
+            return $erreurs;
+        }
+
+        if (strtotime($post['date_debut']) > strtotime($post['date_fin'])) {
+            $erreurs[] = "La date de début doit être antérieure à la date de fin.";
+        }
+
+        return $erreurs;
+    }
+
+    public function deleteOffer(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Offre');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['offre_id'])) {
+                $erreurs[] = "ID de l'offre requis.";
+            } else {
+                try {
+                    $offre = new OffreModel();
+                    $offreToDelete = $offre->first(['id' => $_POST['offre_id']]);
+
+                    if (!$offreToDelete) {
+                        $erreurs[] = "Offre non trouvée.";
+                    } else {
+                        $offre->delete($_POST['offre_id']);
+                        echo json_encode(['status' => 'success', 'message' => 'Offre supprimée avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function updateOffer(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Offre');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $offre = new OffreModel();
+            $erreurs = $this->validateOfferData($_POST);
+            if(!$offre->getOfferById($_POST['offre_id'])){
+                $erreurs[] = "Offre non trouvée.";
+            }
+            if (empty($erreurs)) {
+                try {
+                    $donneesOffre = [
+                        'partenaire_id' => $_POST['partenaire_id'],
+                        'type_offre' => $_POST['type_offre'],
+                        'valeur' => $_POST['valeur'],
+                        'description' => $_POST['description'],
+                        'date_debut' => $_POST['date_debut'],
+                        'date_fin' => $_POST['date_fin'],
+                        'is_special' => $_POST['is_special'] ?? 0
+                    ];
+
+                    $offre->update($_POST['offre_id'], $donneesOffre);
+                    echo json_encode(['status' => 'success', 'message' => 'Offre mise à jour avec succès !']);
+                    exit();
+
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function getAllOffers(){
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('Offre');
+        $offre = new OffreModel();
+        $offres = $offre->getAllOffers();
+        echo json_encode(['status' => 'success', 'data' => $offres]);
+        exit();
+    }
+
+    public function getOfferDetails(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Offre');
+
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+            if (empty($_GET['offre_id'])) {
+                $erreurs[] = "ID de l'offre requis.";
+            } else {
+                $offre = new OffreModel();
+                $offreDetails = $offre->getOfferById($_GET['offre_id']);
+                echo json_encode(['status' => 'success', 'data' => $offreDetails]);
+                exit();
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    // Event management
+
 }
