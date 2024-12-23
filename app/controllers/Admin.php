@@ -962,8 +962,98 @@ class Admin {
         exit();
     }
 
+    // Benevolat management
+
+
+
     // Dons management
 
+
+    // Notification management
+
+    public function addNotification(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Notification');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $notification = new NotificationModel();
+
+            $champsObligatoires = ['titre','contenu','date_envoi', 'type'];
+            foreach ($champsObligatoires as $champ) {
+                if (empty($_POST[$champ])) {
+                    $erreurs[] = ucfirst($champ) . " est requis.";
+                }
+            }
+
+            if (!empty($_POST['date_envoi']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_envoi'])) {
+                $erreurs[] = "Date d'envoi invalide. Format attendu : YYYY-MM-DD.";
+            }
+
+            if(!in_array($_POST['type'], ['EVENEMENT', 'PROMOTION', 'NOUVELLE_OFFRE', 'RAPPEL', 'AUTRE'])){
+                $erreurs[] = "Type de notification invalide.";
+            }
+
+            if (empty($erreurs)) {
+                try {
+                    $donneesNotification = [
+                        'titre' => $_POST['titre'],
+                        'contenu' => $_POST['contenu'],
+                        'date_envoi' => $_POST['date_envoi'],
+                        'is_sent' => 0,
+                        'groupe_cible' => $_POST['groupe_cible'] ?? 0,
+                        'type' => $_POST['type'],
+                        'created_by' => $_SESSION['admin_id']
+                    ];
+
+                    $notification->insert($donneesNotification);
+
+                    echo json_encode(['status' => 'success', 'message' => 'Notification ajoutée avec succès !']);
+                    exit();
+                } catch (Exception $e) {
+                    $erreurs[] = "Une erreur s'est produite lors de l'ajout de la notification : " . $e->getMessage();
+                }
+            }
+
+            
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function deleteNotification(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Notification');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['notification_id'])) {
+                $erreurs[] = "ID de la notification requis.";
+            } else {
+                try {
+                    $notification = new NotificationModel();
+                    $notificationToDelete = $notification->first(['id' => $_POST['notification_id']]);
+
+                    if (!$notificationToDelete) {
+                        $erreurs[] = "Notification non trouvée.";
+                    } else {
+                        $notification->delete($_POST['notification_id']);
+                        echo json_encode(['status' => 'success', 'message' => 'Notification supprimée avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    // 
 
 
 }
