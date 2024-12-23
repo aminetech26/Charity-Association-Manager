@@ -171,4 +171,72 @@ class Membre {
         }
     }
 
+    // Partenaire favoris
+
+    public function markPartnerAsFavourite(){
+        $this->checkIfLoggedIn();
+        $this->model('PartenaireFavori');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $favori = new PartenaireFavoriModel();
+
+            $donnees = [
+                'compte_membre_id' => $_SESSION['membre_id'],
+                'partenaire_id' => $_POST['partenaire_id']
+            ];
+
+            if ($favori->first($donnees)) {
+                echo json_encode(['status' => 'error', 'message' => 'Ce partenaire est déjà dans vos favoris.']);
+                exit();
+            }
+
+            $favori->insert($donnees);
+            echo json_encode(['status' => 'success', 'message' => 'Partenaire ajouté à vos favoris.']);
+            exit();
+        }
+    }
+
+    public function removePartnerFromFavourites(){
+        $this->checkIfLoggedIn();
+        $this->model('PartenaireFavori');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $favori = new PartenaireFavoriModel();
+
+            $donnees = [
+                'compte_membre_id' => $_SESSION['membre_id'],
+                'partenaire_id' => $_POST['partenaire_id']
+            ];
+
+            $favoriId = $favori->first($donnees)->id;
+            if (!$favoriId) {
+                echo json_encode(['status' => 'error', 'message' => 'Partenaire non trouvé dans vos favoris.']);
+                exit();
+            }
+            $favori->delete($favoriId);
+            echo json_encode(['status' => 'success', 'message' => 'Partenaire retiré de vos favoris.']);
+            exit();
+        }
+    }
+
+    public function getFavouritePartners(){
+        $this->checkIfLoggedIn();
+        $this->model('PartenaireFavori');
+        $this->model('Partenaire');
+
+        $favori = new PartenaireFavoriModel();
+        $partenaire = new PartenaireModel();
+
+        $favoris = $favori->where(['compte_membre_id' => $_SESSION['membre_id']]) ?? [];
+        $partenaires = [];
+
+        foreach ($favoris as $favori) {
+            $partenaire = $partenaire->first(['id' => $favori->partenaire_id]);
+            $partenaires[] = $partenaire;
+        }
+
+        echo json_encode(['status' => 'success', 'data' => $partenaires]);
+        exit();
+    }
+
 }
