@@ -125,12 +125,17 @@ class Membre {
                         session_start();
                     }
 
-                    $_SESSION['id'] = $utilisateur->id;
-                    $_SESSION['nom'] = $utilisateur->nom;
-                    $_SESSION['prenom'] = $utilisateur->prenom;
-                    $_SESSION['email'] = $utilisateur->email;
+                    if($utilisateur->is_approved == 0) {
+                        echo json_encode(['status' => 'error', 'message' => 'Votre compte n\'a pas encore été approuvé.']);
+                        exit();
+                    }
 
-                    // If the user has an abonnement_id, retrieve additional details
+                    $_SESSION['membre_id'] = $utilisateur->id;
+                    $_SESSION['membre_nom'] = $utilisateur->nom;
+                    $_SESSION['membre_prenom'] = $utilisateur->prenom;
+                    $_SESSION['membre_email'] = $utilisateur->email;
+
+                    // If the member has an abonnement_id, retrieve additional details
                     if (!empty($utilisateur->abonnement_id)) {
                         $detailsAbonnement = $abonnement->first(['id' => $utilisateur->abonnement_id]);
                         if ($detailsAbonnement) {
@@ -151,6 +156,19 @@ class Membre {
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
     }
-    
+
+    public function signOut() {
+        session_unset();
+        session_destroy();
+        echo json_encode(['status' => 'success', 'message' => 'Déconnexion réussie !']);
+        exit();
+    }
+
+    public function checkIfLoggedIn() {
+        if (!isset($_SESSION['membre_id'])) {
+            echo json_encode(['status' => 'error', 'message' => 'Vous devez être connecté pour effectuer cette action.']);
+            exit();
+        }
+    }
 
 }
