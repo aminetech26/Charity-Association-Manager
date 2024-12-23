@@ -837,4 +837,133 @@ class Admin {
 
     // Event management
 
+    public function addEvent(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Evenement');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $evenement = new EvenementModel();
+
+            $champsObligatoires = ['titre', 'description', 'lieu', 'date_debut', 'date_fin'];
+            foreach ($champsObligatoires as $champ) {
+                if (empty($_POST[$champ])) {
+                    $erreurs[] = ucfirst($champ) . " est requis.";
+                }
+            }
+
+            if (!empty($_POST['date_debut']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_debut'])) {
+                $erreurs[] = "Date de début invalide. Format attendu : YYYY-MM-DD.";
+            }
+
+            if (!empty($_POST['date_fin']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_fin'])) {
+                $erreurs[] = "Date de fin invalide. Format attendu : YYYY-MM-DD.";
+            }
+
+            if (empty($erreurs)) {
+                try {
+                    $donneesEvenement = [
+                        'titre' => $_POST['titre'],
+                        'description' => $_POST['description'],
+                        'lieu' => $_POST['lieu'],
+                        'date_debut' => $_POST['date_debut'],
+                        'date_fin' => $_POST['date_fin']
+                    ];
+
+                    $evenement->insert($donneesEvenement);
+
+                    echo json_encode(['status' => 'success', 'message' => 'Événement ajouté avec succès !']);
+                    exit();
+                } catch (Exception $e) {
+                    $erreurs[] = "Une erreur s'est produite lors de l'ajout de l'événement : " . $e->getMessage();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function deleteEvent(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Evenement');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['evenement_id'])) {
+                $erreurs[] = "ID de l'événement requis.";
+            } else {
+                try {
+                    $evenement = new EvenementModel();
+                    $evenementToDelete = $evenement->first(['id' => $_POST['evenement_id']]);
+
+                    if (!$evenementToDelete) {
+                        $erreurs[] = "Événement non trouvé.";
+                    } else {
+                        $evenement->delete($_POST['evenement_id']);
+                        echo json_encode(['status' => 'success', 'message' => 'Événement supprimé avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function editEvent(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Evenement');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $evenement = new EvenementModel();
+
+            $champsObligatoires = ['evenement_id', 'titre', 'description', 'lieu', 'date_debut', 'date_fin'];
+            foreach ($champsObligatoires as $champ) {
+                if (empty($_POST[$champ])) {
+                    $erreurs[] = ucfirst($champ) . " est requis.";
+                }
+            }
+
+            if (!empty($_POST['date_debut']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_debut'])) {
+                $erreurs[] = "Date de début invalide. Format attendu : YYYY-MM-DD.";
+            }
+
+            if (!empty($_POST['date_fin']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_fin'])) {
+                $erreurs[] = "Date de fin invalide. Format attendu : YYYY-MM-DD.";
+            }
+
+            if (empty($erreurs)) {
+                try {
+                    $donneesEvenement = [
+                        'titre' => $_POST['titre'],
+                        'description' => $_POST['description'],
+                        'lieu' => $_POST['lieu'],
+                        'date_debut' => $_POST['date_debut'],
+                        'date_fin' => $_POST['date_fin']
+                    ];
+
+                    $evenement->update($_POST['evenement_id'], $donneesEvenement);
+
+                    echo json_encode(['status' => 'success', 'message' => 'Événement mis à jour avec succès !']);
+                    exit();
+                } catch (Exception $e) {
+                    $erreurs[] = "Une erreur s'est produite lors de la mise à jour de l'événement : " . $e->getMessage();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    // Dons management
+
+
+
 }
