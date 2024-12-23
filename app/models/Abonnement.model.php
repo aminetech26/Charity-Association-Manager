@@ -8,7 +8,8 @@ class AbonnementModel {
         'date_debut',
         'date_fin',
         'recu_paiement',
-        'statut'
+        'statut',
+        'is_active'
     ];
 
     public function getAllSubscriptions() {

@@ -42,7 +42,8 @@ class Membre {
                             'date_debut' => date('Y-m-d'), // mis à jour par l'admin
                             'date_fin' => date('Y-m-d', strtotime('+1 year')), // mis à jour par l'admin
                             'recu_paiement' => $recuPath,
-                            'statut' => 'EN_COURS'
+                            'statut' => 'EN_COURS',
+                            'is_active' => 0
                         ];
 
                         $abonnementId = $abonnement->insert($donneesAbonnement);

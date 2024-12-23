@@ -1053,7 +1053,57 @@ class Admin {
         exit();
     }
 
-    // 
+    // Abonnement management
+
+    public function getAllSubscriptions(){
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('Abonnement');
+        $abonnement = new AbonnementModel();
+        $abonnements = $abonnement->getAllSubscriptions();
+        echo json_encode(['status' => 'success', 'data' => $abonnements]);
+        exit();
+    }
+
+    public function approveSubscription(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Abonnement');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['abonnement_id'])) {
+                $erreurs[] = "ID de l'abonnement requis.";
+            } else {
+                try {
+                    if(!in_array($_POST['type_abonnement'], ['CLASSIQUE', 'JEUNE', 'PREMIUM'])){
+                        $erreurs[] = "Type abonnement invalide.";
+                    }
+                    $abonnement = new AbonnementModel();
+                    $abonnementToApprove = $abonnement->first(['id' => $_POST['abonnement_id']]);
+
+                    if (!$abonnementToApprove) {
+                        $erreurs[] = "Abonnement non trouvé.";
+                    } else {
+                        $abonnementUpdatedData = [
+                            'type_abonnement' => $_POST['type_abonnement'],
+                            'date_debut' => date('Y-m-d H:i:s'),
+                            'date_fin' => date('Y-m-d H:i:s', strtotime('+1 year')),
+                            'is_active' => 1,
+                            'statut' => 'RENOUVELE'
+                        ];
+                        $abonnement->update($_POST['abonnement_id'], $abonnementUpdatedData);
+                        echo json_encode(['status' => 'success', 'message' => 'Abonnement approuvé avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
 
 
 }
