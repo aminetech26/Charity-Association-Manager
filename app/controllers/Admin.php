@@ -1104,6 +1104,4 @@ class Admin {
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
     }
-
-
 }
