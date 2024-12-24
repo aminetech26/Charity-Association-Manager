@@ -23,4 +23,8 @@ class OffreModel{
     public function getOffersByType($type){
         return $this->where(['type_offre' => $type]);
     }
+
+    public function getOffersByTypeAndPartnerId($type, $id){
+        return $this->where(['type_offre' => $type, 'partenaire_id' => $id]);
+    }
 }
