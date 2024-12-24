@@ -964,10 +964,131 @@ class Admin {
 
     // Benevolat management
 
+    public function validerBenevolat(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Benevolats');
 
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['benevolat_id'])) {
+                $erreurs[] = "ID du bénévolat requis.";
+            } else {
+                try {
+                    $benevolat = new BenevolatsModel();
+                    $benevolatToValidate = $benevolat->first(['id' => $_POST['benevolat_id']]);
+
+                    if (!$benevolatToValidate) {
+                        $erreurs[] = "Bénévolat non trouvé.";
+                    } else {
+                        $benevolat->update($_POST['benevolat_id'], ['statut' => 'VALIDE']);
+                        echo json_encode(['status' => 'success', 'message' => 'Bénévolat validé avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function refuserBenevolat(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Benevolats');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['benevolat_id'])) {
+                $erreurs[] = "ID du bénévolat requis.";
+            } else {
+                try {
+                    $benevolat = new BenevolatsModel();
+                    $benevolatToValidate = $benevolat->first(['id' => $_POST['benevolat_id']]);
+
+                    if (!$benevolatToValidate) {
+                        $erreurs[] = "Bénévolat non trouvé.";
+                    } else {
+                        $benevolat->update($_POST['benevolat_id'], ['statut' => 'REFUSE']);
+                        echo json_encode(['status' => 'success', 'message' => 'Bénévolat refusé par l\'admin !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
 
     // Dons management
 
+    public function validerDon(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Dons');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['don_id'])) {
+                $erreurs[] = "ID du don requis.";
+            } else {
+                try {
+                    $don = new DonsModel();
+                    $donToValidate = $don->first(['id' => $_POST['don_id']]);
+
+                    if (!$donToValidate) {
+                        $erreurs[] = "Don non trouvé.";
+                    } else {
+                        $don->update($_POST['don_id'], ['statut' => 'VALIDE']);
+                        echo json_encode(['status' => 'success', 'message' => 'Don validé avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function refuserDon(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('Dons');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['don_id'])) {
+                $erreurs[] = "ID du don requis.";
+            } else {
+                try {
+                    $don = new DonsModel();
+                    $donToValidate = $don->first(['id' => $_POST['don_id']]);
+
+                    if (!$donToValidate) {
+                        $erreurs[] = "Don non trouvé.";
+                    } else {
+                        $don->update($_POST['don_id'], ['statut' => 'REFUSE']);
+                        echo json_encode(['status' => 'success', 'message' => 'Don refusé par l\'admin !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
 
     // Notification management
 
