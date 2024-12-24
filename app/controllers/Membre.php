@@ -239,4 +239,147 @@ class Membre {
         exit();
     }
 
+    // Dons made by a member
+
+    public function ajouterDon() {
+        $erreurs = [];
+        $this->model('Dons');
+        
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $donModel = new DonsModel();
+            
+            $erreurs = $this->validateDon($_POST, $_FILES);
+            
+            if (isset($_POST['est_tracable']) && $_POST['est_tracable'] == true && !isset($_SESSION['membre_id'])) {
+                $erreurs[] = "Vous devez être connecté pour faire un don traçable";
+                echo json_encode(['status' => 'error', 'message' => implode(', ', $erreurs)]);
+                exit();
+            }
+            
+            if (empty($erreurs)) {
+                $donModel->beginTransaction();
+                
+                try {
+                    $recuPath = handleFileUpload($_FILES['recu_paiement'], 'recus_dons/');
+                    
+                    $donneesDon = [
+                        'montant' => $_POST['montant'],
+                        'date' => date('Y-m-d H:i:s'),
+                        'est_tracable' => isset($_POST['est_tracable']) ? $_POST['est_tracable'] : 0,
+                        'statut' => 'EN_ATTENTE',
+                        'recu_paiement' => $recuPath
+                    ];
+                    
+                    if ($donneesDon['est_tracable']) {
+                        $donneesDon['compte_membre_id'] = $_SESSION['membre_id'];
+                    }
+                    
+                    $don = $donModel->insert($donneesDon);
+                    $donId = $donModel->first(['recu_paiement' => $recuPath])->id;
+                    
+                    if ($donId) {
+                        $donModel->commit();
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Don enregistré avec succès !',
+                            'don_id' => $donId
+                        ]);
+                        exit();
+                    } else {
+                        throw new Exception("Erreur lors de l'enregistrement du don");
+                    }
+                    
+                } catch (Exception $e) {
+                    $donModel->rollback();
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Une erreur s\'est produite : ' . $e->getMessage()
+                    ]);
+                    exit();
+                }
+            }
+        }
+        
+        echo json_encode([
+            'status' => 'error',
+            'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.'
+        ]);
+        exit();
+    }
+    
+    private function validateDon($data, $files) {
+        $erreurs = [];
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['date'])) {
+            $erreurs[] = "Date de don invalide. Format attendu : YYYY-MM-DD.";
+            return $erreurs;
+        }
+        
+        if (!isset($data['montant']) || empty($data['montant'])) {
+            $erreurs[] = "Le montant est requis";
+        } elseif (!is_numeric($data['montant']) || $data['montant'] <= 0) {
+            $erreurs[] = "Le montant doit être un nombre positif";
+        }
+        
+        if (!isset($files['recu_paiement']) || $files['recu_paiement']['error'] !== 0) {
+            $erreurs[] = "Le reçu de paiement est obligatoire";
+        }
+        
+        if (isset($data['est_tracable'])) {
+            if (!is_bool($data['est_tracable']) && $data['est_tracable'] !== "0" && $data['est_tracable'] !== "1") {
+                $erreurs[] = "La valeur de est_tracable doit être un booléen";
+            }
+        }
+        
+        return $erreurs;
+    }
+
+    public function getMemberDonations() {
+        $this->checkIfLoggedIn();
+        $this->model('Dons');
+        
+        $donModel = new DonsModel();
+        $dons = $donModel->where(['compte_membre_id' => $_SESSION['membre_id']]) ?? [];
+        
+        echo json_encode(['status' => 'success', 'data' => $dons]);
+        exit();
+    }
+
+    // Bénévoler dans un événement
+
+    public function volunteerForEvent() {
+        $this->checkIfLoggedIn();
+        $this->model('benevolats');
+        $this->model('evenement');
+        
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $benevoleModel = new BenevolatsModel();
+            $evenementModel = new EvenementModel();
+            $erreurs = [];
+            
+            // Validate event exists
+            if (!isset($_POST['evenement_id']) || !$evenementModel->first(['id' => $_POST['evenement_id']])) {
+                echo json_encode(['status' => 'error', 'message' => 'Événement invalide']);
+                exit();
+            }
+            
+            $evenement = $evenementModel->first(['id' => $_POST['evenement_id']]);
+            
+            $donnees = [
+                'compte_membre_id' => $_SESSION['membre_id'],
+                'evenement_id' => $_POST['evenement_id'],
+                'statut' => 'EN_ATTENTE'
+            ];
+            
+            if ($benevoleModel->first(['compte_membre_id' => $_SESSION['membre_id'], 'evenement_id' => $_POST['evenement_id']])) {
+                echo json_encode(['status' => 'error', 'message' => 'Vous êtes déjà bénévole pour cet événement.']);
+                exit();
+            }
+            
+            $benevoleModel->insert($donnees);
+            echo json_encode(['status' => 'success', 'message' => 'Vous êtes désormais bénévole pour cet événement.']);
+            exit();
+        }
+    }
+
 }

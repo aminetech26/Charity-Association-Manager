@@ -1,7 +1,7 @@
 <?php 
 class EvenementModel{
     use Model;
-    protected $table = 'Evenement';
+    protected $table = 'evenement';
     protected $allowedColumns = ['titre','description','lieu','date_debut', 'date_fin'];
 
     public function getAllEvenements(){
