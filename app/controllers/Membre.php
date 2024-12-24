@@ -382,4 +382,138 @@ class Membre {
         }
     }
 
+
+    // Renouveller l'abonnement
+
+    public function creerAbonnement(){
+        $this->checkIfLoggedIn();
+        $this->model('Abonnement');
+        $this->model('Membre');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $abonnementModel = new AbonnementModel();
+            $membre = new MembreModel();
+            
+            $abonnementMembre = $membre->first(['id' => $_SESSION['membre_id']])->abonnement_id;
+
+            if (!isset($files['recu_paiement']) || $files['recu_paiement']['error'] !== 0) {
+                $erreurs[] = "Le reçu de paiement est obligatoire";
+            }
+
+            if($abonnementMembre){
+                echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà un abonnement en cours. Vous devez demander un renouvellement.']);
+                exit();
+            }
+
+            $donnees = [
+                'type_abonnement' => $_POST['type_abonnement'],
+                'date_debut' => date('Y-m-d'),
+                'date_fin' => date('Y-m-d', strtotime('+1 year')),
+                'recu_paiement' => null,
+                'statut' => 'EN_COURS',
+                'is_active' => 0
+            ];
+
+            if (isset($_FILES['recu_paiement']) && $_FILES['recu_paiement']['error'] === 0) {
+                $recuPath = handleFileUpload($_FILES['recu_paiement'], 'recus/');
+                $donnees['recu_paiement'] = $recuPath;
+            }
+
+            try {
+                $abonnement = $abonnementModel->insert($donnees);
+                $abonnementId = $abonnementModel->first(['recu_paiement' => $donnees['recu_paiement']])->id;
+                $membre->update($_SESSION['membre_id'], ['abonnement_id' => $abonnementId]);
+                echo json_encode(['status' => 'success', 'message' => 'Abonnement créé avec succès !']);
+                exit();
+            } catch (Exception $e) {
+                echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                exit();
+            }
+        }
+    }
+
+    public function renouvelerAbonnement() {
+        $this->checkIfLoggedIn();
+        $this->model('Abonnement');
+        $this->model('Membre');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $abonnementModel = new AbonnementModel();
+            $membre = new MembreModel();
+    
+            $membreData = $membre->first(['id' => $_SESSION['membre_id']]);
+            $abonnementMembre = $membreData->abonnement_id;
+    
+            if (!$abonnementMembre) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Vous n\'avez pas d\'abonnement en cours. Vous devez en créer un nouveau.'
+                ]);
+                exit();
+            }
+    
+            $currentAbonnement = $abonnementModel->first(['id' => $abonnementMembre]);
+            if (!$currentAbonnement) {
+                echo json_encode(['status' => 'error', 'message' => 'L\'abonnement actuel n\'existe pas.']);
+                exit();
+            }
+    
+            if (date('Y-m-d') < $currentAbonnement->date_fin) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Votre abonnement est encore valide.'
+                ]);
+                exit();
+            }
+    
+            // Validate payment receipt
+            if (!isset($_FILES['recu_paiement']) || $_FILES['recu_paiement']['error'] !== 0) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Le reçu de paiement est obligatoire.'
+                ]);
+                exit();
+            }
+    
+            // Prepare new abonnement data
+            $donnees = [
+                'type_abonnement' => $_POST['type_abonnement'],
+                'date_debut' => date('Y-m-d'),
+                'date_fin' => date('Y-m-d', strtotime('+1 year')),
+                'recu_paiement' => null,
+                'statut' => 'EN_COURS',
+                'is_active' => 0
+            ];
+    
+            if (isset($_FILES['recu_paiement']) && $_FILES['recu_paiement']['error'] === 0) {
+                $recuPath = handleFileUpload($_FILES['recu_paiement'], 'recus/');
+                $donnees['recu_paiement'] = $recuPath;
+            }
+    
+    
+            try {
+                $abonnement = $abonnementModel->insert($donnees);
+                $abonnementId = $abonnementModel->first(['recu_paiement' => $donnees['recu_paiement']])->id;
+    
+                $membre->update($_SESSION['membre_id'], ['abonnement_id' => $abonnementId]);
+    
+    
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Abonnement renouvelé avec succès !'
+                ]);
+                exit();
+            } catch (Exception $e) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => 'Une erreur s\'est produite : ' . $e->getMessage()
+                ]);
+                exit();
+            }
+        }
+    }
+    
+
+   
+
 }
