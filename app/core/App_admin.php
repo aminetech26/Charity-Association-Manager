@@ -3,11 +3,11 @@
 class App_admin
 {
 	private $controller = 'Admin';
-	private $method 	= 'signin';
+	private $method 	= 'index';
 
 	private function splitURL()
 	{
-		$URL = $_GET['url'] ?? 'Admin/signin';
+		$URL = $_GET['url'] ?? 'Admin/index';
 		$URL = explode("/", trim($URL,"/"));
 		return $URL;	
 	}

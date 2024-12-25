@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Tailwind CSS build files
+public/css/tailwind.css
+public/css/tailwind.min.css
+
+# Exclude specific directories
+public/identities/
+public/logos/
+public/photos/
+public/recus/
+public/recus_dons/
+
+# Other common ignores
+.DS_Store
+.env
+dist/
+build/
+*.log
+*.tmp
+*.cache

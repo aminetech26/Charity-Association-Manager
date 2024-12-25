@@ -2,6 +2,10 @@
 class Admin {
     use Controller;
 
+    public function index() {
+        $this->view('admin_signin');
+    }
+
     private function checkIfSuperAdmin() {
         if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'SUPER_ADMIN') {
             echo json_encode(['status' => 'error', 'message' => 'Accès non autorisé']);
