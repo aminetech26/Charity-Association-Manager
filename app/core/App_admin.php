@@ -7,7 +7,7 @@ class App_admin
 
 	private function splitURL()
 	{
-		$URL = $_GET['url'] ?? 'Admin/index';
+		$URL = $_GET['url'] ?? 'admin';
 		$URL = explode("/", trim($URL,"/"));
 		return $URL;	
 	}

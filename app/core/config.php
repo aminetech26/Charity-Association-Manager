@@ -5,7 +5,7 @@
 	define('DBUSER', 'root');
 	define('DBPASS', 'root');
 	define('DBDRIVER', '');
-	define('ROOT', 'http://localhost/TDWProject/public');
+	define('ROOT', 'http://localhost/TDWProject/');
 
     define('APP_NAME', "My TDWProject");
     define('APP_DESC', "");

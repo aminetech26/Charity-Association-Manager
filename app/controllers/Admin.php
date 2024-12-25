@@ -1,9 +1,26 @@
 <?php
+require_once dirname(__DIR__) . "/core/Controller.php";
 class Admin {
     use Controller;
 
-    public function index() {
-        $this->view('admin_signin');
+    public function index()
+    {
+        $this->view("admin_signin");
+        $this->model('Admin');
+        $view = new Admin_login_view();
+        $view->page_head(["admin/assets/css/main.css","admin/assets/css/login_admin.css"], 'Se connecter en tant qu\'administrateur');
+        $view->show_login_page();
+    }
+
+    public function dashboard()
+    {
+        if(!isset($_SESSION['admin_id'])){
+            redirect('admin/index');
+        }
+        $this->view("admin_dashboard");
+        $view = new Admin_dashboard_view();
+        $view->page_head(["dashboard.css","main.css"], 'Tableau de bord administrateur');
+        $view->show_dashboard_page();
     }
 
     private function checkIfSuperAdmin() {
@@ -26,14 +43,10 @@ class Admin {
                 $utilisateur = $admin->first(['email' => $_POST['email']]);
 
                 if ($utilisateur && password_verify($_POST['mot_de_passe'], $utilisateur->mot_de_passe)) {
-                    if (session_status() === PHP_SESSION_NONE) {
-                        session_start();
-                    }
                     $_SESSION['admin_id'] = $utilisateur->id;
                     $_SESSION['admin_nom'] = $utilisateur->nom_user;
                     $_SESSION['admin_email'] = $utilisateur->email;
                     $_SESSION['admin_role'] = $utilisateur->role;
-
                     echo json_encode([
                         'status' => 'success', 
                         'message' => 'Connexion réussie !',
@@ -42,6 +55,9 @@ class Admin {
                             'role' => $utilisateur->role
                         ]
                     ]);
+
+                    redirect('public/Admin/dashboard');
+
                     exit();
                 } else {
 

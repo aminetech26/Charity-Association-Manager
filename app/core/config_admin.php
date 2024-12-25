@@ -5,10 +5,7 @@
 	define('DBUSER', 'root');
 	define('DBPASS', 'root');
 	define('DBDRIVER', '');
-	define('ROOT', 'http://localhost/TDWProject/admin');
-    define('ROOTIMG', "http://localhost/TDW_PROJECT/admin/assets/images/");
-    define('ROOTCSS', "http://localhost/TDW_PROJECT/admin/assets/css/");
-    define('ROOTJS', "http://localhost/TDW_PROJECT/admin/assets/js/");
+	define('ROOT', 'http://localhost/TDWProject/');
     define('APP_NAME', "My TDWProject");
     define('APP_DESC', "");
 
