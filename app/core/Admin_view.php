@@ -1,9 +1,10 @@
 <?php
-Trait AdminView{
-public function page_head($page_title){
-?>
+
+trait AdminView {
+    public function page_head($page_title) {
+        ?>
         <!DOCTYPE html>
-        <html lang="fr">
+        <html lang="fr" class="h-full bg-white">
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,11 +12,17 @@ public function page_head($page_title){
             <meta http-equiv="Pragma" content="no-cache" />
             <meta http-equiv="Expires" content="-1" />
             <title><?=$page_title?></title>
+            <script src="https://cdn.tailwindcss.com"></script>
             <link rel="stylesheet" href="<?= ROOT . "public/assets/css/main.css" ?>">
         </head>
-
-        <body class="
-         text-black">
-            <?php
-        }
+        <body class="h-full bg-white">
+        <?php
     }
+
+    public function page_footer() {
+        ?>
+        </body>
+        </html>
+        <?php
+    }
+}

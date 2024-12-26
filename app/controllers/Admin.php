@@ -8,6 +8,7 @@ class Admin {
         $view = new Admin_login_view();
         $view->page_head('Connexion administrateur');
         $view->show_login_page();
+        $view->page_footer();
     }
 
     public function dashboard()
@@ -16,6 +17,7 @@ class Admin {
         $view = new Admin_dashboard_view();
         $view->page_head('Tableau de bord administrateur');
         $view->show_dashboard_page();
+        $view->page_footer();
     }
 
     private function checkIfSuperAdmin() {
@@ -28,39 +30,44 @@ class Admin {
     public function signIn() {
         $erreurs = [];
         $this->model('Admin');
-
+    
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $admin = new AdminModel();
-
-            if (empty($_POST['email']) || empty($_POST['mot_de_passe'])) {
-                $erreurs[] = "L'adresse e-mail et le mot de passe sont requis.";
+    
+            if (empty($_POST['nom_user']) || empty($_POST['mot_de_passe'])) {
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => "Le nom d'utilisateur et le mot de passe sont requis."
+                ]);
+                exit();
+            }
+    
+            $utilisateur = $admin->first(['nom_user' => $_POST['nom_user']]);
+    
+            if ($utilisateur && password_verify($_POST['mot_de_passe'], $utilisateur->mot_de_passe)) {
+                $_SESSION['admin_id'] = $utilisateur->id;
+                $_SESSION['admin_nom'] = $utilisateur->nom_user;
+                $_SESSION['admin_email'] = $utilisateur->email;
+                $_SESSION['admin_role'] = $utilisateur->role;
+    
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Connexion réussie !',
+                ]);
+                exit();
             } else {
-                $utilisateur = $admin->first(['email' => $_POST['email']]);
-
-                if ($utilisateur && password_verify($_POST['mot_de_passe'], $utilisateur->mot_de_passe)) {
-                    $_SESSION['admin_id'] = $utilisateur->id;
-                    $_SESSION['admin_nom'] = $utilisateur->nom_user;
-                    $_SESSION['admin_email'] = $utilisateur->email;
-                    $_SESSION['admin_role'] = $utilisateur->role;
-
-                    // echo json_encode([
-                    //     'status' => 'success', 
-                    //     'message' => 'Connexion réussie !',
-                    //     'data' => [
-                    //         'nom' => $utilisateur->nom_user,
-                    //         'role' => $utilisateur->role
-                    //     ]
-                    // ]);
-
-                    redirect('admin/Admin/dashboard');
-                } else {
-                    $erreurs[] = "Adresse e-mail ou mot de passe incorrect.";
-                    redirect('admin/Admin/index');
-                }
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => "Nom d'utilisateur ou mot de passe incorrect."
+                ]);
+                exit();
             }
         }
-
-        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+    
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Méthode non autorisée.'
+        ]);
         exit();
     }
 
