@@ -1,25 +1,20 @@
 <?php
-require_once dirname(__DIR__) . "/core/Controller.php";
 class Admin {
     use Controller;
 
     public function index()
     {
         $this->view("admin_signin");
-        $this->model('Admin');
         $view = new Admin_login_view();
-        $view->page_head(["admin/assets/css/main.css","admin/assets/css/login_admin.css"], 'Se connecter en tant qu\'administrateur');
+        $view->page_head('Connexion administrateur');
         $view->show_login_page();
     }
 
     public function dashboard()
     {
-        if(!isset($_SESSION['admin_id'])){
-            redirect('admin/index');
-        }
         $this->view("admin_dashboard");
         $view = new Admin_dashboard_view();
-        $view->page_head(["dashboard.css","main.css"], 'Tableau de bord administrateur');
+        $view->page_head('Tableau de bord administrateur');
         $view->show_dashboard_page();
     }
 
@@ -47,21 +42,20 @@ class Admin {
                     $_SESSION['admin_nom'] = $utilisateur->nom_user;
                     $_SESSION['admin_email'] = $utilisateur->email;
                     $_SESSION['admin_role'] = $utilisateur->role;
-                    echo json_encode([
-                        'status' => 'success', 
-                        'message' => 'Connexion réussie !',
-                        'data' => [
-                            'nom' => $utilisateur->nom_user,
-                            'role' => $utilisateur->role
-                        ]
-                    ]);
 
-                    redirect('public/Admin/dashboard');
+                    // echo json_encode([
+                    //     'status' => 'success', 
+                    //     'message' => 'Connexion réussie !',
+                    //     'data' => [
+                    //         'nom' => $utilisateur->nom_user,
+                    //         'role' => $utilisateur->role
+                    //     ]
+                    // ]);
 
-                    exit();
+                    redirect('admin/Admin/dashboard');
                 } else {
-
                     $erreurs[] = "Adresse e-mail ou mot de passe incorrect.";
+                    redirect('admin/Admin/index');
                 }
             }
         }
