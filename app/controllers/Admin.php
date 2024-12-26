@@ -20,6 +20,11 @@ class Admin {
         $view->page_footer();
     }
 
+    public function partenaire_content(){
+        $content = $this->view("partenaire", true);
+        echo $content;
+    }
+
     private function checkIfSuperAdmin() {
         if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'SUPER_ADMIN') {
             echo json_encode(['status' => 'error', 'message' => 'Accès non autorisé']);
@@ -181,6 +186,7 @@ class Admin {
         session_unset();
         session_destroy();
         echo json_encode(['status' => 'success', 'message' => 'Déconnexion réussie !']);
+        redirect('admin/Admin/index');
         exit();
     }
 

@@ -3,15 +3,26 @@
 Trait Controller
 {
 
-	public function view($viewName)
+	public function view($viewName, $returnContent = false)
 	{
-		$filename = "../app/views/".$viewName.".view.php";
-		if(file_exists($filename))
-		{
-			require $filename;
-		}else{
+		$filename = "../app/views/" . $viewName . ".view.php";
+		if (file_exists($filename)) {
+			if ($returnContent) {
+				ob_start();
+				require $filename;
+				return ob_get_clean();
+			} else {
+				require $filename;
+			}
+		} else {
 			$filename = "../app/views/404.view.php";
-			require $filename;
+			if ($returnContent) {
+				ob_start();
+				require $filename;
+				return ob_get_clean();
+			} else {
+				require $filename;
+			}
 		}
 	}
 
