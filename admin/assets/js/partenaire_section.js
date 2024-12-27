@@ -39,27 +39,22 @@ function initializeEventListeners() {
         dropdown.classList.toggle('hidden');
     });
 
-    // Search input listener
     document.getElementById('simple-search').addEventListener('input', (e) => {
         const searchTerm = e.target.value;
         currentPage = 1;
         loadPartnersFromBackend(currentPage, itemsPerPage, searchTerm);
     });
 
-    // Filter listeners
     document.getElementById('filterVille').addEventListener('input', applyFilters);
     document.getElementById('filterCategorie').addEventListener('input', applyFilters);
 
-    // Select all checkbox
     document.getElementById('selectAll').addEventListener('change', (e) => {
         const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
         checkboxes.forEach(checkbox => checkbox.checked = e.target.checked);
     });
 
-    // Delete selected button
     document.getElementById('deleteAllButton').addEventListener('click', deleteSelected);
 
-    // Clear filter buttons
     document.getElementById('clearVille').addEventListener('click', () => {
         document.getElementById('filterVille').value = null;
         applyFilters();
@@ -89,7 +84,6 @@ function deleteSelected() {
             parseInt(checkbox.getAttribute('data-id'))
         );
 
-        // Send a request to the backend to delete the selected partners
         fetch(`${ROOT}admin/Admin/deletePartners`, {
             method: 'POST',
             headers: {
@@ -100,7 +94,6 @@ function deleteSelected() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Reload the partners after deletion
                 loadPartnersFromBackend(currentPage, itemsPerPage);
             } else {
                 console.error('Error deleting partners:', data.message);
@@ -163,7 +156,6 @@ function updatePagination() {
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = '';
 
-    // Previous Button
     pagination.innerHTML += `
         <li>
             <button onclick="changePage(${currentPage - 1})" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 ${currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''}" ${currentPage === 1 ? 'disabled' : ''}>
@@ -175,7 +167,6 @@ function updatePagination() {
         </li>
     `;
 
-    // Page Numbers
     for (let i = 1; i <= totalPages; i++) {
         pagination.innerHTML += `
             <li>
@@ -186,7 +177,6 @@ function updatePagination() {
         `;
     }
 
-    // Next Button
     pagination.innerHTML += `
         <li>
             <button onclick="changePage(${currentPage + 1})" class="flex items-center justify-center h-full py-1.5 px-3 text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 ${currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>
@@ -215,7 +205,7 @@ async function loadPartnersFromBackend(page = 1, limit = 10, searchTerm = '', vi
             totalItems = data.pagination.total;
             totalPages = data.pagination.total_pages;
             updatePagination();
-            updatePaginationInfo(data.pagination.total); // Pass totalItems to updatePaginationInfo
+            updatePaginationInfo(data.pagination.total); 
         } else {
             console.error('Error loading partners:', data.message);
         }
