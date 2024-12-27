@@ -13,6 +13,7 @@ class Admin {
 
     public function dashboard()
     {
+        $this->checkIfAdminOrSuperAdmin();
         $this->view("admin_dashboard");
         $view = new Admin_dashboard_view();
         $view->page_head('Tableau de bord administrateur');
@@ -54,8 +55,7 @@ class Admin {
 
     private function checkIfSuperAdmin() {
         if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'SUPER_ADMIN') {
-            echo json_encode(['status' => 'error', 'message' => 'Accès non autorisé']);
-            exit();
+            redirect('admin/Admin/index');
         }
     }
 
@@ -219,8 +219,7 @@ class Admin {
 
     public function checkIfAdminOrSuperAdmin(){
         if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role']) || ($_SESSION['admin_role'] !== 'ADMIN' && $_SESSION['admin_role'] !== 'SUPER_ADMIN')) {
-            echo json_encode(['status' => 'error', 'message' => 'Accès non autorisé']);
-            exit();
+            redirect('admin/Admin/index');
         }
     }
 
