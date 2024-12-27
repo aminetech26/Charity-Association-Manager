@@ -6,8 +6,8 @@ class PartenaireModel{
     protected $table = "Partenaire";
     protected $allowedColumns = ['nom', 'ville', 'adresse', 'numero_de_telephone', 'email', 'site_web', 'logo','categorie_id','statut'];
 
-    public function getAllPartenaires(){
-        return $this->findAll();
+    public function getAllPartenaires($limit = 10, $offset = 0){
+        return $this->findAll($limit, $offset);
     }
 
     public function getPartenaireById($id){
@@ -28,6 +28,10 @@ class PartenaireModel{
 
     public function getPartenaireByNom($nom){
         return $this->where(['nom' => $nom]);
+    }
+
+    public function getTotalPartenaires() {
+        return $this->getTotalCount();
     }
 
 }

@@ -217,8 +217,10 @@ class Admin {
         exit();
     }
 
-    public function checkIfAdminOrSuperAdmin(){
-        if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role']) || ($_SESSION['admin_role'] !== 'ADMIN' && $_SESSION['admin_role'] !== 'SUPER_ADMIN')) {
+    public function checkIfAdminOrSuperAdmin() {
+        $allowedRoles = ['ADMIN', 'SUPER_ADMIN'];
+    
+        if (empty($_SESSION['admin_id']) || empty($_SESSION['admin_role']) || !in_array($_SESSION['admin_role'], $allowedRoles)) {
             redirect('admin/Admin/index');
         }
     }
@@ -566,12 +568,27 @@ class Admin {
         exit();
     }
 
-    public function getAllPartners(){
+    public function getAllPartners() {
         $this->checkIfAdminOrSuperAdmin();
         $this->model('Partenaire');
         $partenaire = new PartenaireModel();
-        $partenaires = $partenaire->getAllPartenaires();
-        echo json_encode(['status' => 'success', 'data' => $partenaires]);
+    
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+        $partenaires = $partenaire->getAllPartenaires($limit, $offset);
+        $total = $partenaire->getTotalPartenaires();
+        echo json_encode([
+            'status' => 'success',
+            'data' => $partenaires,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        
         exit();
     }
 
