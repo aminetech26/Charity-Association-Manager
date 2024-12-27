@@ -25,6 +25,33 @@ class Admin {
         echo $content;
     }
 
+    public function members_content(){
+        $content = $this->view("membres", true);
+        echo $content;
+    }
+
+    public function donations_content(){
+        $content = $this->view("dons", true);
+        echo $content;
+    }
+
+    public function notifications_content(){
+        $content = $this->view("notifications", true);
+        echo $content;
+    }
+
+    public function groups_content(){
+        $content = $this->view("groupes", true);
+        echo $content;
+    }
+
+    public function settings_content(){
+        $content = $this->view("parametres_site", true);
+        echo $content;
+    }
+
+
+
     private function checkIfSuperAdmin() {
         if (!isset($_SESSION['admin_id']) || !isset($_SESSION['admin_role']) || $_SESSION['admin_role'] !== 'SUPER_ADMIN') {
             echo json_encode(['status' => 'error', 'message' => 'Accès non autorisé']);
