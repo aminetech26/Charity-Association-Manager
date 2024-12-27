@@ -61,9 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
                 const scripts = mainContent.querySelectorAll('script');
                 scripts.forEach(script => {
-                    if (script.src && loadedScripts.has(script.src)) {
-                        return;
-                    }
+                
     
                     const newScript = document.createElement('script');
                     if (script.src) {
