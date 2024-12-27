@@ -575,9 +575,15 @@ class Admin {
     
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $nom = isset($_GET['nom']) ? $_GET['nom'] : null;
+        $categorie_id = isset($_GET['categorie_id']) ? $_GET['categorie_id'] : null;
+        $ville = isset($_GET['ville']) ? $_GET['ville'] : null;
         $offset = ($page - 1) * $limit;
-        $partenaires = $partenaire->getAllPartenaires($limit, $offset);
+        $partenaires = $partenaire->getPartenaireByNomAndCategorieAndVille($nom, $categorie_id, $ville, $limit, $offset);
         $total = $partenaire->getTotalPartenaires();
+        if(!$partenaires){
+            $partenaires = [];
+        }
         echo json_encode([
             'status' => 'success',
             'data' => $partenaires,
