@@ -4,6 +4,9 @@
             <a href="#partenaires" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link active" aria-current="page">Partenaires</a>
         </li>
         <li class="me-2">
+            <a href="#compte-partenaires" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link">Comptes partenaires</a>
+        </li>
+        <li class="me-2">
             <a href="#offres" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link">Offres</a>
         </li>
         <li class="me-2">
@@ -115,6 +118,10 @@
         </div>
     </div>
 </div>
+    <div id="compte-partenaires" class="tab-pane p-4 hidden">
+        <h2 class="text-xl font-bold mb-4">Gestion des comptes partenaires</h2>
+        <p>Ceci est le contenu de la section Gestion des comptes partenaires.</p>
+    </div>
     <div id="offres" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Gestion des Offres</h2>
         <p>Ceci est le contenu de la section Offres.</p>
