@@ -482,24 +482,31 @@ class Admin {
         exit();
     }
 
-    public function deletePartner(){
+    public function deletePartners() {
         $this->checkIfAdminOrSuperAdmin();
         $erreurs = [];
         $this->model('Partenaire');
-
+    
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            if (empty($_POST['partenaire_id'])) {
-                $erreurs[] = "ID du partenaire requis.";
+            $data = json_decode(file_get_contents('php://input'), true);
+            $ids = $data['ids'] ?? [];
+    
+            if (empty($ids)) {
+                $erreurs[] = "Aucun partenaire sélectionné.";
             } else {
                 try {
                     $partenaire = new PartenaireModel();
-                    $partenaireToDelete = $partenaire->first(['id' => $_POST['partenaire_id']]);
-
-                    if (!$partenaireToDelete) {
-                        $erreurs[] = "Partenaire non trouvé.";
-                    } else {
-                        $partenaire->delete($_POST['partenaire_id']);
-                        echo json_encode(['status' => 'success', 'message' => 'Partenaire supprimé avec succès !']);
+                    foreach ($ids as $id) {
+                        $partenaireToDelete = $partenaire->first(['id' => $id]);
+                        if (!$partenaireToDelete) {
+                            $erreurs[] = "Partenaire avec l'ID $id non trouvé.";
+                        } else {
+                            $partenaire->delete($id);
+                        }
+                    }
+    
+                    if (empty($erreurs)) {
+                        echo json_encode(['status' => 'success', 'message' => 'Partenaires supprimés avec succès !']);
                         exit();
                     }
                 } catch (Exception $e) {
@@ -508,7 +515,7 @@ class Admin {
                 }
             }
         }
-
+    
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
     }
@@ -568,6 +575,8 @@ class Admin {
         exit();
     }
 
+    
+
     public function getAllPartners() {
         $this->checkIfAdminOrSuperAdmin();
         $this->model('Partenaire');
@@ -579,11 +588,28 @@ class Admin {
         $categorie_id = isset($_GET['categorie_id']) ? $_GET['categorie_id'] : null;
         $ville = isset($_GET['ville']) ? $_GET['ville'] : null;
         $offset = ($page - 1) * $limit;
-        $partenaires = $partenaire->getPartenaireByNomAndCategorieAndVille($nom, $categorie_id, $ville, $limit, $offset);
+        
+        $searchFields = [];
+        $exactMatchFields = [];
+
+        if ($nom !== null && $nom !== '' && $nom !== 'null') {
+            $searchFields['nom'] = $nom;
+        }
+        if ($categorie_id !== null && $categorie_id !== '' && $categorie_id !== 'null') {
+            $searchFields['categorie_id'] = $categorie_id;
+            $exactMatchFields[] = 'categorie_id';
+        }
+        if ($ville !== null && $ville !== '' && $ville !== 'null') {
+            $searchFields['ville'] = $ville;
+        }
+
+        $partenaires = $partenaire->search($searchFields, $exactMatchFields, $limit, $offset);
+
         $total = $partenaire->getTotalPartenaires();
         if(!$partenaires){
             $partenaires = [];
         }
+        
         echo json_encode([
             'status' => 'success',
             'data' => $partenaires,

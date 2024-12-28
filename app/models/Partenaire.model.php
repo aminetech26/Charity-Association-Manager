@@ -30,25 +30,8 @@ class PartenaireModel{
         return $this->where(['nom' => $nom]);
     }
 
-    public function getPartenaireByNomAndCategorieAndVille($nom = null, $categorie_id = null, $ville = null, $limit = 10, $offset = 0)
-    {
-        $data = [];
-    
-        if ($nom !== null && $nom !== '') {
-            $data['nom'] = $nom;
-        }
-        if ($categorie_id !== null && $categorie_id !== '') {
-            $data['categorie_id'] = $categorie_id;
-        }
-        if ($ville !== null && $ville !== '') {
-            $data['ville'] = $ville;
-        }
-    
-        if (empty($data)) {
-            return $this->findAll($limit, $offset);
-        }
-    
-        return $this->where($data, [], $limit, $offset);
+    public function getPartnerWithSearch($search, $exact_match , $limit = 10, $offset = 0) {
+        return $this->search($search, $exact_match, $limit, $offset);
     }
 
     public function getTotalPartenaires() {

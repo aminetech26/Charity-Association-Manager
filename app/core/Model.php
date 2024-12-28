@@ -126,4 +126,26 @@ Trait Model
 		return $result[0]->total;
 	}
 
+    public function search($searchFields = [], $exactMatchFields = [], $limit = 10, $offset = 0, $order_column = "id", $order_type = "ASC")
+    {
+        $query = "SELECT * FROM $this->table WHERE 1=1 ";
+        $data = [];
+
+        foreach ($searchFields as $key => $value) {
+            if ($value !== null && $value !== '') {
+                if (in_array($key, $exactMatchFields)) {
+                    $query .= " AND $key = :$key ";
+                    $data[$key] = $value;
+                } else {
+                    $query .= " AND $key LIKE :$key ";
+                    $data[$key] = '%' . $value . '%';
+                }
+            }
+        }
+
+        $query .= " ORDER BY $order_column $order_type LIMIT $limit OFFSET $offset";
+
+        return $this->query($query, $data);
+    }
+
 }
