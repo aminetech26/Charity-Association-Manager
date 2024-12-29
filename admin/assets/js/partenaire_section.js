@@ -23,6 +23,7 @@
     }
 
     // -----------------------------------------------------------------------------------
+
     let currentPage = 1;
     const itemsPerPage = 10;
     let totalItems = 0;
@@ -30,7 +31,9 @@
     
     initializeEventListeners();
     loadPartnersFromBackend(currentPage, itemsPerPage);
-    
+    populateCategoriesDropDown();
+
+
     function initializeEventListeners() {
         document.getElementById('filterButton').addEventListener('click', () => {
             const dropdown = document.getElementById('filterDropdown');
@@ -69,6 +72,57 @@
             applyFilters();
         });
 
+        document.getElementById('btnAjouterPartenaire').addEventListener('click', () => {
+            console.log('Button clicked');
+            const modal = document.getElementById('createPartnerModal');
+            modal.classList.remove('hidden');
+        });
+        
+        document.querySelector('#createPartnerModal form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const logoFile = formData.get('logo');
+            
+            if (!logoFile || logoFile.size === 0) {
+                alert("Veuillez télécharger un logo.");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${ROOT}admin/Admin/addPartner`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert(data.message);
+                    loadPartnersFromBackend(currentPage, itemsPerPage);
+                    document.getElementById('createPartnerModal').classList.add('hidden');
+                    // Optional: Reset form
+                    e.target.reset();
+                } else {
+                    console.error('Error adding partner:', data.message);
+                    alert('Erreur: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error adding partner:', error);
+                alert('Une erreur s\'est produite lors de l\'ajout du partenaire.');
+            }
+        });
+
+        const closeButtons = document.querySelectorAll('[data-modal-toggle="createPartnerModal"]');
+            closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const modal = document.getElementById('createPartnerModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+
         document.getElementById('partnersTableBody').addEventListener('click', (e) => {
             const target = e.target;
             if (target.getAttribute('data-action') === 'delete') {
@@ -97,6 +151,46 @@
             }
         });
 
+    }
+
+    function populateCategoriesDropDown() {
+        const categorySelect = document.getElementById('categorie');
+    
+        fetch(`${ROOT}admin/Admin/getAllCategories`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                categorySelect.innerHTML = '<option value="" selected disabled>Sélectionnez une catégorie</option>';
+                
+                data.data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.nom;
+                    option.classList.add('bg-gray-100', 'text-black', 'py-2', 'px-4', 'text-sm');
+                    categorySelect.appendChild(option);
+                });
+                
+                categorySelect.addEventListener('change', function() {
+                    if (!this.value) {
+                        console.log('No category selected');
+                    } else {
+                        console.log('Selected category ID:', this.value);
+                    }
+                });
+                } else {
+                    console.error('Error fetching categories:', data.message);
+                    alert('Erreur: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching categories:', error);
+                alert('Une erreur s\'est produite lors du chargement des catégories.');
+            });
     }
 
     function deletePartner(partenaireId) {

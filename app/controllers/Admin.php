@@ -383,6 +383,15 @@ class Admin {
         exit();
     }
 
+    public function getAllCategories(){
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('Categorie');
+        $categorie = new CategorieModel();
+        $categories = $categorie->getAllCategories();
+        echo json_encode(['status' => 'success', 'data' => $categories]);
+        exit();
+    }
+
     // Partenaire management
 
 

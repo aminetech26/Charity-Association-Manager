@@ -56,18 +56,19 @@ function generate_unique_filename($original_filename, $extension = '') {
     return $base . '_' . uniqid() . '.' . $extension;
 }
 
-function handleFileUpload($file, $directory) {
-    if(!is_dir($directory)) {
-        mkdir($directory, 0777, true);
+function handleFileUpload($file, $relativeDirectory) {
+    $absoluteDirectory = '../public/' . $relativeDirectory;
+
+    if (!is_dir($absoluteDirectory)) {
+        mkdir($absoluteDirectory, 0777, true);
     }
-    
-    // Generate a unique, clean filename
+
     $filename = generate_unique_filename($file['name']);
-    $destination = $directory . $filename;
-    
-    if(!move_uploaded_file($file['tmp_name'], $destination)) {
+    $destination = $absoluteDirectory . $filename;
+
+    if (!move_uploaded_file($file['tmp_name'], $destination)) {
         throw new Exception("Error uploading file");
     }
-    
+
     return $destination;
 }
