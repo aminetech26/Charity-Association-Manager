@@ -529,6 +529,8 @@ class Admin {
         exit();
     }
 
+    
+
     public function editPartnerInfos(){
         $this->checkIfAdminOrSuperAdmin();
         $erreurs = [];

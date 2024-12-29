@@ -75,34 +75,31 @@
         document.getElementById('btnAjouterPartenaire').addEventListener('click', () => {
             console.log('Button clicked');
             const modal = document.getElementById('createPartnerModal');
+            const form = modal.querySelector('form');
+            form.reset();
             modal.classList.remove('hidden');
         });
         
         document.querySelector('#createPartnerModal form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const formData = new FormData(e.target);
-            const logoFile = formData.get('logo');
-            
-            if (!logoFile || logoFile.size === 0) {
-                alert("Veuillez télécharger un logo.");
-                return;
-            }
+            const partenaireId = formData.get('partenaire_id');
 
             try {
-                const response = await fetch(`${ROOT}admin/Admin/addPartner`, {
-                    method: 'POST',
+                const url = partenaireId ? `${ROOT}admin/Admin/editPartnerInfos` : `${ROOT}admin/Admin/addPartner`;
+                method = 'POST';
+                const response = await fetch(url, {
+                    method: method,
                     body: formData,
                 });
-                
+
                 const data = await response.json();
                 
                 if (data.status === 'success') {
                     alert(data.message);
                     loadPartnersFromBackend(currentPage, itemsPerPage);
-                    document.getElementById('createPartnerModal').classList.add('hidden');
-                    // Optional: Reset form
                     e.target.reset();
+                    document.getElementById('createPartnerModal').classList.add('hidden');
                 } else {
                     console.error('Error adding partner:', data.message);
                     alert('Erreur: ' + data.message);
@@ -218,7 +215,46 @@
             });
         }
     }
+
+    async function editPartner(partenaireId) {
+        try {
+            const response = await fetch(`${ROOT}admin/Admin/getPartnerDetails?partenaire_id=${partenaireId}`);
+            const data = await response.json();
     
+            if (data.status === 'success') {
+                const partner = data.data[0];
+    
+                const form = document.querySelector('#createPartnerModal form');
+                form.querySelector('input[name="nom"]').value = partner.nom;
+                form.querySelector('input[name="ville"]').value = partner.ville;
+                form.querySelector('input[name="email"]').value = partner.email;
+                form.querySelector('input[name="numero_de_telephone"]').value = partner.numero_de_telephone;
+                form.querySelector('input[name="adresse"]').value = partner.adresse;
+                form.querySelector('input[name="site_web"]').value = partner.site_web;
+                form.querySelector('select[name="categorie_id"]').value = partner.categorie_id;
+
+                let partnerIdInput = form.querySelector('input[name="partenaire_id"]');
+                if (!partnerIdInput) {
+                    partnerIdInput = document.createElement('input');
+                    partnerIdInput.type = 'hidden';
+                    partnerIdInput.name = 'partenaire_id';
+                    form.appendChild(partnerIdInput);
+                }
+                partnerIdInput.value = partenaireId;
+
+                const modal = document.getElementById('createPartnerModal');
+                modal.classList.remove('hidden');
+
+            } else {
+                console.error('Error fetching partner data:', data.message);
+                alert('Erreur: ' + data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching partner data:', error);
+            alert('Une erreur s\'est produite lors de la récupération des données du partenaire.');
+        }
+    }
+
     function deleteSelected() {
         const selectedCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
         if (selectedCheckboxes.length === 0) {
