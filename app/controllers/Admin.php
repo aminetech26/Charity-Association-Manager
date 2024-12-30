@@ -668,7 +668,7 @@ class Admin {
                 try {
                     $donneesComptePartenaire = [
                         'partenaire_id' => $_POST['partenaire_id'],
-                        'email' => $_POST['email'],
+                        'email' => $_POST['email-compte'],
                         'mot_de_passe' => password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT),
                         'created_by' => $_SESSION['admin_id'],
                         'statut' => 'ACTIVE'
@@ -695,7 +695,7 @@ class Admin {
         $comptePartenaire = new ComptePartenaireModel();
         $partenaire = new PartenaireModel();
 
-        $champsObligatoires = ['partenaire_id', 'email', 'mot_de_passe'];
+        $champsObligatoires = ['partenaire_id', 'email-compte', 'mot_de_passe'];
         foreach ($champsObligatoires as $champ) {
             if (empty($post[$champ])) {
                 $erreurs[] = ucfirst($champ) . " est requis.";
@@ -706,11 +706,11 @@ class Admin {
             $erreurs[] = "Partenaire non trouvé.";
         }
 
-        if (!filter_var($post['email'], FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var($post['email-compte'], FILTER_VALIDATE_EMAIL)) {
             $erreurs[] = "Adresse e-mail invalide.";
         }
 
-        if ($comptePartenaire->first(['email' => $post['email']])) {
+        if ($comptePartenaire->first(['email' => $post['email-compte']])) {
             $erreurs[] = "Cette adresse e-mail est déjà utilisée.";
         }
 
@@ -787,6 +787,38 @@ class Admin {
             
             exit();
         }
+
+        public function deletePartnerAccount(){
+            $this->checkIfAdminOrSuperAdmin();
+            $erreurs = [];
+            $this->model('ComptePartenaire');
+        
+            if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                if (empty($_POST['compte_partenaire_id'])) {
+                    $erreurs[] = "ID du compte partenaire requis.";
+                } else {
+                    try {
+                        $comptePartenaire = new ComptePartenaireModel();
+                        $comptePartenaireToDelete = $comptePartenaire->first(['id' => $_POST['compte_partenaire_id']]);
+        
+                        if (!$comptePartenaireToDelete) {
+                            $erreurs[] = "Compte partenaire non trouvé.";
+                        } else {
+                            $comptePartenaire->delete($_POST['compte_partenaire_id']);
+                            echo json_encode(['status' => 'success', 'message' => 'Compte partenaire supprimé avec succès !']);
+                            exit();
+                        }
+                    } catch (Exception $e) {
+                        echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                        exit();
+                    }
+                }
+            }
+        
+            echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+            exit();
+        }
+
 
     // Offer management
 

@@ -470,6 +470,14 @@
             }
         });
 
+        document.getElementById('comptePartenaireTableBody').addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.getAttribute('data-action') === 'edit') {
+                const compteId = target.getAttribute('data-id');
+                editComptePartenaire(compteId);
+            }
+        });
+
         document.getElementById('paginationComptePartenaire').addEventListener('click', (e) => {
             const target = e.target.closest('button');
             if (!target) return;
@@ -582,12 +590,11 @@ function changeComptePartenairePage(page) {
     async function deleteComptePartenaire(compteId) {
         if (confirm('Êtes-vous sûr de vouloir supprimer ce compte partenaire ?')) {
             try {
-                const response = await fetch(`${ROOT}admin/Admin/deleteComptePartenaire`, {
+                formData = new FormData();
+                formData.append('compte_partenaire_id', compteId);
+                const response = await fetch(`${ROOT}admin/Admin/deletePartnerAccount`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ id: compteId }),
+                    body: formData,
                 });
 
                 const data = await response.json();
@@ -605,4 +612,41 @@ function changeComptePartenairePage(page) {
             }
         }
     }
+
+    // async function editComptePartenaire(compteId) {
+    //     try {
+    //         const response = await fetch(`${ROOT}admin/Admin/getPartnerAccountDetails?compte_partenaire_id=${compteId}`);
+    //         const data = await response.json();
+    
+    //         if (data.status === 'success') {
+    //             const compte = data.data[0];
+    
+    //             const form = document.querySelector('#createCompteModal form');
+    //             form.querySelector('input[name="email"]').value = compte.email;
+    //             form.querySelector('input[name="password"]').value = compte.password;
+    //             form.querySelector('input[name="statut"]').value = compte.statut;
+    //             form.querySelector('input[name="partenaire_id"]').value = compte.partenaire_id;
+
+    //             let compteIdInput = form.querySelector('input[name="compte_partenaire_id"]');
+    //             if (!compteIdInput) {
+    //                 compteIdInput = document.createElement('input');
+    //                 compteIdInput.type = 'hidden';
+    //                 compteIdInput.name = 'compte_partenaire_id';
+    //                 form.appendChild(compteIdInput);
+    //             }
+    //             compteIdInput.value = compteId;
+
+    //             const modal = document.getElementById('createCompteModal');
+    //             modal.classList.remove('hidden');
+
+    //         } else {
+    //             console.error('Error fetching partner account data:', data.message);
+    //             alert('Erreur: ' + data.message);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching partner account data:', error);
+    //         alert('Une erreur s\'est produite lors de la récupération des données du compte partenaire.');
+    //     }
+    // }
+
 }
