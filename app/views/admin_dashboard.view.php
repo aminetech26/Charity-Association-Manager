@@ -50,6 +50,8 @@ class Admin_dashboard_view
             ['icon' => ROOT . 'admin/assets/images/membre.png', 'text' => 'Gestion des membres', 'href' => 'members', 'target' => 'members_content'],
             ['icon' => ROOT . 'admin/assets/images/don.png', 'text' => 'Gestion des dons', 'href' => 'donations', 'target' => 'donations_content'],
             ['icon' => ROOT . 'admin/assets/images/notification.png', 'text' => 'Gestions des notifications', 'href' => 'notifications', 'target' => 'notifications_content'],
+            ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des paiements', 'href' => 'payments', 'target' => 'paiements_content'],
+            ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion d\'Aides', 'href' => 'aides', 'target' => 'aides_content'],
             ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des groupes', 'href' => 'groups', 'target' => 'groups_content']
         ];
         
