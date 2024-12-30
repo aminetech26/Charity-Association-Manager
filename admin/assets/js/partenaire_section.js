@@ -29,7 +29,7 @@
     let totalItems = 0;
     let totalPages = 1;
 
-    
+
     
     initializeEventListeners();
     loadPartnersFromBackend(currentPage, itemsPerPage);
@@ -469,9 +469,26 @@
                 deleteComptePartenaire(compteId);
             }
         });
+
+        document.getElementById('paginationComptePartenaire').addEventListener('click', (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+            
+            if (target.hasAttribute('data-action')) {
+                const action = target.getAttribute('data-action');
+                if (action === 'previous' && currentPage > 1) {
+                    changeComptePartenairePage(currentPage - 1);
+                } else if (action === 'next' && currentPage < totalPages) {
+                    changeComptePartenairePage(currentPage + 1);
+                } else if (action === 'page') {
+                    const page = parseInt(target.getAttribute('data-page'));
+                    changeComptePartenairePage(page);
+                }
+            }
+        });
+
     }
 
-    // Fonctions pour la partie Compte Partenaire
     async function loadComptePartenaireFromBackend(page = 1, limit = 10) {
         try {
             const params = new URLSearchParams({
@@ -499,25 +516,68 @@
     }
 
     function updateComptePartenaireTable(comptes) {
-        const tableBody = document.getElementById('comptePartenaireTableBody');
-        tableBody.innerHTML = comptes.map(compte => `
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                    ${compte.partenaire_id}
-                </td>
-                <td class="px-6 py-4">${compte.email}</td>
-                <td class="px-6 py-4">${compte.statut}</td>
-                <td class="px-6 py-4">${compte.created_by}</td>
-                <td class="px-6 py-4 text-right">
-                    <button data-action="delete" data-id="${compte.id}" class="font-medium text-red-600 dark:text-red-500 hover:underline">
-                        Supprimer
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+    const tableBody = document.getElementById('comptePartenaireTableBody');
+    tableBody.innerHTML = comptes.map(compte => `
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                ${compte.partenaire_id}
+            </td>
+            <td class="px-6 py-4">${compte.email}</td>
+            <td class="px-6 py-4">${compte.statut}</td>
+            <td class="px-6 py-4">${compte.created_by}</td>
+            <td class="px-6 py-4 text-right">
+                <button data-action="edit" data-id="${compte.id}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline mr-3">
+                    Modifier
+                </button>
+                <button data-action="delete" data-id="${compte.id}" class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                    Supprimer
+                </button>
+            </td>
+        </tr>
+    `).join('');
 
-        updatePaginationInfo(totalItems);
+    updatePaginationInfo(totalItems);
+    updateComptePartenairePagination();
+}
+
+function updateComptePartenairePagination() {
+    const pagination = document.getElementById('paginationComptePartenaire');
+    pagination.innerHTML = `
+        <li>
+            <button data-action="previous" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 ${currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''}" ${currentPage === 1 ? 'disabled' : ''}>
+                <span class="sr-only">Précédent</span>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </li>`;
+
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.innerHTML += `
+            <li>
+                <button data-action="page" data-page="${i}" class="flex items-center justify-center px-3 py-2 text-sm leading-tight ${currentPage === i ? 'text-blue-600 bg-blue-50 border border-blue-300' : 'text-gray-500 bg-white border border-gray-300'} hover:bg-gray-100">
+                    ${i}
+                </button>
+            </li>`;
     }
+
+    pagination.innerHTML += `
+        <li>
+            <button data-action="next" class="flex items-center justify-center h-full py-1.5 px-3 text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 ${currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>
+                <span class="sr-only">Suivant</span>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </li>`;
+}
+
+function changeComptePartenairePage(page) {
+    if (page >= 1 && page <= totalPages) {
+        currentPage = page;
+        loadComptePartenaireFromBackend(page, itemsPerPage);
+    }
+}
 
     async function deleteComptePartenaire(compteId) {
         if (confirm('Êtes-vous sûr de vouloir supprimer ce compte partenaire ?')) {

@@ -225,7 +225,7 @@
         <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
             Affichage <span class="font-semibold text-gray-900 dark:text-white" id="startIndex">1</span>-<span class="font-semibold text-gray-900 dark:text-white" id="endIndex">10</span> sur <span class="font-semibold text-gray-900 dark:text-white" id="totalItems">100</span>
         </span>
-        <ul class="inline-flex items-stretch -space-x-px" id="pagination">
+        <ul class="inline-flex items-stretch -space-x-px" id="paginationComptePartenaire">
             <!-- Filled dynamically -->
         </ul>
     </nav>
