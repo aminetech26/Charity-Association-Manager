@@ -758,6 +758,36 @@ class Admin {
         exit();
     }
 
+    public function getAllComptesPartenaires(){
+            $this->checkIfAdminOrSuperAdmin();
+            $this->model('ComptePartenaire');
+            $compte_partenaire = new ComptePartenaireModel();
+        
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $offset = ($page - 1) * $limit;
+    
+            $compte_partenaires = $compte_partenaire->getAllPartnerAccounts($limit, $offset);
+    
+            $total = $compte_partenaire->getTotalPartnerAccounts();
+            if(!$compte_partenaires){
+                $compte_partenaires = [];
+            }
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => $compte_partenaires,
+                'pagination' => [
+                    'total' => $total,
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total_pages' => ceil($total / $limit)
+                ]
+            ]);
+            
+            exit();
+        }
+
     // Offer management
 
     public function addPartnerOffer(){

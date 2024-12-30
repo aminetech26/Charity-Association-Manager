@@ -28,6 +28,8 @@
     const itemsPerPage = 10;
     let totalItems = 0;
     let totalPages = 1;
+
+    
     
     initializeEventListeners();
     loadPartnersFromBackend(currentPage, itemsPerPage);
@@ -408,4 +410,139 @@
         }
     }
     
+    // -----------------------------------------------------------------------------------
+    // Partie Compte Partenaire
+    // -----------------------------------------------------------------------------------
+
+    initializeComptePartenaireEventListeners();
+    loadComptePartenaireFromBackend(currentPage, itemsPerPage);
+
+    function initializeComptePartenaireEventListeners() {
+        document.getElementById('btnCreerCompte').addEventListener('click', () => {
+            const modal = document.getElementById('createCompteModal');
+            const form = modal.querySelector('form');
+            form.reset();
+            modal.classList.remove('hidden');
+        });
+
+        document.querySelector('#createCompteModal form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            try {
+                const response = await fetch(`${ROOT}admin/Admin/createPartnerAccount`, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    alert(data.message);
+                    loadComptePartenaireFromBackend(currentPage, itemsPerPage);
+                    e.target.reset();
+                    document.getElementById('createCompteModal').classList.add('hidden');
+                } else {
+                    console.error('Error creating account:', data.message);
+                    alert('Erreur: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error creating account:', error);
+                alert('Une erreur s\'est produite lors de la création du compte partenaire.');
+            }
+        });
+
+        const closeCompteButtons = document.querySelectorAll('[data-modal-toggle="createCompteModal"]');
+        closeCompteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = document.getElementById('createCompteModal');
+                if (modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+        document.getElementById('comptePartenaireTableBody').addEventListener('click', (e) => {
+            const target = e.target;
+            if (target.getAttribute('data-action') === 'delete') {
+                const compteId = target.getAttribute('data-id');
+                deleteComptePartenaire(compteId);
+            }
+        });
+    }
+
+    // Fonctions pour la partie Compte Partenaire
+    async function loadComptePartenaireFromBackend(page = 1, limit = 10) {
+        try {
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString()
+            });
+
+            const url = `${ROOT}admin/Admin/getAllComptesPartenaires?${params.toString()}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                updateComptePartenaireTable(data.data);
+                totalItems = data.pagination.total;
+                totalPages = data.pagination.total_pages;
+                updatePagination();
+                updatePaginationInfo(data.pagination.total);
+            } else {
+                console.error('Error loading compte partenaire:', data.message);
+            }
+        } catch (error) {
+            console.error('Error loading compte partenaire:', error);
+        }
+    }
+
+    function updateComptePartenaireTable(comptes) {
+        const tableBody = document.getElementById('comptePartenaireTableBody');
+        tableBody.innerHTML = comptes.map(compte => `
+            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    ${compte.partenaire_id}
+                </td>
+                <td class="px-6 py-4">${compte.email}</td>
+                <td class="px-6 py-4">${compte.statut}</td>
+                <td class="px-6 py-4">${compte.created_by}</td>
+                <td class="px-6 py-4 text-right">
+                    <button data-action="delete" data-id="${compte.id}" class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                        Supprimer
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+
+        updatePaginationInfo(totalItems);
+    }
+
+    async function deleteComptePartenaire(compteId) {
+        if (confirm('Êtes-vous sûr de vouloir supprimer ce compte partenaire ?')) {
+            try {
+                const response = await fetch(`${ROOT}admin/Admin/deleteComptePartenaire`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ id: compteId }),
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    alert(data.message);
+                    loadComptePartenaireFromBackend(currentPage, itemsPerPage);
+                } else {
+                    console.error('Error deleting compte partenaire:', data.message);
+                    alert('Erreur: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error deleting compte partenaire:', error);
+                alert('Une erreur s\'est produite lors de la suppression du compte partenaire.');
+            }
+        }
+    }
 }
