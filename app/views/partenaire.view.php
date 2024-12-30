@@ -10,6 +10,9 @@
             <a href="#offres" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link">Offres</a>
         </li>
         <li class="me-2">
+            <a href="#categories" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link">Categories</a>
+        </li>
+        <li class="me-2">
             <a href="#statistiques" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link">Statistiques</a>
         </li>
     </ul>
@@ -277,6 +280,10 @@
     <div id="offres" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Gestion des Offres</h2>
         <p>Ceci est le contenu de la section Offres.</p>
+    </div>
+    <div id="categories" class="tab-pane p-4 hidden">
+        <h2 class="text-xl font-bold mb-4">Gestion des catégories</h2>
+        <p>Ceci est le contenu de la section catégorie.</p>
     </div>
     <div id="statistiques" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Statistiques</h2>
