@@ -79,12 +79,12 @@ class Admin_dashboard_view
                         <!-- Gestion Partenaire -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion Partenaire</h2>
-                            <p class="text-gray-200">Ajoutez, modifiez et gérez les partenaires de votre organisation.</p>
+                            <p class="text-gray-200">Ajoutez, modifiez et gérez les partenaires de votre association.</p>
                         </div>
                         <!-- Gestion des Membres -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion des Membres</h2>
-                            <p class="text-gray-200">Administrez les membres de votre communauté ou organisation.</p>
+                            <p class="text-gray-200">Administrez les membres de votre association.</p>
                         </div>
                         <!-- Gestion des Dons -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
@@ -99,7 +99,7 @@ class Admin_dashboard_view
                         <!-- Gestion des Groupes -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion des Groupes</h2>
-                            <p class="text-gray-200">Créez et organisez des groupes pour structurer votre communauté.</p>
+                            <p class="text-gray-200">Créez et organisez des groupes pour structurer votre association.</p>
                         </div>
                         <!-- Paramètres du Site -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
