@@ -6,7 +6,12 @@ class Home
 
 	public function index()
 	{
-		$this->view('home', 'public');
+		$this->view("home","public");
+        $view = new Home_view();
+        $view->page_head('Association El Mountada');
+		$view->home();
+		
+        $view->page_footer();
 	}
 
 }
