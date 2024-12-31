@@ -4,7 +4,7 @@ class Admin {
 
     public function index()
     {
-        $this->view("admin_signin");
+        $this->view("admin_signin","admin");
         $view = new Admin_login_view();
         $view->page_head('Connexion administrateur');
         $view->show_login_page();
@@ -14,7 +14,7 @@ class Admin {
     public function dashboard()
     {
         $this->checkIfAdminOrSuperAdmin();
-        $this->view("admin_dashboard");
+        $this->view("admin_dashboard","admin");
         $view = new Admin_dashboard_view();
         $view->page_head('Tableau de bord administrateur');
         $view->show_dashboard_page();
@@ -22,32 +22,50 @@ class Admin {
     }
 
     public function partenaire_content(){
-        $content = $this->view("partenaire", true);
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("partenaire","admin", true);
         echo $content;
     }
 
     public function members_content(){
-        $content = $this->view("membres", true);
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("membres","admin", true);
         echo $content;
     }
 
     public function donations_content(){
-        $content = $this->view("dons", true);
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("dons","admin", true);
+        echo $content;
+    }
+
+    public function payments_content(){
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("paiement","admin", true);
+        echo $content;
+    }
+
+    public function aides_content(){
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("aides","admin", true);
         echo $content;
     }
 
     public function notifications_content(){
-        $content = $this->view("notifications", true);
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("notifications","admin", true);
         echo $content;
     }
 
     public function groups_content(){
-        $content = $this->view("groupes", true);
+        $this->checkIfAdminOrSuperAdmin();
+        $content = $this->view("groupes","admin", true);
         echo $content;
     }
 
     public function settings_content(){
-        $content = $this->view("parametres_site", true);
+        $this->checkIfSuperAdmin();
+        $content = $this->view("parametres_site","admin", true);
         echo $content;
     }
 

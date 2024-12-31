@@ -3,9 +3,26 @@
 Trait Controller
 {
 
-	public function view($viewName, $returnContent = false)
+	public function view($viewName, $role, $returnContent = false)
 	{
-		$filename = "../app/views/" . $viewName . ".view.php";
+		switch($role){
+			case 'admin':
+				$base = '../app/views/admin/';
+				break;
+			case 'public':
+				$base = '../app/views/public/';
+				break;
+			case 'member':
+				$base = '../app/membre/views/';
+				break;
+			case 'partenaire':
+				$base = '../app/partenaire/views/';
+				break;
+			default:
+				$base = '../app/views/';
+				break;
+		}
+		$filename = $base . $viewName . ".view.php";
 		if (file_exists($filename)) {
 			if ($returnContent) {
 				ob_start();
