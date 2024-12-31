@@ -42,36 +42,47 @@ class Admin_dashboard_view
         </nav>
         <!-- Sidebar -->
         <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0">
-          <div class="h-full px-3 pb-4 overflow-y-auto bg-white">
-            <ul class="space-y-2 font-medium">
-        <?php 
-        $menu_items = [
-            ['icon' => ROOT . 'admin/assets/images/partenaire.png', 'text' => 'Gestion partenaire', 'href' => 'partenaire', 'target' => 'partenaire_content'],
-            ['icon' => ROOT . 'admin/assets/images/membre.png', 'text' => 'Gestion des membres', 'href' => 'members', 'target' => 'members_content'],
-            ['icon' => ROOT . 'admin/assets/images/don.png', 'text' => 'Gestion des dons', 'href' => 'donations', 'target' => 'donations_content'],
-            ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des paiements', 'href' => 'payments', 'target' => 'payments_content'],
-            ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion d\'Aides', 'href' => 'aides', 'target' => 'aides_content'],
-            ['icon' => ROOT . 'admin/assets/images/notification.png', 'text' => 'Gestions des notifications', 'href' => 'notifications', 'target' => 'notifications_content'],
-            ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des groupes', 'href' => 'groups', 'target' => 'groups_content']
-          ];
-        
-        if ($_SESSION['admin_role'] === 'SUPER_ADMIN') {
-            $menu_items[] = ['icon' => ROOT . 'admin/assets/images/parametres.png', 'text' => 'Paramètres site', 'href' => 'settings', 'target' => 'settings_content'];
-        }
-        
-        foreach ($menu_items as $item): ?>
-            <li>
-                <a href="<?= $item['href'] ?>" data-target="<?= $item['target'] ?>" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-200 group menu-item">
-                    <img src="<?= $item['icon'] ?>" alt="<?=$item['text'] ?>" class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900">
-                    <span class="ml-3"><?= $item['text'] ?></span>
-                </a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
+    <div class="h-full px-3 pb-4 overflow-y-auto bg-white flex flex-col">
+        <!-- Menu Items -->
+        <ul class="space-y-2 font-medium">
+            <?php 
+            $menu_items = [
+                ['icon' => ROOT . 'admin/assets/images/partenaire.png', 'text' => 'Gestion partenaire', 'href' => 'partenaire', 'target' => 'partenaire_content'],
+                ['icon' => ROOT . 'admin/assets/images/membre.png', 'text' => 'Gestion des membres', 'href' => 'members', 'target' => 'members_content'],
+                ['icon' => ROOT . 'admin/assets/images/don.png', 'text' => 'Gestion des dons', 'href' => 'donations', 'target' => 'donations_content'],
+                ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des paiements', 'href' => 'payments', 'target' => 'payments_content'],
+                ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion d\'Aides', 'href' => 'aides', 'target' => 'aides_content'],
+                ['icon' => ROOT . 'admin/assets/images/notification.png', 'text' => 'Gestions des notifications', 'href' => 'notifications', 'target' => 'notifications_content'],
+                ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des groupes', 'href' => 'groups', 'target' => 'groups_content']
+            ];
+            
+            if ($_SESSION['admin_role'] === 'SUPER_ADMIN') {
+                $menu_items[] = ['icon' => ROOT . 'admin/assets/images/parametres.png', 'text' => 'Paramètres site', 'href' => 'settings', 'target' => 'settings_content'];
+            }
+            
+            foreach ($menu_items as $item): ?>
+                <li>
+                    <a href="<?= $item['href'] ?>" data-target="<?= $item['target'] ?>" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-200 group menu-item">
+                        <img src="<?= $item['icon'] ?>" alt="<?=$item['text'] ?>" class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900">
+                        <span class="ml-3"><?= $item['text'] ?></span>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
 
-          </div>
-        </aside>
-        <!-- Main content -->
+        <div class="mt-auto">
+            <ul class="space-y-2 font-medium">
+                <li>
+                    <a href="<?= ROOT ?>admin/Admin/signOut" class="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg hover:bg-gray-200 group">
+                        <img src="<?= ROOT . 'admin/assets/images/logout.png' ?>" alt="Déconnexion" class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900">
+                        <span class="ml-3">Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+<!-- Main content -->
         <main class="ml-64 p-20 bg-background-light">
             <div class="flex flex-col items-center justify-center h-full">
                 <div class="text-center">

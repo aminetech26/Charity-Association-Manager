@@ -12,10 +12,7 @@ trait AdminView {
             <meta http-equiv="Pragma" content="no-cache" />
             <meta http-equiv="Expires" content="-1" />
             <title><?=$page_title?></title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <link rel="stylesheet" href="<?= ROOT . "public/assets/css/main.css" ?>">
-        </head>
-        <body class="h-full bg-white">
+            <link rel="stylesheet" href="<?= ROOT . "public/assets/css/main.css?v=" . time() ?>">        <body class="h-full bg-white">
         <?php
     }
 
