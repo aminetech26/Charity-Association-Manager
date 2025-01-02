@@ -10,6 +10,10 @@ class Home
         $view = new Home_view();
         $view->page_head('Association El Mountada');
 		$view->nav_bar();
+		$view->show_diaporama();
+		$view->showNewsSection();
+		$view->showMemberBenefits();
+		$view->showPartnersLogosSection();
         $view->footer();
 	}
 
