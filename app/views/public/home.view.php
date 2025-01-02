@@ -3,84 +3,60 @@ class Home_view
 {
     use View;
 
-    public function page_head($page_title) {
+    public function show_diaporama() {
+        $carouselData = [
+            [
+                'src' => ROOT . 'public/assets/images/carousel/logo.png',
+                'alt' => 'Slide 1',
+            ],
+            [
+                'src' => ROOT . 'public/assets/images/carousel/logo.png',
+                'alt' => 'Slide 2',
+            ],
+            [
+                'src' => ROOT . 'public/assets/images/carousel/logo.png',
+                'alt' => 'Slide 3',
+            ],
+            [
+                'src' => ROOT . 'public/assets/images/carousel/logo.png',
+                'alt' => 'Slide 4',
+            ],
+            [
+                'src' => ROOT . 'public/assets/images/carousel/logo.png',
+                'alt' => 'Slide 5',
+            ],
+        ];
         ?>
-        <!DOCTYPE html>
-        <html lang="fr" class="h-full bg-white">
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <meta http-equiv="cache-control" content="no-cache" />
-            <meta http-equiv="Pragma" content="no-cache" />
-            <meta http-equiv="Expires" content="-1" />
-            <title><?=$page_title?></title>
-            <link rel="stylesheet" href="<?= ROOT . "public/assets/css/main.css?v=" . time() ?>">        <body class="h-full bg-white">
-        <?php
-    }
-
-    public function page_footer() {
-        ?>
-        </body>
-        </html>
-        <?php
-    }
-
-    public function home() {
-        ?>
-        <div class="container mx-auto">
-            <div class="flex justify-center items-center h-screen">
-                <h1 class="text-4xl font-bold text-center">Welcome to Association El Mountada</h1>
+        <div id="default-carousel" class="relative w-full" data-carousel="slide">
+            <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+                <?php foreach ($carouselData as $index => $item): ?>
+                    <!-- Item <?= $index + 1 ?> -->
+                    <div class="hidden duration-700 ease-in-out" data-carousel-item>
+                        <img src="<?= $item['src'] ?>" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="<?= $item['alt'] ?>">
+                    </div>
+                <?php endforeach; ?>
             </div>
-        </div>
-        <?php
-    }
-
-    public function about() {
-        ?>
-        <div class="container mx-auto">
-            <div class="flex justify-center items-center h-screen">
-                <h1 class="text-4xl font-bold text-center">About Association El Mountada</h1>
+            <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+                <?php foreach ($carouselData as $index => $item): ?>
+                    <button type="button" class="w-3 h-3 rounded-full" aria-current="<?= $index === 0 ? 'true' : 'false' ?>" aria-label="Slide <?= $index + 1 ?>" data-carousel-slide-to="<?= $index ?>"></button>
+                <?php endforeach; ?>
             </div>
-        </div>
-        <?php
-    }
-
-    public function contact() {
-        ?>
-        <div class="container mx-auto">
-            <div class="flex justify-center items-center h-screen">
-                <h1 class="text-4xl font-bold text-center">Contact Association El Mountada</h1>
-            </div>
-        </div>
-        <?php
-    }
-
-    public function error() {
-        ?>
-        <div class="container mx-auto">
-            <div class="flex justify-center items-center h-screen">
-                <h1 class="text-4xl font-bold text-center">404 Not Found</h1>
-            </div>
-        </div>
-        <?php
-    }
-
-    public function login() {
-        ?>
-        <div class="container mx-auto">
-            <div class="flex justify-center items-center h-screen">
-                <h1 class="text-4xl font-bold text-center">Login</h1>
-            </div>
-        </div>
-        <?php
-    }
-
-    public function register() {
-        ?>
-        <div class="container mx-auto">
-            <div class="flex justify-center items-center h-screen">
-                <h1 class="text-4xl font-bold text-center">Register</h1>
-            </div>
+            <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                    </svg>
+                    <span class="sr-only">Previous</span>
+                </span>
+            </button>
+            <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+                    <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <span class="sr-only">Next</span>
+                </span>
+            </button>
         </div>
         <?php
     }

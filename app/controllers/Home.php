@@ -9,9 +9,8 @@ class Home
 		$this->view("home","public");
         $view = new Home_view();
         $view->page_head('Association El Mountada');
-		$view->home();
-		
-        $view->page_footer();
+		$view->nav_bar();
+        $view->footer();
 	}
 
 }
