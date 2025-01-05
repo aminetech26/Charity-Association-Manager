@@ -5,8 +5,8 @@ class CategorieModel{
     protected $table = "Categorie";
     protected $allowedColumns = ['nom'];
 
-    public function getAllCategories(){
-        return $this->findAll();
+    public function getAllCategories($limit = 10, $offset = 0){
+        return $this->findAll($limit,$offset);
     }
 
     public function getCategorieById($id){
@@ -15,5 +15,9 @@ class CategorieModel{
 
     public function getCategorieByNom($nom){
         return $this->where(['nom' => $nom]);
+    }
+
+    public function getTotalCategories(){
+        return $this->getTotalCount();
     }
 }

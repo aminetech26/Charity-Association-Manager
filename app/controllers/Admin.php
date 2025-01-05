@@ -376,17 +376,17 @@ class Admin {
         $this->model('Categorie');
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            if (empty($_POST['categorie_id'])) {
+            if (empty($_POST['category_id'])) {
                 $erreurs[] = "ID de la catégorie requis.";
             } else {
                 try {
                     $categorie = new CategorieModel();
-                    $categorieToDelete = $categorie->first(['id' => $_POST['categorie_id']]);
+                    $categorieToDelete = $categorie->first(['id' => $_POST['category_id']]);
 
                     if (!$categorieToDelete) {
                         $erreurs[] = "Catégorie non trouvée.";
                     } else {
-                        $categorie->delete($_POST['categorie_id']);
+                        $categorie->delete($_POST['category_id']);
                         echo json_encode(['status' => 'success', 'message' => 'Catégorie supprimée avec succès !']);
                         exit();
                     }
@@ -405,9 +405,28 @@ class Admin {
         $this->checkIfAdminOrSuperAdmin();
         $this->model('Categorie');
         $categorie = new CategorieModel();
-        $categories = $categorie->getAllCategories();
-        echo json_encode(['status' => 'success', 'data' => $categories]);
-        exit();
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $categories = $categorie->getAllCategories($limit, $offset);
+
+        $total = $categorie->getTotalCategories();
+        if(!$categories){
+            $categories = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $categories,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
     }
 
     // Partenaire management
