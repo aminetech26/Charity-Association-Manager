@@ -636,6 +636,7 @@ class Admin {
         $offset = ($page - 1) * $limit;
         
         $searchFields = [];
+        $conditons = [];
         $exactMatchFields = [];
 
         if ($nom !== null && $nom !== '' && $nom !== 'null') {
