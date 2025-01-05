@@ -119,12 +119,30 @@ Trait Model
         return false;
     }
 
-	public function getTotalCount()
-	{
-		$query = "SELECT COUNT(*) as total FROM $this->table";
-		$result = $this->query($query);
-		return $result[0]->total;
-	}
+	public function getTotalCount($conditions = [], $conditions_not = [])
+{
+    $query = "SELECT COUNT(*) as total FROM $this->table";
+
+    if (!empty($conditions) || !empty($conditions_not)) {
+        $query .= " WHERE ";
+
+        foreach ($conditions as $key => $value) {
+            $query .= "$key = :$key AND ";
+        }
+
+        foreach ($conditions_not as $key => $value) {
+            $query .= "$key != :$key AND ";
+        }
+
+        $query = rtrim($query, " AND ");
+    }
+
+    $data = array_merge($conditions, $conditions_not);
+
+    $result = $this->query($query, $data);
+
+    return $result[0]->total;
+}
 
     public function search($searchFields = [], $exactMatchFields = [], $limit = 10, $offset = 0, $order_column = "id", $order_type = "ASC")
     {

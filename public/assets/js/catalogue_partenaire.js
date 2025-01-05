@@ -1,125 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
   const ROOT = "http://localhost/TDWProject/public/";
-  const categories = ["Hôtels", "Cliniques", "Écoles", "Agences de Voyage"];
-  const sampleData = {
-    Hôtels: [
-      {
-        name: "Hotel A",
-        city: "City A",
-        discount: "10%",
-        details: {
-          email: "hotelA@example.com",
-          address: "123 Street A",
-          phone: "123-456-7890",
-          website: "http://hotelA.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-      {
-        name: "Hotel B",
-        city: "City B",
-        discount: "15%",
-        details: {
-          email: "hotelB@example.com",
-          address: "456 Street B",
-          phone: "123-456-7891",
-          website: "http://hotelB.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-      {
-        name: "Hotel B",
-        city: "City B",
-        discount: "15%",
-        details: {
-          email: "hotelB@example.com",
-          address: "456 Street B",
-          phone: "123-456-7891",
-          website: "http://hotelB.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-      {
-        name: "Hotel B",
-        city: "City B",
-        discount: "15%",
-        details: {
-          email: "hotelB@example.com",
-          address: "456 Street B",
-          phone: "123-456-7891",
-          website: "http://hotelB.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-      {
-        name: "Hotel B",
-        city: "City B",
-        discount: "15%",
-        details: {
-          email: "hotelB@example.com",
-          address: "456 Street B",
-          phone: "123-456-7891",
-          website: "http://hotelB.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-      {
-        name: "Hotel B",
-        city: "City B",
-        discount: "15%",
-        details: {
-          email: "hotelB@example.com",
-          address: "456 Street B",
-          phone: "123-456-7891",
-          website: "http://hotelB.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-    ],
-    Cliniques: [
-      {
-        name: "Clinic A",
-        city: "City A",
-        discount: "20%",
-        details: {
-          email: "clinicA@example.com",
-          address: "789 Street A",
-          phone: "123-456-7892",
-          website: "http://clinicA.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-    ],
-    Écoles: [
-      {
-        name: "School A",
-        city: "City A",
-        discount: "5%",
-        details: {
-          email: "schoolA@example.com",
-          address: "101 Street A",
-          phone: "123-456-7893",
-          website: "http://schoolA.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-    ],
-    "Agences de Voyage": [
-      {
-        name: "Travel Agency A",
-        city: "City A",
-        discount: "25%",
-        details: {
-          email: "travelA@example.com",
-          address: "202 Street A",
-          phone: "123-456-7894",
-          website: "http://travelA.com",
-          logo: ROOT + "assets/images/logo.png",
-        },
-      },
-    ],
-  };
-
   const partnersContainer = document.getElementById("partnersContainer");
   const citySearch = document.getElementById("citySearch");
   const categoryTabs = document.getElementById("categoryTabs");
@@ -130,20 +10,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let currentPage = 1;
   const partnersPerPage = 6;
-  let currentCategory = categories[0];
-  let filteredData = sampleData[currentCategory];
+  let currentCategory = null;
+  let filteredData = [];
 
-  categories.forEach((category) => {
-    const tab = document.createElement("button");
-    tab.textContent = category;
-    tab.className =
-      "px-4 py-2 bg-primary text-white rounded hover:bg-secondary-dark";
-    tab.addEventListener("click", () => {
-      currentCategory = category;
-      filterPartners();
-    });
-    categoryTabs.appendChild(tab);
-  });
+  function fetchCategories() {
+    fetch(`${ROOT}Admin/getAllCategories`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          const categories = data.data;
+          categories.forEach((category) => {
+            const tab = document.createElement("button");
+            tab.textContent = category.nom; // Assuming 'nom' is the field for category name
+            tab.className =
+              "px-4 py-2 bg-primary text-white rounded hover:bg-secondary-dark";
+            tab.addEventListener("click", () => {
+              currentCategory = category.id;
+              filterPartners();
+            });
+            categoryTabs.appendChild(tab);
+          });
+          if (categories.length > 0) {
+            currentCategory = categories[0].id;
+            filterPartners();
+          }
+        }
+      })
+      .catch((error) => console.error("Error fetching categories:", error));
+  }
+
+  function fetchPartnersByCategory(categoryId, searchTerm = "", page = 1) {
+    const limit = partnersPerPage;
+    const offset = (page - 1) * limit;
+
+    let url = `${ROOT}Admin/getAllPartners?categorie_id=${categoryId}&page=${page}&limit=${limit}`;
+    if (searchTerm) {
+      url += `&ville=${searchTerm}`;
+    }
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          filteredData = data.data;
+          displayPartners(filteredData, page);
+          renderPagination(data.pagination.total);
+        }
+      })
+      .catch((error) => console.error("Error fetching partners:", error));
+  }
 
   function displayPartners(data, page) {
     partnersContainer.innerHTML = "";
@@ -156,11 +71,11 @@ document.addEventListener("DOMContentLoaded", function () {
       card.className =
         "bg-white rounded-lg shadow-md p-6 hover:shadow-lg hover:bg-gray-100 transition-shadow transform hover:scale-105";
       card.innerHTML = `
-                <img src="${partner.details.logo}" alt="${partner.name}" class="w-24 h-24 mx-auto mb-4 rounded-full">
-                <h3 class="text-xl font-bold text-primary text-center">${partner.name}</h3>
-                <p class="text-text-secondary text-center mt-2"><strong>Ville:</strong> ${partner.city}</p>
-                <p class="text-text-secondary text-center"><strong>Remise:</strong> ${partner.discount}</p>
-                <button onclick="showPartnerDetails('${partner.name}', '${partner.city}', '${partner.details.email}', '${partner.details.address}', '${partner.details.phone}', '${partner.details.website}', '${partner.details.logo}')" class="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark w-full">
+                <img src="${partner.logo}" alt="${partner.nom}" class="w-24 h-24 mx-auto mb-4 rounded-full">
+                <h3 class="text-xl font-bold text-primary text-center">${partner.nom}</h3>
+                <p class="text-text-secondary text-center mt-2"><strong>Ville:</strong> ${partner.ville}</p>
+                <p class="text-text-secondary text-center"><strong>Remise:</strong> ${partner.remise}</p>
+                <button onclick="showPartnerDetails('${partner.nom}', '${partner.ville}', '${partner.email}', '${partner.adresse}', '${partner.telephone}', '${partner.website}', '${partner.logo}')" class="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark w-full">
                     Plus de détails
                 </button>
             `;
@@ -169,8 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     startIndex.textContent = start + 1;
     endIndex.textContent = Math.min(end, data.length);
-    totalItems.textContent = data.length;
-    renderPagination(data.length);
+    totalItems.textContent = filteredData.length;
   }
 
   window.showPartnerDetails = function (
@@ -214,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }`;
       button.addEventListener("click", () => {
         currentPage = i;
-        displayPartners(filteredData, currentPage);
+        fetchPartnersByCategory(currentCategory, citySearch.value, currentPage);
       });
       pagination.appendChild(button);
     }
@@ -226,13 +140,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function filterPartners() {
     const searchTerm = citySearch.value.toLowerCase();
-    const categoryData = sampleData[currentCategory];
-    filteredData = categoryData.filter((partner) =>
-      partner.city.toLowerCase().includes(searchTerm)
-    );
-    currentPage = 1;
-    displayPartners(filteredData, currentPage);
+    fetchPartnersByCategory(currentCategory, searchTerm, currentPage);
   }
 
-  filterPartners();
+  fetchCategories();
 });

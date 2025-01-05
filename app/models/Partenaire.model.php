@@ -34,8 +34,8 @@ class PartenaireModel{
         return $this->search($search, $exact_match, $limit, $offset);
     }
 
-    public function getTotalPartenaires() {
-        return $this->getTotalCount();
+    public function getTotalPartenaires($conditions=[]){
+        return $this->getTotalCount($conditions);
     }
 
 }

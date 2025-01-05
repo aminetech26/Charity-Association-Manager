@@ -402,7 +402,6 @@ class Admin {
     }
 
     public function getAllCategories(){
-        $this->checkIfAdminOrSuperAdmin();
         $this->model('Categorie');
         $categorie = new CategorieModel();
 
@@ -626,7 +625,6 @@ class Admin {
     
 
     public function getAllPartners() {
-        $this->checkIfAdminOrSuperAdmin();
         $this->model('Partenaire');
         $partenaire = new PartenaireModel();
     
@@ -646,6 +644,7 @@ class Admin {
         if ($categorie_id !== null && $categorie_id !== '' && $categorie_id !== 'null') {
             $searchFields['categorie_id'] = $categorie_id;
             $exactMatchFields[] = 'categorie_id';
+            $conditons['categorie_id'] = $categorie_id;
         }
         if ($ville !== null && $ville !== '' && $ville !== 'null') {
             $searchFields['ville'] = $ville;
@@ -653,7 +652,7 @@ class Admin {
 
         $partenaires = $partenaire->search($searchFields, $exactMatchFields, $limit, $offset);
 
-        $total = $partenaire->getTotalPartenaires();
+        $total = $partenaire->getTotalPartenaires($conditons);
         if(!$partenaires){
             $partenaires = [];
         }
