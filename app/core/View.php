@@ -22,7 +22,7 @@ trait View {
             <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
             <img src="<?= ROOT ?>public/assets/images/logo.png" class="h-12" alt="Association El Mountada Logo" />
 
-                <a href="<?= ROOT ?>" class="flex items-center space-x-3 rtl:space-x-reverse mx-auto"> <!-- Centrer le logo et le texte -->
+                <a href="<?= ROOT ?>public/Home/index" class="flex items-center space-x-3 rtl:space-x-reverse mx-auto"> <!-- Centrer le logo et le texte -->
                     <span class="self-center text-3xl font-bold whitespace-nowrap text-primary">Association El Mountada</span>
                 </a>
                 <div class="flex items-center space-x-6 rtl:space-x-reverse">
@@ -46,7 +46,7 @@ trait View {
                 <div class="flex items-center justify-between">
                     <ul class="flex flex-row font-medium mt-0 space-x-10 rtl:space-x-reverse text-lg">
                         <li>
-                            <a href="<?= ROOT ?>" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300" aria-current="page">Accueil</a> <!-- Utilisation de la couleur primary -->
+                            <a href="<?= ROOT ?>public/Home/index" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300" aria-current="page">Accueil</a> <!-- Utilisation de la couleur primary -->
                         </li>
                         <li>
                             <a href="<?= ROOT ?>news" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">News</a>
@@ -55,7 +55,7 @@ trait View {
                             <a href="<?= ROOT ?>reductions" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Remises et avantages</a>
                         </li>
                         <li>
-                            <a href="<?= ROOT ?>partners" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Catalogue des partenaires</a>
+                            <a href="<?= ROOT ?>public/Home/catalogue_partenaire" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Catalogue des partenaires</a>
                         </li>
                         <li>
                             <a href="<?= ROOT ?>donate" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Faire un don</a>
@@ -170,8 +170,7 @@ trait View {
                 </div>
             </div>
         </footer>
-        <script src="<?= ROOT ?>public/assets/js/home.js"></script>
-        <?php if (!empty($script_path)): ?>
+        <?php if (!empty($file_name)): ?>
             <script src="<?= ROOT ?>public/assets/js/<?= $file_name ?>"></script>
         <?php endif; ?>        
         </body>

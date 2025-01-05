@@ -14,7 +14,18 @@ class Home
 		$view->showNewsSection();
 		$view->showMemberBenefits();
 		$view->showPartnersLogosSection();
-        $view->footer();
+        $view->footer("home.js");
+	}
+
+
+	public function catalogue_partenaire()
+	{
+		$this->view("catalogue_partenaire","public");
+		$view = new CataloguePartenaire_view();
+		$view->page_head('Catalogue Partenaire');
+		$view->nav_bar();
+		$view->showCataloguePartenaires();
+		$view->footer("catalogue_partenaire.js");
 	}
 
 }
