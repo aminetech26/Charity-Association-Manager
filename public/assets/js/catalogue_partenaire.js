@@ -41,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function fetchPartnersByCategory(categoryId, searchTerm = "", page = 1) {
     const limit = partnersPerPage;
-    const offset = (page - 1) * limit;
 
     let url = `${ROOT}Admin/getAllPartners?categorie_id=${categoryId}&page=${page}&limit=${limit}`;
     if (searchTerm) {
