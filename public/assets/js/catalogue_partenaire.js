@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const categories = data.data;
           categories.forEach((category) => {
             const tab = document.createElement("button");
-            tab.textContent = category.nom; // Assuming 'nom' is the field for category name
+            tab.textContent = category.nom;
             tab.className =
               "px-4 py-2 bg-primary text-white rounded hover:bg-secondary-dark";
             tab.addEventListener("click", () => {
@@ -59,6 +59,10 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => console.error("Error fetching partners:", error));
   }
 
+  function escapeString(str) {
+    return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+  }
+
   function displayPartners(data, page) {
     partnersContainer.innerHTML = "";
     const start = (page - 1) * partnersPerPage;
@@ -66,15 +70,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const paginatedData = data.slice(start, end);
 
     paginatedData.forEach((partner) => {
+      let path = partner.logo;
+      let trimmedPath = path.split("public/")[1];
+      console.log(trimmedPath);
       const card = document.createElement("div");
       card.className =
         "bg-white rounded-lg shadow-md p-6 hover:shadow-lg hover:bg-gray-100 transition-shadow transform hover:scale-105";
       card.innerHTML = `
-                <img src="${partner.logo}" alt="${partner.nom}" class="w-24 h-24 mx-auto mb-4 rounded-full">
-                <h3 class="text-xl font-bold text-primary text-center">${partner.nom}</h3>
-                <p class="text-text-secondary text-center mt-2"><strong>Ville:</strong> ${partner.ville}</p>
-                <p class="text-text-secondary text-center"><strong>Remise:</strong> ${partner.remise}</p>
-                <button onclick="showPartnerDetails('${partner.nom}', '${partner.ville}', '${partner.email}', '${partner.adresse}', '${partner.telephone}', '${partner.website}', '${partner.logo}')" class="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark w-full">
+                <img src="${ROOT}${trimmedPath}" alt="${
+        partner.nom
+      }" class="w-24 h-24 mx-auto mb-4 rounded-full">
+                <h3 class="text-xl font-bold text-primary text-center">${
+                  partner.nom
+                }</h3>
+                <p class="text-text-secondary text-center mt-2"><strong>Ville:</strong> ${
+                  partner.ville
+                }</p>
+                <p class="text-text-secondary text-center"><strong>Remise:</strong> ${
+                  partner.remise
+                }</p>
+                <button onclick="showPartnerDetails('${escapeString(
+                  partner.nom
+                )}', '${partner.ville}', '${partner.email}', '${
+        partner.adresse
+      }', '${partner.numero_de_telephone}', '${
+        partner.site_web
+      }', '${ROOT}${trimmedPath}')" class="mt-4 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark w-full">
                     Plus de détails
                 </button>
             `;
