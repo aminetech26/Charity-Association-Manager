@@ -71,7 +71,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     paginatedData.forEach((partner) => {
       let path = partner.logo;
-      let trimmedPath = path.split("public/")[1];
+      let trimmedPath = path.includes("public/")
+        ? path.split("public/")[1]
+        : path;
       console.log(trimmedPath);
       const card = document.createElement("div");
       card.className =
