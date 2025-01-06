@@ -28,4 +28,12 @@ class Home
 		$view->footer("catalogue_partenaire.js");
 	}
 
+
+	public function signup(){
+		$this->view("signup","public");
+		$view = new Signup_view();
+		$view->page_head('Inscription');
+		$view->showSignUpForm();
+	}
+
 }
