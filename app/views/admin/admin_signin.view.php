@@ -10,7 +10,6 @@ class Admin_login_view
     <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-text-primary">Connexion Administrateur</h2>
   </div>
 
-  <!-- Error Alert -->
   <div id="error-alert" class="hidden mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
     <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert"></div>
   </div>

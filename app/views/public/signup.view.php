@@ -34,26 +34,26 @@ class Signup_view
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label for="nom" class="block mb-1 text-sm font-medium text-gray-900">Nom</label>
-                      <input type="text" id="nom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                      <input name="nom" type="text" id="nom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                         onchange="validateField(this, /^[a-zA-ZÀ-ÿ\s]{2,}$/)">
                       <p class="mt-1 text-xs text-red-500 hidden"></p>
                     </div>
                     <div>
                       <label for="prenom" class="block mb-1 text-sm font-medium text-gray-900">Prénom</label>
-                      <input type="text" id="prenom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                      <input name="prenom" type="text" id="prenom" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                         onchange="validateField(this, /^[a-zA-ZÀ-ÿ\s]{2,}$/)">
                       <p class="mt-1 text-xs text-red-500 hidden"></p>
                     </div>
                   </div>
                   <div>
-                    <label for="phone" class="block mb-1 text-sm font-medium text-gray-900">Numéro de Téléphone</label>
-                    <input type="tel" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                    <label for="numero_de_telephone" class="block mb-1 text-sm font-medium text-gray-900">Numéro de Téléphone</label>
+                    <input name="numero_de_telephone" type="tel" id="numero_de_telephone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                       onchange="validateField(this, /^[\d\s+()-]{10,}$/)">
                     <p class="mt-1 text-xs text-red-500 hidden"></p>
                   </div>
                   <div>
                     <label for="adresse" class="block mb-1 text-sm font-medium text-gray-900">Adresse</label>
-                    <input type="text" id="adresse" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                    <input name="adresse" type="text" id="adresse" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                       onchange="validateField(this, /^.{5,}$/)">
                     <p class="mt-1 text-xs text-red-500 hidden"></p>
                   </div>
@@ -62,7 +62,7 @@ class Signup_view
                   <div class="mb-4">
                     <span class="block mb-1 text-sm font-medium text-gray-900">Photo Personnelle</span>
                     <div class="flex justify-center items-center w-full">
-                        <label for="personal-photo" class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors group">
+                        <label for="photo" class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors group">
                             <div class="flex flex-col justify-center items-center p-4">
                                 <svg class="w-8 h-8 mb-2 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -70,7 +70,8 @@ class Signup_view
                                 <p class="text-sm text-gray-500 text-center"><span class="font-semibold">Cliquez</span> ou glissez</p>
                                 <p class="text-xs text-gray-500">PNG, JPG (MAX. 2MB)</p>
                             </div>
-                            <input id="personal-photo" type="file" class="hidden" required onchange="validateFile(this)">
+                            <input style="opacity: 0; position: absolute; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;" 
+                            name="photo" id="photo" type="file" class="hidden" required onchange="validateFile(this)">
                             <span class="text-sm text-red-500 hidden">Une photo est requise</span>
                         </label>
                     </div>
@@ -80,7 +81,7 @@ class Signup_view
                   <div class="mb-4">
                     <span class="block mb-1 text-sm font-medium text-gray-900">Pièce d'Identité</span>
                     <div class="flex justify-center items-center w-full">
-                        <label for="id-photo" class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors group">
+                        <label for="piece_identite" class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors group">
                             <div class="flex flex-col justify-center items-center p-4">
                                 <svg class="w-8 h-8 mb-2 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -88,7 +89,8 @@ class Signup_view
                                 <p class="text-sm text-gray-500 text-center"><span class="font-semibold">Cliquez</span> ou glissez</p>
                                 <p class="text-xs text-gray-500">PNG, JPG (MAX. 2MB)</p>
                             </div>
-                            <input id="id-photo" type="file" class="hidden" required onchange="validateFile(this)">
+                            <input style="opacity: 0; position: absolute; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;" 
+                            name="piece_identite" id="piece_identite" type="file" class="hidden" required onchange="validateFile(this)">
                             <span class="text-sm text-red-500 hidden">Une photo est requise</span>
                         </label>
                     </div>
@@ -100,7 +102,7 @@ class Signup_view
                       Pour bénéficier des remises, joignez le reçu de paiement (optionnel).
                     </div>
                     <div class="flex justify-center items-center w-full">
-                        <label for="payment-receipt" class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors group">
+                        <label for="recu_paiement" class="flex flex-col justify-center items-center w-full h-32 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer hover:bg-gray-100 transition-colors group">
                             <div class="flex flex-col justify-center items-center p-4">
                                 <svg class="w-8 h-8 mb-2 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
@@ -108,7 +110,9 @@ class Signup_view
                                 <p class="text-sm text-gray-500 text-center"><span class="font-semibold">Cliquez</span> ou glissez</p>
                                 <p class="text-xs text-gray-500">PNG, JPG, PDF (MAX. 5MB)</p>
                             </div>
-                            <input id="payment-receipt" type="file" class="hidden" onchange="validateFile(this)">
+                            <input style="opacity: 0; position: absolute; width: 100%; height: 100%; top: 0; left: 0; cursor: pointer;" 
+                            name="recu_paiement" id="recu_paiement" type="file" class="hidden" onchange="validateFile(this)">
+                            <span class="text-sm text-red-500 hidden">Reçu de paiement</span>
                         </label>
                     </div>
                   </div>
@@ -116,19 +120,19 @@ class Signup_view
                 <div id="step-3" class="step hidden space-y-4">
                   <div>
                     <label for="email" class="block mb-1 text-sm font-medium text-gray-900">Email</label>
-                    <input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                    <input name="email" type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                       onchange="validateField(this, /^[^\s@]+@[^\s@]+\.[^\s@]+$/)">
                     <p class="mt-1 text-xs text-red-500 hidden"></p>
                   </div>
                   <div>
-                    <label for="password" class="block mb-1 text-sm font-medium text-gray-900">Mot de Passe</label>
-                    <input type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                    <label for="mot_de_passe" class="block mb-1 text-sm font-medium text-gray-900">Mot de Passe</label>
+                    <input name="mot_de_passe" type="password" id="mot_de_passe" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                       onchange="validatePassword(this)">
                     <p class="mt-1 text-xs text-red-500 hidden"></p>
                   </div>
                   <div>
                     <label for="confirmPassword" class="block mb-1 text-sm font-medium text-gray-900">Confirmer le Mot de Passe</label>
-                    <input type="password" id="confirmPassword" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
+                    <input name="confirm_password" type="password" id="confirmPassword" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5 transition-colors" required
                       onchange="validatePasswordConfirm(this)">
                     <p class="mt-1 text-xs text-red-500 hidden"></p>
                   </div>

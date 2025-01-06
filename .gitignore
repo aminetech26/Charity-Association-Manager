@@ -11,6 +11,8 @@ public/logos/
 public/photos/
 public/recus/
 public/recus_dons/
+/public/qrcodes/*
+!public/qrcodes/.gitkeep
 
 # Other common ignores
 .DS_Store

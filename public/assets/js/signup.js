@@ -1,6 +1,7 @@
+const ROOT = "http://localhost/TDWProject/";
 // File validation configurations
 const fileValidationRules = {
-  "personal-photo": {
+  photo: {
     allowedTypes: ["image/jpeg", "image/png", "image/jpg"],
     maxSize: 2, // MB
     messages: {
@@ -9,7 +10,7 @@ const fileValidationRules = {
       size: "La taille du fichier ne doit pas dépasser 2MB",
     },
   },
-  "id-photo": {
+  piece_identite: {
     allowedTypes: ["image/jpeg", "image/png", "image/jpg"],
     maxSize: 2, // MB
     messages: {
@@ -18,7 +19,7 @@ const fileValidationRules = {
       size: "La taille du fichier ne doit pas dépasser 2MB",
     },
   },
-  "payment-receipt": {
+  recu_paiement: {
     allowedTypes: ["image/jpeg", "image/png", "image/jpg"],
     maxSize: 5, // MB
     messages: {
@@ -39,7 +40,7 @@ const validationRules = {
     pattern: /^[a-zA-ZÀ-ÿ\s]{2,}$/,
     message: "Le prénom doit contenir au moins 2 caractères alphabétiques",
   },
-  phone: {
+  numero_de_telephone: {
     pattern: /^[\d\s+()-]{10,}$/,
     message:
       "Veuillez entrer un numéro de téléphone valide (minimum 10 chiffres)",
@@ -52,7 +53,7 @@ const validationRules = {
     pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     message: "Veuillez entrer une adresse email valide",
   },
-  password: {
+  mot_de_passe: {
     pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/,
     message:
       "Le mot de passe doit contenir au moins 8 caractères, dont une lettre et un chiffre",
@@ -98,7 +99,6 @@ function validateFile(input) {
   return true;
 }
 
-// Field validation function
 function validateField(input) {
   const rule = validationRules[input.id];
   const errorElement = input.nextElementSibling;
@@ -119,9 +119,27 @@ function validateField(input) {
   return isValid;
 }
 
-// Password confirmation validation function
+function validatePassword() {
+  const password = document.getElementById("mot_de_passe");
+  const errorElement = password.nextElementSibling;
+
+  const isValid = password.value.length >= 8;
+  password.classList.toggle("border-red-500", !isValid);
+  password.classList.toggle("border-green-500", isValid);
+
+  if (!isValid) {
+    errorElement.textContent =
+      "Le mot de passe doit contenir au moins 8 caractères";
+    errorElement.classList.remove("hidden");
+  } else {
+    errorElement.classList.add("hidden");
+  }
+
+  return isValid;
+}
+
 function validatePasswordConfirm() {
-  const password = document.getElementById("password");
+  const password = document.getElementById("mot_de_passe");
   const confirmPassword = document.getElementById("confirmPassword");
   const errorElement = confirmPassword.nextElementSibling;
 
@@ -139,7 +157,6 @@ function validatePasswordConfirm() {
   return isValid;
 }
 
-// Step validation function
 function validateStep(step) {
   const currentStepElement = document.getElementById(`step-${step}`);
   const inputs = currentStepElement.querySelectorAll("input[required]");
@@ -160,7 +177,6 @@ function validateStep(step) {
   return isValid;
 }
 
-// Step navigation logic
 let currentStep = 1;
 const form = document.getElementById("multi-step-form");
 const prevBtn = document.getElementById("prevBtn");
@@ -169,7 +185,6 @@ const submitBtn = document.getElementById("submitBtn");
 const progressBar = document.getElementById("progress-bar");
 
 function updateStepIndicators(step) {
-  // Update the appearance of step indicators
   for (let i = 1; i <= 3; i++) {
     const stepIndicator = document.getElementById(`step${i}`);
     if (stepIndicator) {
@@ -190,21 +205,17 @@ function showStep(step) {
   document.querySelectorAll(".step").forEach((s) => s.classList.add("hidden"));
   document.getElementById(`step-${step}`).classList.remove("hidden");
 
-  // Update progress bar
   const totalSteps = 3;
   const progressPercentage = (step / totalSteps) * 100;
   progressBar.style.width = `${progressPercentage}%`;
 
-  // Update step indicators
   updateStepIndicators(step);
 
-  // Update button visibility
   prevBtn.classList.toggle("hidden", step === 1);
   nextBtn.classList.toggle("hidden", step === 3);
   submitBtn.classList.toggle("hidden", step !== 3);
 }
 
-// Event listeners for navigation buttons
 nextBtn.addEventListener("click", () => {
   if (validateStep(currentStep)) {
     currentStep++;
@@ -217,7 +228,6 @@ prevBtn.addEventListener("click", () => {
   showStep(currentStep);
 });
 
-// Form submission logic
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -225,7 +235,7 @@ form.addEventListener("submit", async (e) => {
     const formData = new FormData(form);
 
     try {
-      const response = await fetch(`${ROOT}admin/Admin/createPartnerAccount`, {
+      const response = await fetch(`${ROOT}public/Membre/signup`, {
         method: "POST",
         body: formData,
       });
@@ -234,9 +244,7 @@ form.addEventListener("submit", async (e) => {
 
       if (data.status === "success") {
         alert("Compte créé avec succès !");
-        form.reset();
-        currentStep = 1;
-        showStep(currentStep);
+        window.location.href = ROOT + "public/Home/index";
       } else {
         alert(data.message || "Une erreur s'est produite");
       }
@@ -247,7 +255,6 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-// Add input validation listeners
 document.querySelectorAll("input[required]").forEach((input) => {
   if (input.type !== "file") {
     input.addEventListener("blur", () => validateField(input));
@@ -256,5 +263,4 @@ document.querySelectorAll("input[required]").forEach((input) => {
   }
 });
 
-// Initialize form
 showStep(currentStep);

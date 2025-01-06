@@ -1,5 +1,6 @@
 <?php
 //defined('ROOTPATH') OR exit('Accès refusé !');
+require_once(__DIR__ . '/../core/qr_code_helper.php');
 class Membre {
     use Controller;
 
@@ -38,9 +39,9 @@ class Membre {
                         $recuPath = handleFileUpload($_FILES['recu_paiement'], 'recus/');
 
                         $donneesAbonnement = [
-                            'type_abonnement' => 'CLASSIQUE', // mis à jour par l'admin
-                            'date_debut' => date('Y-m-d'), // mis à jour par l'admin
-                            'date_fin' => date('Y-m-d', strtotime('+1 year')), // mis à jour par l'admin
+                            'type_abonnement' => 'CLASSIQUE',
+                            'date_debut' => date('Y-m-d'),
+                            'date_fin' => date('Y-m-d', strtotime('+1 year')),
                             'recu_paiement' => $recuPath,
                             'statut' => 'EN_COURS',
                             'is_active' => 0
@@ -49,16 +50,37 @@ class Membre {
                         $abonnementId = $abonnement->insert($donneesAbonnement);
                         $donneesMembre['abonnement_id'] = $abonnement->first(['recu_paiement' => $recuPath])->id;
                     }
-                    // Création du compte membre
-                    $membre->insert($donneesMembre);
 
-                    // Validation de la transaction
+                    $member = $membre->insert($donneesMembre);
+                    $membreId = $membre->first(['email' => $_POST['email']])->id;                    
+                    $memberUniqueId = 'MEM-' . date('Y') . '-' . str_pad($membreId, 5, '0', STR_PAD_LEFT);
+                    
+                    $qrHelper = new QRCodeHelper();
+                    
+                    $memberData = [
+                        'member_unique_id' => $memberUniqueId,
+                        'nom' => $_POST['nom'],
+                        'prenom' => $_POST['prenom'],
+                        'email' => $_POST['email']
+                    ];
+                    
+                    $qrCodePath = $qrHelper->generateMemberQR($memberData);
+                    
+                    $membre->update($membreId, [
+                        'member_unique_id' => $memberUniqueId,
+                        'qr_code' => $qrCodePath
+                    ]);
+
                     $membre->commit();
+
+                    $_SESSION['membre_id'] = $membreId;
+                    $_SESSION['membre_nom'] = $_POST['nom'];
+                    $_SESSION['membre_prenom'] = $_POST['prenom'];
+                    $_SESSION['membre_email'] = $_POST['email'];
+
                     echo json_encode(['status' => 'success', 'message' => 'Inscription réussie !']);
                     exit();
-
                 } catch (Exception $e) {
-                    // Annulation en cas d'erreur
                     $membre->rollback();
                     $erreurs[] = "Une erreur s'est produite pendant l'inscription. Veuillez réessayer.";
                     echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
@@ -74,7 +96,6 @@ class Membre {
     private function validateSignup($post, $files) {
         $erreurs = [];
 
-        // Validation des champs obligatoires
         $champsObligatoires = ['nom', 'prenom', 'email', 'mot_de_passe', 'adresse', 'numero_de_telephone'];
         foreach ($champsObligatoires as $champ) {
             if (empty($post[$champ])) {
@@ -82,7 +103,6 @@ class Membre {
             }
         }
 
-        // Validation de l'email
         if (!filter_var($post['email'], FILTER_VALIDATE_EMAIL)) {
             $erreurs[] = "Adresse e-mail invalide.";
         }
@@ -135,7 +155,6 @@ class Membre {
                     $_SESSION['membre_prenom'] = $utilisateur->prenom;
                     $_SESSION['membre_email'] = $utilisateur->email;
 
-                    // If the member has an abonnement_id, retrieve additional details
                     if (!empty($utilisateur->abonnement_id)) {
                         $detailsAbonnement = $abonnement->first(['id' => $utilisateur->abonnement_id]);
                         if ($detailsAbonnement) {
@@ -152,7 +171,6 @@ class Membre {
             }
         }
     
-        // Return errors if any
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
     }
