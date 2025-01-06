@@ -73,11 +73,6 @@ class Membre {
 
                     $membre->commit();
 
-                    $_SESSION['membre_id'] = $membreId;
-                    $_SESSION['membre_nom'] = $_POST['nom'];
-                    $_SESSION['membre_prenom'] = $_POST['prenom'];
-                    $_SESSION['membre_email'] = $_POST['email'];
-
                     echo json_encode(['status' => 'success', 'message' => 'Inscription réussie !']);
                     exit();
                 } catch (Exception $e) {
