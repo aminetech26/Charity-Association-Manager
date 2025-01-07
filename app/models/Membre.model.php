@@ -4,8 +4,41 @@
 class MembreModel{
     use Model;
     protected $table = "Compte_Membre";
-    protected $allowedColumns = ['nom', 'prenom', 'email', 'mot_de_passe', 'photo', 'piece_identite', 'adresse', 'numero_de_telephone', 'abonnement_id','is_approved','qr_code','member_unique_id','created_at'];
+    protected $allowedColumns = ['id','nom', 'prenom', 'email', 'mot_de_passe', 'photo', 'piece_identite', 'adresse', 'numero_de_telephone', 'abonnement_id','is_approved','qr_code','member_unique_id','created_at'];
 
+    public function getApprovedMembersWithSubscriptionType($date_inscription, $searchTerm, $limit = 10, $offset = 0) {
+        return $this->join(
+            ['abonnement' => ['id', 'type_abonnement']],
+            ['abonnement' => 'abonnement.id = Compte_Membre.abonnement_id'],
+            [
+                'type' => 'LEFT',
+                'limit' => $limit,
+                'offset' => $offset,
+                'order_column' => 'Compte_Membre.created_at',
+                'order_type' => 'ASC',
+                'where' => ['Compte_Membre.is_approved' => 1],
+                'search' => [
+                    'Compte_Membre.nom' => $searchTerm,
+                    'Compte_Membre.created_at' => $date_inscription
+                ]
+            ]
+        );
+    }
+    
+    public function getTotalCount($date_inscription, $searchTerm) {
+        return $this->getJoinTotalCount(
+            ['abonnement' => ['id', 'type_abonnement']], // Changed array format
+            ['abonnement' => 'abonnement.id = Compte_Membre.abonnement_id'],
+            [
+                'where' => ['Compte_Membre.is_approved' => 1],
+                'search' => [
+                    'Compte_Membre.nom' => $searchTerm,
+                    'Compte_Membre.created_at' => $date_inscription
+                ]
+            ]
+        );
+    }
+    
     public function getApprovedMembers($limit = 10,$offset = 0){
         return $this->where(['is_approved' => 1],[],$limit,$offset);
     }

@@ -352,25 +352,8 @@ class Admin {
         $date_inscription = isset($_GET['date_inscription']) ? $_GET['date_inscription'] : null;
         $offset = ($page - 1) * $limit;
         
-        $searchFields = [];
-        $conditons = [];
-        $exactMatchFields = [];
-
-        if ($nom !== null && $nom !== '' && $nom !== 'null') {
-            $searchFields['nom'] = $nom;
-        }
-
-        if ($date_inscription !== null && $date_inscription !== '' && $date_inscription !== 'null') {
-            $searchFields['created_at'] = $date_inscription;
-        }
-
-        $searchFields['is_approved'] = 1;
-
-        $exactMatchFields[] = 'is_approved';
-
-        $conditons['is_approved'] = 1;	
-        $membres = $membre->search($searchFields, $exactMatchFields, $limit, $offset);
-        $total = $membre->getTotalMembres($conditons);
+        $membres = $membre->getApprovedMembersWithSubscriptionType($date_inscription,$nom,$limit, $offset);
+        $total = $membre->getTotalCount($date_inscription,$nom);
         
         if(!$membres){
             $membres = [];

@@ -166,4 +166,166 @@ Trait Model
         return $this->query($query, $data);
     }
 
+    public function join($tables, $joinConditions, $options = [])
+{
+    // Default options
+    $defaults = [
+        'type' => 'LEFT',
+        'limit' => 10,
+        'offset' => 0,
+        'order_column' => 'id',
+        'order_type' => 'ASC',
+        'where' => [],
+        'where_not' => [],
+        'search' => [],
+        'exact_match' => [],
+        'params' => []
+    ];
+    
+    $options = array_merge($defaults, $options);
+    
+    // Start building the base query
+    $query = "SELECT ";
+    
+    // Add columns from current table using allowedColumns if defined
+    if (!empty($this->allowedColumns)) {
+        $currentTableColumns = array_map(function($col) {
+            return "$this->table.$col";
+        }, $this->allowedColumns);
+    } else {
+        $currentTableColumns = ["$this->table.*"];
+    }
+    
+    // Add selected columns from joined tables
+    foreach ($tables as $tableName => $columns) {
+        if (!empty($columns) && is_array($columns)) {
+            foreach ($columns as $column) {
+                $currentTableColumns[] = "$tableName.$column as {$tableName}_{$column}";
+            }
+        } else {
+            $currentTableColumns[] = "$tableName.*";
+        }
+    }
+    
+    $query .= implode(', ', $currentTableColumns);
+    $query .= " FROM $this->table";
+    
+    // Add JOIN clauses
+    foreach ($tables as $tableName => $columns) {
+        if (isset($joinConditions[$tableName])) {
+            $query .= " " . $options['type'] . " JOIN $tableName ON {$joinConditions[$tableName]}";
+        }
+    }
+    
+    // Initialize where conditions array and parameters
+    $whereConditions = [];
+    $queryParams = [];
+    
+    // Handle WHERE conditions
+    if (!empty($options['where'])) {
+        foreach ($options['where'] as $key => $value) {
+            $paramKey = str_replace('.', '_', $key); // Convert dots to underscores for parameter names
+            $whereConditions[] = "$key = :where_$paramKey";
+            $queryParams["where_$paramKey"] = $value;
+        }
+    }
+    
+    // Handle WHERE NOT conditions
+    if (!empty($options['where_not'])) {
+        foreach ($options['where_not'] as $key => $value) {
+            $paramKey = str_replace('.', '_', $key);
+            $whereConditions[] = "$key != :not_$paramKey";
+            $queryParams["not_$paramKey"] = $value;
+        }
+    }
+    
+    // Handle Search conditions
+    if (!empty($options['search'])) {
+        foreach ($options['search'] as $key => $value) {
+            if ($value !== null && $value !== '') {
+                $paramKey = str_replace('.', '_', $key);
+                if (!empty($options['exact_match']) && in_array($key, $options['exact_match'])) {
+                    $whereConditions[] = "$key = :search_$paramKey";
+                    $queryParams["search_$paramKey"] = $value;
+                } else {
+                    $whereConditions[] = "$key LIKE :search_$paramKey";
+                    $queryParams["search_$paramKey"] = '%' . $value . '%';
+                }
+            }
+        }
+    }
+    
+    // Add WHERE clause if conditions exist
+    if (!empty($whereConditions)) {
+        $query .= " WHERE " . implode(' AND ', $whereConditions);
+    }
+    
+    // Add ORDER BY
+    $query .= " ORDER BY {$options['order_column']} {$options['order_type']}";
+    
+    // Add LIMIT and OFFSET
+    if ($options['limit'] > 0) {
+        $query .= " LIMIT {$options['limit']} OFFSET {$options['offset']}";
+    }
+    
+    // Merge all parameters
+    $queryParams = array_merge($queryParams, $options['params']);
+    
+    return $this->query($query, $queryParams);
+}
+
+// Add a helper method to get total count with joins
+public function getJoinTotalCount($tables, $joinConditions, $options = [])
+{
+    // Default join type if not set
+    $joinType = isset($options['type']) ? $options['type'] : 'LEFT';
+    
+    // Start building the count query
+    $query = "SELECT COUNT(*) as total FROM $this->table";
+    
+    // Add JOIN clauses
+    foreach ($tables as $tableName => $columns) {
+        if (isset($joinConditions[$tableName])) {
+            $query .= " $joinType JOIN $tableName ON {$joinConditions[$tableName]}";
+        }
+    }
+    
+    // Initialize where conditions array and parameters
+    $whereConditions = [];
+    $queryParams = [];
+    
+    // Handle WHERE conditions
+    if (!empty($options['where'])) {
+        foreach ($options['where'] as $key => $value) {
+            $paramKey = str_replace('.', '_', $key);
+            $whereConditions[] = "$key = :where_$paramKey";
+            $queryParams["where_$paramKey"] = $value;
+        }
+    }
+    
+    // Handle Search conditions
+    if (!empty($options['search'])) {
+        foreach ($options['search'] as $key => $value) {
+            if ($value !== null && $value !== '') {
+                $paramKey = str_replace('.', '_', $key);
+                if (!empty($options['exact_match']) && in_array($key, $options['exact_match'])) {
+                    $whereConditions[] = "$key = :search_$paramKey";
+                    $queryParams["search_$paramKey"] = $value;
+                } else {
+                    $whereConditions[] = "$key LIKE :search_$paramKey";
+                    $queryParams["search_$paramKey"] = '%' . $value . '%';
+                }
+            }
+        }
+    }
+    
+    // Add WHERE clause if conditions exist
+    if (!empty($whereConditions)) {
+        $query .= " WHERE " . implode(' AND ', $whereConditions);
+    }
+    
+    $result = $this->query($query, $queryParams);
+    return isset($result[0]->total) ? $result[0]->total : 0;
+}
+
 }

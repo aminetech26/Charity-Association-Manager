@@ -410,7 +410,9 @@
                 <td class="px-6 py-4">${member.email}</td>
                 <td class="px-6 py-4">${member.adresse}</td>
                 <td class="px-6 py-4">${member.numero_de_telephone}</td>
-                <td class="px-6 py-4">${member.type_abonnement}</td>
+                <td class="px-6 py-4">${
+                  member.abonnement_type_abonnement ?? "/"
+                }</td>
                 <td class="px-6 py-4">${new Date(
                   member.created_at
                 ).toLocaleDateString("fr-FR", {
