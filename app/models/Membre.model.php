@@ -6,8 +6,8 @@ class MembreModel{
     protected $table = "Compte_Membre";
     protected $allowedColumns = ['nom', 'prenom', 'email', 'mot_de_passe', 'photo', 'piece_identite', 'adresse', 'numero_de_telephone', 'abonnement_id','is_approved','qr_code','member_unique_id'];
 
-    public function getAllMembers(){
-        return $this->findAll();
+    public function getAllMembers($limit = 10,$offset = 0){
+        return $this->findAll($limit,$offset);
     }
 
     public function getMemberById($id){
@@ -20,6 +20,10 @@ class MembreModel{
 
     public function getMembersWithoutSubscription(){
         return $this->query("SELECT * FROM Compte_Membre WHERE abonnement_id IS NULL");
+    }
+
+    public function getTotalMembres($conditions = []){
+        return $this->getTotalCount($conditions);
     }
 
 }

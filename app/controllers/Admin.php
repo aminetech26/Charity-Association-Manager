@@ -312,7 +312,42 @@ class Admin {
         $this->model('Membre');
         $membre = new MembreModel();
         $membres = $membre->getAllMembers();
-        echo json_encode(['status' => 'success', 'data' => $membres]);
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $nom = isset($_GET['nom']) ? $_GET['nom'] : null;
+        $date_inscription = isset($_GET['date_inscription']) ? $_GET['date_inscription'] : null;
+        $offset = ($page - 1) * $limit;
+        
+        $searchFields = [];
+        $conditons = [];
+        $exactMatchFields = [];
+
+        if ($nom !== null && $nom !== '' && $nom !== 'null') {
+            $searchFields['nom'] = $nom;
+        }
+
+        if ($date_inscription !== null && $date_inscription !== '' && $date_inscription !== 'null') {
+            $exactMatchFields['date_inscription'] = $date_inscription;
+        }
+
+        $membres = $membre->search($searchFields, $exactMatchFields, $limit, $offset);
+
+        $total = $membre->getTotalMembres($conditons);
+        if(!$membres){
+            $membres = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $membres,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
         exit();
     }
 
