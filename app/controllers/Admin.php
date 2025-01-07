@@ -307,11 +307,44 @@ class Admin {
         exit();
     }
 
+
+    public function getAllRegistrations(){
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('Membre');
+        $membre = new MembreModel();
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $membres = $membre->getMembersNotApproved($limit, $offset);
+
+        $searchFields = [];
+        $conditons = [];
+        $exactMatchFields = [];
+        $conditons['is_approved'] = 0;
+
+        $total = $membre->getTotalMembres($conditons);
+        if(!$membres){
+            $membres = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $membres,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        exit();
+    }
+
     public function getAllMembers(){
         $this->checkIfAdminOrSuperAdmin();
         $this->model('Membre');
         $membre = new MembreModel();
-        $membres = $membre->getAllMembers();
 
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
@@ -328,12 +361,17 @@ class Admin {
         }
 
         if ($date_inscription !== null && $date_inscription !== '' && $date_inscription !== 'null') {
-            $exactMatchFields['date_inscription'] = $date_inscription;
+            $searchFields['created_at'] = $date_inscription;
         }
 
-        $membres = $membre->search($searchFields, $exactMatchFields, $limit, $offset);
+        $searchFields['is_approved'] = 1;
 
+        $exactMatchFields[] = 'is_approved';
+
+        $conditons['is_approved'] = 1;	
+        $membres = $membre->search($searchFields, $exactMatchFields, $limit, $offset);
         $total = $membre->getTotalMembres($conditons);
+        
         if(!$membres){
             $membres = [];
         }
