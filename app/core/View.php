@@ -36,7 +36,7 @@ trait View {
                         </div>
                     <?php else: ?>
                         <a href="<?= ROOT ?>public/Home/signup" class="text-lg font-semibold text-primary hover:text-primary-hover transition duration-300">S'inscrire</a> <!-- Utilisation de la couleur primary -->
-                        <a href="<?= ROOT ?>login" class="text-lg font-semibold bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-hover transition duration-300">Se connecter</a> <!-- Bouton CTA -->
+                        <a href="<?= ROOT ?>public/Home/signin" class="text-lg font-semibold bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-hover transition duration-300">Se connecter</a> <!-- Bouton CTA -->
                     <?php endif; ?>
                 </div>
             </div>

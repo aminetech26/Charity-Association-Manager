@@ -36,4 +36,11 @@ class Home
 		$view->showSignUpForm();
 	}
 
+	public function signin(){
+		$this->view("signin","public");
+		$view = new Signin_view();
+		$view->page_head('Connexion');
+		$view->showLoginPage();
+	}
+
 }
