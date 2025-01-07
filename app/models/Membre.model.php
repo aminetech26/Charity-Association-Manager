@@ -25,7 +25,7 @@ class MembreModel{
         );
     }
     
-    public function getTotalCount($date_inscription, $searchTerm) {
+    public function getTotalJoin($date_inscription, $searchTerm) {
         return $this->getJoinTotalCount(
             ['abonnement' => ['id', 'type_abonnement']], // Changed array format
             ['abonnement' => 'abonnement.id = Compte_Membre.abonnement_id'],
@@ -59,7 +59,7 @@ class MembreModel{
         return $this->where(['is_approved' => 0],[],$limit,$offset);
     }
 
-    public function getTotalMembres($conditions = []){
+    public function getTotal($conditions = []){
         return $this->getTotalCount($conditions);
     }
 

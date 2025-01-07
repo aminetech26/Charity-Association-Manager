@@ -323,7 +323,7 @@ class Admin {
         $exactMatchFields = [];
         $conditons['is_approved'] = 0;
 
-        $total = $membre->getTotalMembres($conditons);
+        $total = $membre->getTotal($conditons);
         if(!$membres){
             $membres = [];
         }
@@ -353,7 +353,7 @@ class Admin {
         $offset = ($page - 1) * $limit;
         
         $membres = $membre->getApprovedMembersWithSubscriptionType($date_inscription,$nom,$limit, $offset);
-        $total = $membre->getTotalCount($date_inscription,$nom);
+        $total = $membre->getTotalJoin($date_inscription,$nom);
         
         if(!$membres){
             $membres = [];
