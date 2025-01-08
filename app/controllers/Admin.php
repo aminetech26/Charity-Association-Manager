@@ -622,8 +622,7 @@ class Admin {
         exit();
     }
 
-    // Partenaire management
-
+    // News management
 
     public function addPartner() {
         $this->checkIfAdminOrSuperAdmin();
@@ -676,6 +675,125 @@ class Admin {
                     exit();
                 } catch (Exception $e) {
                     $erreurs[] = "Une erreur s'est produite lors de l'ajout du partenaire : " . $e->getMessage();
+                }
+            }
+        }
+    
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+
+
+    // Partenaire management
+
+
+    public function addNewsArticle() {
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('News');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $article = new NewsModel();
+    
+            $champsObligatoires = ['titre', 'contenu'];
+            foreach ($champsObligatoires as $champ) {
+                if (empty($_POST[$champ])) {
+                    $erreurs[] = ucfirst($champ) . " est requis.";
+                }
+            }
+    
+            if (empty($erreurs)) {
+                try {
+                    if(isset($_FILES['image']) && $_FILES['image']['error'] === 0){
+                        $thumbnailPath = handleFileUpload($_FILES['image'], 'thumbnails/');
+    
+                    $donneesArticle = [
+                        'titre' => $_POST['titre'],
+                        'contenu' => $_POST['contenu'],
+                        'thumbnail_url' => $thumbnailPath ?? null,
+                        'date_publication' => date('Y-m-d H:i:s')
+                    ];
+    
+                    $article->insert($donneesArticle);
+    
+                    echo json_encode(['status' => 'success', 'message' => 'Article ajouté avec succès !']);
+                    exit();
+
+                    }else{
+                        $donneesArticle = [
+                            'titre' => $_POST['titre'],
+                            'contenu' => $_POST['contenu'],
+                            'date_publication' => date('Y-m-d H:i:s')
+                        ];
+        
+                        $article->insert($donneesArticle);
+        
+                        echo json_encode(['status' => 'success', 'message' => 'Article ajouté avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    $erreurs[] = "Une erreur s'est produite lors de l'ajout d'un article : " . $e->getMessage();
+                }
+            }
+        }
+    
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function getAllNewsArticles(){
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('News');
+        $article = new NewsModel();
+    
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+    
+        $articles = $article->getAllNewsArticles($limit, $offset);
+    
+        $total = $article->getTotalNewsArticles();
+        if(!$articles){
+            $articles = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $articles,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        exit();
+    }
+
+    public function deleteNewsArticle(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('News');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['article_id'])) {
+                $erreurs[] = "ID de l'article requis.";
+            } else {
+                try {
+                    $article = new NewsModel();
+                    $articleToDelete = $article->first(['id' => $_POST['article_id']]);
+    
+                    if (!$articleToDelete) {
+                        $erreurs[] = "Article non trouvé.";
+                    } else {
+                        $article->delete($_POST['article_id']);
+                        echo json_encode(['status' => 'success', 'message' => 'Article supprimé avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
                 }
             }
         }

@@ -22,7 +22,7 @@
     </div>
     <div id="events" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Gestion des evenements</h2>
-        <p>Ceci est le contenu de la section evenements.</p>
+        
     </div>
 </div>
 <script src="<?= ROOT ?>admin/assets/js/dons_section.js"></script>
