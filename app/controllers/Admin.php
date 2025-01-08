@@ -1376,12 +1376,12 @@ class Admin {
                 }
             }
 
-            if (!empty($_POST['date_debut']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_debut'])) {
-                $erreurs[] = "Date de début invalide. Format attendu : YYYY-MM-DD.";
+            if (!empty($_POST['date_debut']) && !preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $_POST['date_debut'])) {
+                $erreurs[] = "Date de début invalide. Format attendu : YYYY-MM-DDTHH:MM.";
             }
-
-            if (!empty($_POST['date_fin']) && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $_POST['date_fin'])) {
-                $erreurs[] = "Date de fin invalide. Format attendu : YYYY-MM-DD.";
+            
+            if (!empty($_POST['date_fin']) && !preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/', $_POST['date_fin'])) {
+                $erreurs[] = "Date de fin invalide. Format attendu : YYYY-MM-DDTHH:MM.";
             }
 
             if (empty($erreurs)) {
@@ -1484,6 +1484,36 @@ class Admin {
 
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
+    }
+
+    public function getAllEvents(){
+        $this->checkIfAdminOrSuperAdmin();
+            $this->model('Evenement');
+            $evenement = new EvenementModel();
+        
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $offset = ($page - 1) * $limit;
+    
+            $evenements = $evenement->getAllEvenements($limit, $offset);
+    
+            $total = $evenement->getTotalEvents();
+            if(!$evenements){
+                $evenements = [];
+            }
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => $evenements,
+                'pagination' => [
+                    'total' => $total,
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total_pages' => ceil($total / $limit)
+                ]
+            ]);
+            
+            exit();
     }
 
     // Benevolat management
