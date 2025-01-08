@@ -400,6 +400,7 @@
             <td class="px-6 py-4">
                 <input type="checkbox" class="w-4 h-4" data-id="${partner.id}">
             </td>
+            <td class="px-6 py-4">${partner.id}</td>
             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 ${partner.nom}
             </td>

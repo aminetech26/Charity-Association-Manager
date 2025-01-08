@@ -12,8 +12,8 @@ class AdminModel {
         'role'
     ];
 
-    public function getAllAdmins() {
-        return $this->findAll();
+    public function getAllAdmins($limit=10,$offset=0) {
+        return $this->findAll($limit,$offset);
     }
 
     public function getAdminById($id) {
@@ -26,6 +26,10 @@ class AdminModel {
 
     public function getAdminByRole($role) {
         return $this->where(['role' => $role]);
+    }
+
+    public function getTotalAdminAccounts(){
+        return $this->getTotalCount();
     }
     
 }

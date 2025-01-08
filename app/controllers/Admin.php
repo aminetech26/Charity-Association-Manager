@@ -155,6 +155,69 @@ class Admin {
         exit();
     }
 
+    public function deleteAdminAccount(){
+
+            $this->checkIfSuperAdmin();
+            $erreurs = [];
+            $this->model('Admin');
+        
+            if ($_SERVER['REQUEST_METHOD'] == "POST") {
+                if (empty($_POST['admin_id'])) {
+                    $erreurs[] = "ID du compte admin requis.";
+                } else {
+                    try {
+                        $compte_admin = new AdminModel();
+                        $compteAdminToDelete = $compte_admin->first(['id' => $_POST['admin_id']]);
+        
+                        if (!$compteAdminToDelete) {
+                            $erreurs[] = "Compte admin non trouvé.";
+                        } else {
+                            $compte_admin->delete($_POST['admin_id']);
+                            echo json_encode(['status' => 'success', 'message' => 'Compte admin supprimé avec succès !']);
+                            exit();
+                        }
+                    } catch (Exception $e) {
+                        echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                        exit();
+                    }
+                }
+            }
+        
+            echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+            exit();
+
+    }
+
+    public function getAllComptesAdmin(){
+        $this->checkIfSuperAdmin();
+        $this->model('Admin');
+        $compte_admin = new AdminModel();
+    
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $comptes_admin = $compte_admin->getAllAdmins($limit, $offset);
+
+        $total = $compte_admin->getTotalAdminAccounts();
+        if(!$comptes_admin){
+            $comptes_admin = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $comptes_admin,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        
+        exit();
+    }
+
     public function updateAdminRole() {
         $this->checkIfSuperAdmin();
         $erreurs = [];
@@ -197,7 +260,7 @@ class Admin {
     private function validateAdminData($post) {
         $erreurs = [];
 
-        $champsObligatoires = ['nom_user', 'email', 'mot_de_passe'];
+        $champsObligatoires = ['nom_user', 'email', 'mot_de_passe','role'];
         foreach ($champsObligatoires as $champ) {
             if (empty($post[$champ])) {
                 $erreurs[] = ucfirst($champ) . " est requis.";
@@ -213,7 +276,7 @@ class Admin {
             $erreurs[] = "Cette adresse e-mail est déjà utilisée.";
         }
 
-        if (strlen($post['mot_de_passe']) < 6) {
+        if (strlen($post['mot_de_passe']) < 5) {
             $erreurs[] = "Le mot de passe doit contenir au moins 6 caractères.";
         }
 

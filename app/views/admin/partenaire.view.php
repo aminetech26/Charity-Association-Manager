@@ -94,6 +94,7 @@
                             <th scope="col" class="px-6 py-3">
                                 <input type="checkbox" id="selectAll" class="w-4 h-4">
                             </th>
+                            <th scope="col" class="px-6 py-3">ID</th>
                             <th scope="col" class="px-6 py-3">Nom</th>
                             <th scope="col" class="px-6 py-3">Ville</th>
                             <th scope="col" class="px-6 py-3">Catégorie</th>

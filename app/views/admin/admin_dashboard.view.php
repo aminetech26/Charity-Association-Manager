@@ -21,7 +21,7 @@ class Admin_dashboard_view
                 <div class="flex items-center ms-3">
                   <div class="relative">
                     <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" id="user-menu-button">
-                      <img class="w-8 h-8 rounded-full" src="<?= ROOT ?>admin/assets/images/<?= $_SESSION['admin_role'] ?>.png" alt="user photo">
+                      <img class="w-8 h-8 rounded-full object-cover" src="<?= ROOT ?>admin/assets/images/<?= $_SESSION['admin_role'] ?>.png" alt="user photo">
                     </button>
                     <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50" id="user-dropdown">
                       <div class="px-4 py-3 border-b">

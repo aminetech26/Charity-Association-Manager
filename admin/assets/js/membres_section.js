@@ -32,12 +32,6 @@
     totalPages: 1,
   };
 
-  initializeEventListeners();
-  loadRegistrationsFromBackend(
-    inscriptionPagination.currentPage,
-    inscriptionPagination.itemsPerPage
-  );
-
   function initializeEventListeners() {
     document.addEventListener("click", function (e) {
       const target = e.target.closest(".approve-button");
@@ -360,6 +354,12 @@
       console.error("Error loading members:", error);
     }
   }
+
+  initializeEventListeners();
+  loadRegistrationsFromBackend(
+    inscriptionPagination.currentPage,
+    inscriptionPagination.itemsPerPage
+  );
 
   // members section
 
