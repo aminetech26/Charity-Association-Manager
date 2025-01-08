@@ -550,6 +550,78 @@ class Admin {
         ]);
     }
 
+    // aides management
+
+    public function getAllTypeAide(){
+        $this->model('TypeAide');
+        $type_aide = new TypeAideModel();
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $type_aides = $type_aide->getAllTypeAides($limit, $offset);
+
+        $total = $type_aide->getTotalTypeAide();
+        if(!$type_aides){
+            $type_aides = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $type_aides,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+    }
+
+    public function addTypeAide(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('TypeAide');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $type_aide = new TypeAideModel();
+
+            if (empty($_POST['label']) || empty($_POST['dossier_requis'])) {
+                $erreurs[] = "Label et dossier requis sont requis.";
+            }
+
+            if (empty($erreurs)) {
+                try {
+
+                    $labelAide = $type_aide->first(['label' => $_POST['label']]);
+
+                    if ($labelAide) {
+                        $erreurs[] = "Ce label d'aide existe déjà.";
+                        json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+                        exit();
+                    }
+
+                    $donneesTypeAide = [
+                        'label' => $_POST['label'],
+                        'description' => $_POST['description'] ?? null,
+                        'dossier_requis' => $_POST['dossier_requis']
+                    ];
+
+                    $type_aide->insert($donneesTypeAide);
+
+                    echo json_encode(['status' => 'success', 'message' => 'Catégorie ajoutée avec succès !']);
+                    exit();
+                } catch (Exception $e) {
+                    $erreurs[] = "Une erreur s'est produite lors de l'ajout de la catégorie : " . $e->getMessage();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
     // Partenaire management
 
 
