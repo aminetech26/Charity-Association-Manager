@@ -24,10 +24,10 @@ class MembreModel{
             ]
         );
     }
-    
-    public function getTotalJoin($date_inscription, $searchTerm) {
+
+    public function getTotalJoinMembers($date_inscription, $searchTerm) {
         return $this->getJoinTotalCount(
-            ['abonnement' => ['id', 'type_abonnement']], // Changed array format
+            ['abonnement' => ['id', 'type_abonnement']],
             ['abonnement' => 'abonnement.id = Compte_Membre.abonnement_id'],
             [
                 'where' => ['Compte_Membre.is_approved' => 1],
@@ -35,6 +35,32 @@ class MembreModel{
                     'Compte_Membre.nom' => $searchTerm,
                     'Compte_Membre.created_at' => $date_inscription
                 ]
+            ]
+        );
+    }
+
+
+    public function getNonApprovedMembersWithSubscription($limit = 10, $offset = 0) {
+        return $this->join(
+            ['abonnement' => ['id', 'recu_paiement','type_abonnement']],
+            ['abonnement' => 'Compte_Membre.abonnement_id = abonnement.id'],
+            [
+                'type' => 'LEFT',
+                'limit' => $limit,
+                'offset' => $offset,
+                'order_column' => 'Compte_Membre.created_at',
+                'order_type' => 'ASC',
+                'where' => ['Compte_Membre.is_approved' => 0],
+            ]
+        );
+    }
+
+    public function getTotalJoinRegistrations() {
+        return $this->getJoinTotalCount(
+            ['abonnement' => ['id', 'recu_paiement']],
+            ['abonnement' => 'abonnement.id = Compte_Membre.abonnement_id'],
+            [
+                'where' => ['Compte_Membre.is_approved' => 0]
             ]
         );
     }

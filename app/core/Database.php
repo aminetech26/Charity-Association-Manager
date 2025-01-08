@@ -15,22 +15,34 @@ Trait Database
     }
 
     public function query($query, $data = [])
-    {
-        $con = $this->connect();
-        $stm = $con->prepare($query);
+{
+    $con = $this->connect();
+    $stm = $con->prepare($query);
 
-        $check = $stm->execute($data);
-        if($check)
-        {
-            $result = $stm->fetchAll(PDO::FETCH_OBJ);
-            if(is_array($result) && count($result))
-            {
-                return $result;
-            }
+    foreach ($data as $key => $value) {
+        if (is_int($value)) {
+            $stm->bindValue(":$key", $value, PDO::PARAM_INT);
+        } elseif (is_bool($value)) {
+            $stm->bindValue(":$key", $value, PDO::PARAM_BOOL);
+        } elseif (is_null($value)) {
+            $stm->bindValue(":$key", $value, PDO::PARAM_NULL);
+        } else {
+            $stm->bindValue(":$key", $value, PDO::PARAM_STR);
         }
-
-        return false;
     }
+
+    $check = $stm->execute();
+
+    if ($check) {
+        $result = $stm->fetchAll(PDO::FETCH_OBJ);
+        if (is_array($result) && count($result)) {
+            return $result;
+        }
+    }
+
+    return false;
+}
+
 
     public function get_row($query, $data = [])
     {

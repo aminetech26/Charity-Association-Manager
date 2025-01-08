@@ -168,7 +168,6 @@ Trait Model
 
     public function join($tables, $joinConditions, $options = [])
 {
-    // Default options
     $defaults = [
         'type' => 'LEFT',
         'limit' => 10,
@@ -184,10 +183,8 @@ Trait Model
     
     $options = array_merge($defaults, $options);
     
-    // Start building the base query
     $query = "SELECT ";
     
-    // Add columns from current table using allowedColumns if defined
     if (!empty($this->allowedColumns)) {
         $currentTableColumns = array_map(function($col) {
             return "$this->table.$col";
@@ -196,7 +193,6 @@ Trait Model
         $currentTableColumns = ["$this->table.*"];
     }
     
-    // Add selected columns from joined tables
     foreach ($tables as $tableName => $columns) {
         if (!empty($columns) && is_array($columns)) {
             foreach ($columns as $column) {
@@ -210,18 +206,15 @@ Trait Model
     $query .= implode(', ', $currentTableColumns);
     $query .= " FROM $this->table";
     
-    // Add JOIN clauses
     foreach ($tables as $tableName => $columns) {
         if (isset($joinConditions[$tableName])) {
             $query .= " " . $options['type'] . " JOIN $tableName ON {$joinConditions[$tableName]}";
         }
     }
     
-    // Initialize where conditions array and parameters
     $whereConditions = [];
     $queryParams = [];
     
-    // Handle WHERE conditions
     if (!empty($options['where'])) {
         foreach ($options['where'] as $key => $value) {
             $paramKey = str_replace('.', '_', $key); // Convert dots to underscores for parameter names
@@ -230,7 +223,6 @@ Trait Model
         }
     }
     
-    // Handle WHERE NOT conditions
     if (!empty($options['where_not'])) {
         foreach ($options['where_not'] as $key => $value) {
             $paramKey = str_replace('.', '_', $key);
@@ -239,7 +231,6 @@ Trait Model
         }
     }
     
-    // Handle Search conditions
     if (!empty($options['search'])) {
         foreach ($options['search'] as $key => $value) {
             if ($value !== null && $value !== '') {
@@ -255,46 +246,36 @@ Trait Model
         }
     }
     
-    // Add WHERE clause if conditions exist
     if (!empty($whereConditions)) {
         $query .= " WHERE " . implode(' AND ', $whereConditions);
     }
     
-    // Add ORDER BY
     $query .= " ORDER BY {$options['order_column']} {$options['order_type']}";
     
-    // Add LIMIT and OFFSET
     if ($options['limit'] > 0) {
         $query .= " LIMIT {$options['limit']} OFFSET {$options['offset']}";
     }
     
-    // Merge all parameters
     $queryParams = array_merge($queryParams, $options['params']);
     
     return $this->query($query, $queryParams);
 }
 
-// Add a helper method to get total count with joins
 public function getJoinTotalCount($tables, $joinConditions, $options = [])
 {
-    // Default join type if not set
     $joinType = isset($options['type']) ? $options['type'] : 'LEFT';
     
-    // Start building the count query
     $query = "SELECT COUNT(*) as total FROM $this->table";
     
-    // Add JOIN clauses
     foreach ($tables as $tableName => $columns) {
         if (isset($joinConditions[$tableName])) {
             $query .= " $joinType JOIN $tableName ON {$joinConditions[$tableName]}";
         }
     }
     
-    // Initialize where conditions array and parameters
     $whereConditions = [];
     $queryParams = [];
     
-    // Handle WHERE conditions
     if (!empty($options['where'])) {
         foreach ($options['where'] as $key => $value) {
             $paramKey = str_replace('.', '_', $key);
@@ -303,7 +284,6 @@ public function getJoinTotalCount($tables, $joinConditions, $options = [])
         }
     }
     
-    // Handle Search conditions
     if (!empty($options['search'])) {
         foreach ($options['search'] as $key => $value) {
             if ($value !== null && $value !== '') {
@@ -319,7 +299,6 @@ public function getJoinTotalCount($tables, $joinConditions, $options = [])
         }
     }
     
-    // Add WHERE clause if conditions exist
     if (!empty($whereConditions)) {
         $query .= " WHERE " . implode(' AND ', $whereConditions);
     }

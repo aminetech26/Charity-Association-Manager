@@ -249,6 +249,7 @@ class Admin {
         $this->checkIfAdminOrSuperAdmin();
         $erreurs = [];
         $this->model('Membre');
+        $this->model('Abonnement');
 
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (empty($_POST['membre_id'])) {
@@ -256,12 +257,19 @@ class Admin {
             } else {
                 try {
                     $membre = new MembreModel();
+                    $abonnement = new AbonnementModel();
                     $membreToUpdate = $membre->first(['id' => $_POST['membre_id']]);
 
                     if (!$membreToUpdate) {
                         $erreurs[] = "Membre non trouvé.";
                     } else {
                         $membre->update($_POST['membre_id'], ['is_approved' => 1]);
+                        if (!empty($_POST['type_abonnement'])) {
+                            $abonnementId = $membreToUpdate->abonnement_id;
+                            $membre->update($abonnementId, ['type_abonnement' => $_POST['type_abonnement'],'is_active' => 1,'statut' => 'EN_COURS','date_debut' => date('Y-m-d'),'date_fin' => date('Y-m-d', strtotime('+1 year'))]);
+                            echo json_encode(['status' => 'success', 'message' => 'Membre approuvé avec un abonnement commençant dès maintenant !']);
+                            exit();
+                        }
                         echo json_encode(['status' => 'success', 'message' => 'Membre approuvé avec succès !']);
                         exit();
                     }
@@ -316,14 +324,9 @@ class Admin {
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
         $offset = ($page - 1) * $limit;
 
-        $membres = $membre->getMembersNotApproved($limit, $offset);
+        $membres = $membre->getNonApprovedMembersWithSubscription($limit, $offset);
 
-        $searchFields = [];
-        $conditons = [];
-        $exactMatchFields = [];
-        $conditons['is_approved'] = 0;
-
-        $total = $membre->getTotal($conditons);
+        $total = $membre->getTotalJoinRegistrations();
         if(!$membres){
             $membres = [];
         }
@@ -353,7 +356,7 @@ class Admin {
         $offset = ($page - 1) * $limit;
         
         $membres = $membre->getApprovedMembersWithSubscriptionType($date_inscription,$nom,$limit, $offset);
-        $total = $membre->getTotalJoin($date_inscription,$nom);
+        $total = $membre->getTotalJoinMembers($date_inscription,$nom);
         
         if(!$membres){
             $membres = [];

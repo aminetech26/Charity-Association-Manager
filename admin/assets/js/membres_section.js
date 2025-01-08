@@ -83,7 +83,9 @@
         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td class="px-6 py-4">${member.id}</td>
             <td class="px-6 py-4">
-                <button onclick="showImageModal('${member.photo}')" class="text-blue-600 hover:text-blue-800">
+                <button onclick="showImageModal('${
+                  member.photo
+                }')" class="text-blue-600 hover:text-blue-800">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -93,19 +95,62 @@
             <td class="px-6 py-4">${member.nom}</td>
             <td class="px-6 py-4">${member.prenom}</td>
             <td class="px-6 py-4">
-                <button onclick="showImageModal('${member.piece_identite}')" class="text-blue-600 hover:text-blue-800">
+                <button onclick="showImageModal('${
+                  member.piece_identite
+                }')" class="text-blue-600 hover:text-blue-800">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
                 </button>
             </td>
+            <td class="px-6 py-4">
+                ${
+                  member.abonnement_id
+                    ? `<button onclick="showImageModal('${member.abonnement_recu_paiement}')" class="text-blue-600 hover:text-blue-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>`
+                    : "/"
+                }
+            </td>
+            <td class="px-8 py-4">
+                ${
+                  member.abonnement_id
+                    ? `<select id="abonnement-type-${
+                        member.id
+                      }" class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1" >
+                        <option value="CLASSIQUE" ${
+                          member.abonnement_type_abonnement === "CLASSIQUE"
+                            ? "selected"
+                            : ""
+                        }>CLASSIQUE</option>
+                        <option value="JEUNE" ${
+                          member.abonnement_type_abonnement === "JEUNE"
+                            ? "selected"
+                            : ""
+                        }>JEUNE</option>
+                        <option value="PREMIUM" ${
+                          member.abonnement_type_abonnement === "PREMIUM"
+                            ? "selected"
+                            : ""
+                        }>PREMIUM</option>
+                    </select>`
+                    : "/"
+                }
+            </td>
             <td class="px-6 py-4">${member.email}</td>
             <td class="px-6 py-4">${member.adresse}</td>
             <td class="px-6 py-4">${member.numero_de_telephone}</td>
             <td class="px-6 py-4">
-                <button class="text-green-600 hover:text-green-800 approve-button" data-id="${member.id}">Approuver</button>
-                <button class="text-red-600 hover:text-red-800 refuse-button" data-id="${member.id}">Refuser</button>
+                <button class="text-green-600 hover:text-green-800 approve-button" data-id="${
+                  member.id
+                }">Approuver</button>
+                <button class="text-red-600 hover:text-red-800 refuse-button" data-id="${
+                  member.id
+                }">Refuser</button>
             </td>
         </tr>
     `
@@ -114,7 +159,6 @@
 
     updatePaginationInfo(inscriptionPagination.totalItems);
   }
-
   function showImageModal(imageUrl) {
     let path = imageUrl;
     let trimmedPath = imageUrl.includes("public/")
@@ -157,9 +201,16 @@
 
   async function approveMember(memberId) {
     try {
+      const selectElement = document.getElementById(
+        `abonnement-type-${memberId}`
+      );
+      const abonnementType = selectElement ? selectElement.value : null;
+
       const formData = new FormData();
       formData.append("membre_id", memberId);
-
+      if (abonnementType !== null) {
+        formData.append("type_abonnement", abonnementType);
+      }
       const response = await fetch(`${ROOT}admin/Admin/approveMember`, {
         method: "POST",
         body: formData,

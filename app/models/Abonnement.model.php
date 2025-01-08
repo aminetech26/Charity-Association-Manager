@@ -4,6 +4,7 @@ class AbonnementModel {
     
     protected $table = "Abonnement";
     protected $allowedColumns = [
+        'id',
         'type_abonnement',
         'date_debut',
         'date_fin',

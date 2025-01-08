@@ -71,6 +71,8 @@
                     <th scope="col" class="px-6 py-3">Nom</th>
                     <th scope="col" class="px-6 py-3">Prénom</th>
                     <th scope="col" class="px-6 py-3">Pièce d'identité</th>
+                    <th scope="col" class="px-6 py-3">Reçu paiement</th>
+                    <th scope="col" class="px-8 py-3">Type abonnement</th>
                     <th scope="col" class="px-6 py-3">Email</th>
                     <th scope="col" class="px-6 py-3">Adresse</th>
                     <th scope="col" class="px-6 py-3">Téléphone</th>
