@@ -12,11 +12,11 @@ Trait Controller
 			case 'public':
 				$base = '../app/views/public/';
 				break;
-			case 'member':
-				$base = '../app/membre/views/';
+			case 'membre':
+				$base = '../app/views/membre/';
 				break;
 			case 'partenaire':
-				$base = '../app/partenaire/views/';
+				$base = '../app/views/partenaire/';
 				break;
 			default:
 				$base = '../app/views/';

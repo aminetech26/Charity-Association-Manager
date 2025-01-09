@@ -525,6 +525,13 @@ class Membre {
             }
         }
     }
+
+    public function dashboard(){
+        $this->view("membre_dashboard","membre");
+        $view = new Membre_dashboard_view();
+        $view->page_head('Membre Dashboard');
+		$view->show_message();
+    }
     
 
    

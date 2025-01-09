@@ -15,18 +15,18 @@ class Signin_view {
 
             <div class="mt-6 sm:mx-auto sm:w-full sm:max-w-sm">
                 <div class="flex rounded-md shadow-sm justify-center" role="group">
-                    <button type="button" id="member-login" class="login-type-btn px-4 py-2 text-sm font-medium rounded-l-lg bg-primary text-white" data-type="member">
+                    <button type="button" id="membre" class="login-type-btn px-4 py-2 text-sm font-medium rounded-l-lg bg-primary text-white" data-type="member">
                         Membre
                     </button>
-                    <button type="button" id="partner-login" class="login-type-btn px-4 py-2 text-sm font-medium rounded-r-lg bg-white text-text-primary outline outline-1 outline-text-secondary" data-type="partner">
+                    <button type="button" id="partenaire" class="login-type-btn px-4 py-2 text-sm font-medium rounded-r-lg bg-white text-text-primary outline outline-1 outline-text-secondary" data-type="partner">
                         Partenaire
                     </button>
                 </div>
             </div>
 
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form id="login-form" class="space-y-6" method="POST" action="<?= ROOT ?>public/Admin/signIn">
-                    <input type="hidden" name="login_type" id="login_type" value="member">
+                <form id="login-form" class="space-y-6">
+                    <input type="hidden" name="login_type" id="login_type" value="membre">
                     <div>
                         <label for="email" class="block text-sm font-medium leading-6 text-text-primary">Email</label>
                         <div class="mt-2">

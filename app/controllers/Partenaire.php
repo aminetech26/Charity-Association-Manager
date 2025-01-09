@@ -15,14 +15,14 @@ class Partenaire{
                 $erreurs[] = "L'adresse e-mail et le mot de passe sont requis.";
             } else {
                 $partner = $comptePartenaire->first(['email' => $_POST['email']]);
-                $partnerId = $partner->partenaire_id;
                 if ($partner && password_verify($_POST['mot_de_passe'], $partner->mot_de_passe)) {
                     if($partner->statut == 'BLOCKED'){
                         $erreurs[] = "Votre compte a été désactivé. Veuillez contacter l'administrateur.";
                         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
                         exit();
                     }
-                    $partenaireInfo = $partenaire->getPartenaireById($partner->partenaire_id);
+                    $partnerId = $partner->partenaire_id;
+                    $partenaireInfo = $partenaire->getPartenaireById($partnerId);
                     $_SESSION['partenaire_id'] = $partenaireInfo[0]->id;
                     $_SESSION['partenaire_nom'] = $partenaireInfo[0]->nom;
                     $_SESSION['partenaire_ville'] = $partenaireInfo[0]->ville;
@@ -157,4 +157,11 @@ class Partenaire{
         }
     }
 
+    public function dashboard(){
+        $this->view("partenaire_dashboard","partenaire");
+        $view = new Partenaire_dashboard_view();
+        $view->page_head('Partenaire Dashboard');
+		$view->show_message();
+    }
+    
     }
