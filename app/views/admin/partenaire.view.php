@@ -401,7 +401,7 @@
             <label for="is_special" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Offre spéciale</label>
         </div>
 
-        <div id="thumbnailSection" class="mb-4 hidden"> <!-- Initially hidden -->
+        <div id="thumbnailSection" class="mb-4 hidden">
             <span class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Thumbnail</span>
             <div class="flex justify-center items-center w-full">
                 <label for="dropzone-file" class="flex flex-col justify-center items-center w-full h-16 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">

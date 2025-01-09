@@ -1102,8 +1102,16 @@
         e.preventDefault();
         const formData = new FormData(e.target);
 
+        // if (!formData.get("is_special")) {
+        //   formData.set("is_special", "0");
+        // } else {
+        //   formData.set("is_special", "1");
+        // }
+
+        console.log("Form data:", formData);
+
         try {
-          const url = `${ROOT}admin/Admin/addOffre`;
+          const url = `${ROOT}admin/Admin/addPartnerOffer`;
           const response = await fetch(url, {
             method: "POST",
             body: formData,
@@ -1183,7 +1191,7 @@
         limit: limit.toString(),
       });
 
-      const url = `${ROOT}admin/Admin/getAllOffres?${params.toString()}`;
+      const url = `${ROOT}admin/Admin/getAllOffers?${params.toString()}`;
       const response = await fetch(url);
       const data = await response.json();
 
@@ -1210,7 +1218,7 @@
             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 ${offre.id}
             </td>
-            <td class="px-6 py-4">${offre.partenaire_id}</td>
+            <td class="px-6 py-4">${offre.partenaire_nom}</td>
             <td class="px-6 py-4">${offre.type_offre}</td>
             <td class="px-6 py-4">${offre.valeur}</td>
             <td class="px-6 py-4">${offre.description}</td>
@@ -1307,7 +1315,6 @@
     }
   }
 
-  // Delete an offer
   async function deleteOffre(offreId) {
     if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
       try {

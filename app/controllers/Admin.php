@@ -1186,26 +1186,36 @@ class Admin {
 
         if (empty($erreurs)) {
             try {
-                $thumbnailPath = null;
-                if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === 0) {
-                    $thumbnailPath = handleFileUpload($_FILES['thumbnail'], 'thumbnails/');
+
+                // if($_POST['is_special'] == 1){
+                //     $thumbnailPath = null;
+                //     if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === 0) {
+                //     $thumbnailPath = handleFileUpload($_FILES['thumbnail'], 'thumbnails/');
+                //     }else{
+                //      $erreurs[] = "Image requise pour les offres spéciales.";   
+                //     }
+                // }
+
+                if(!empty($erreurs)){
+                    echo json_encode(['status' => 'error', 'errors' => $erreurs]);
+                    exit();
+                }else{
+                    $donneesOffre = [
+                        'partenaire_id' => $_POST['partenaire_id'],
+                        'type_offre' => $_POST['type_offre'],
+                        'valeur' => $_POST['valeur'],
+                        'description' => $_POST['description'],
+                        'date_debut' => $_POST['date_debut'],
+                        'date_fin' => $_POST['date_fin'],
+                        'is_special' => $_POST['is_special'] ?? 0,
+                        'thumbnail_path' => $thumbnailPath ?? null
+                    ];
+    
+                    $offre->insert($donneesOffre);
+    
+                    echo json_encode(['status' => 'success', 'message' => 'Offre ajoutée avec succès']);
+                    exit();
                 }
-
-                $donneesOffre = [
-                    'partenaire_id' => $_POST['partenaire_id'],
-                    'type_offre' => $_POST['type_offre'],
-                    'valeur' => $_POST['valeur'],
-                    'description' => $_POST['description'],
-                    'date_debut' => $_POST['date_debut'],
-                    'date_fin' => $_POST['date_fin'],
-                    'is_special' => $_POST['is_special'] ?? 0,
-                    'thumbnail_path' => $thumbnailPath ?? null
-                ];
-
-                $offre->insert($donneesOffre);
-
-                echo json_encode(['status' => 'success', 'message' => 'Offre ajoutée avec succès']);
-                exit();
             } catch (Exception $e) {
                 $erreurs[] = "Une erreur s'est produite lors de l'ajout de l'offre : " . $e->getMessage();
             }
@@ -1257,6 +1267,10 @@ class Admin {
         if (strtotime($post['date_debut']) > strtotime($post['date_fin'])) {
             $erreurs[] = "La date de début doit être antérieure à la date de fin.";
         }
+
+        // if(!empty($post['is_special']) && !in_array($post['is_special'], [0, 1])){
+        //     $erreurs[] = "Valeur de is_special invalide.";
+        // }
 
         return $erreurs;
     }
@@ -1331,12 +1345,31 @@ class Admin {
     }
 
     public function getAllOffers(){
-        $this->checkIfAdminOrSuperAdmin();
-        $this->model('Offre');
-        $offre = new OffreModel();
-        $offres = $offre->getAllOffers();
-        echo json_encode(['status' => 'success', 'data' => $offres]);
-        exit();
+            $this->checkIfAdminOrSuperAdmin();
+            $this->model('Offre');
+            $offre = new OffreModel();
+            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+            $offset = ($page - 1) * $limit;
+    
+            $offres = $offre->getAllOffers($limit, $offset);
+    
+            $total = $offre->getTotalJoinOffers();
+            if(!$offres){
+                $offres = [];
+            }
+            
+            echo json_encode([
+                'status' => 'success',
+                'data' => $offres,
+                'pagination' => [
+                    'total' => $total,
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total_pages' => ceil($total / $limit)
+                ]
+            ]);
+            exit();
     }
 
     public function getOfferDetails(){

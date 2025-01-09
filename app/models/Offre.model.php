@@ -2,10 +2,29 @@
 class OffreModel{
     use Model;
     protected $table = 'offre';
-    protected $allowedColumns = ['partenaire_id', 'type_offre', 'valeur', 'description', 'date_debut', 'date_fin', 'is_special','thumbnail_path'];
+    protected $allowedColumns = ['id','partenaire_id', 'type_offre', 'valeur', 'description', 'date_debut', 'date_fin', 'is_special','thumbnail_path'];
 
-    public function getAllOffers(){
-        return $this->findAll();
+    public function getAllOffers($limit = 10, $offset = 0){
+        return $this->join(
+            ['partenaire' => ['nom']],
+            ['partenaire' => 'offre.partenaire_id = partenaire.id'],
+            [
+                'type' => 'LEFT',
+                'limit' => $limit,
+                'offset' => $offset,
+                'where' => ['Partenaire.statut' => 'ACTIF'],
+            ]
+        );
+    }
+
+    public function getTotalJoinOffers() {
+        return $this->getJoinTotalCount(
+            ['partenaire' => ['nom']],
+            ['partenaire' => 'offre.partenaire_id = partenaire.id'],
+            [
+                'where' => ['Partenaire.statut' => 'ACTIF'],
+            ]
+        );
     }
 
     public function getOfferById($id){
