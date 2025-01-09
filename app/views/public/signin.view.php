@@ -28,7 +28,7 @@ class Signin_view {
                 <form id="login-form" class="space-y-6" method="POST" action="<?= ROOT ?>public/Admin/signIn">
                     <input type="hidden" name="login_type" id="login_type" value="member">
                     <div>
-                        <label for="email" class="block text-sm font-medium leading-6 text-text-primary">email</label>
+                        <label for="email" class="block text-sm font-medium leading-6 text-text-primary">Email</label>
                         <div class="mt-2">
                             <input
                                 type="text"

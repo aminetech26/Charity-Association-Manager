@@ -53,7 +53,6 @@ class Admin_dashboard_view
                 ['icon' => ROOT . 'admin/assets/images/paiement.png', 'text' => 'Gestion des paiements', 'href' => 'payments', 'target' => 'payments_content'],
                 ['icon' => ROOT . 'admin/assets/images/aide.png', 'text' => 'Gestion d\'Aides', 'href' => 'aides', 'target' => 'aides_content'],
                 ['icon' => ROOT . 'admin/assets/images/notification.png', 'text' => 'Gestions des notifications', 'href' => 'notifications', 'target' => 'notifications_content'],
-                ['icon' => ROOT . 'admin/assets/images/groupe.png', 'text' => 'Gestion des groupes', 'href' => 'groups', 'target' => 'groups_content']
             ];
             
             if ($_SESSION['admin_role'] === 'SUPER_ADMIN') {
