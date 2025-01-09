@@ -1061,4 +1061,279 @@
       }
     }
   }
+
+  // offres section
+  const offrePagination = {
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  };
+
+  initializeOffreEventListeners();
+  loadOffresFromBackend(
+    offrePagination.currentPage,
+    offrePagination.itemsPerPage
+  );
+
+  function initializeOffreEventListeners() {
+    document.getElementById("btnCreerOffre").addEventListener("click", () => {
+      const modal = document.getElementById("createOffresModal");
+      const form = modal.querySelector("form");
+      form.reset();
+      modal.classList.remove("hidden");
+
+      const thumbnailSection = document.getElementById("thumbnailSection");
+      thumbnailSection.classList.add("hidden");
+    });
+
+    document.getElementById("is_special").addEventListener("change", (e) => {
+      const thumbnailSection = document.getElementById("thumbnailSection");
+      if (e.target.checked) {
+        thumbnailSection.classList.remove("hidden");
+      } else {
+        thumbnailSection.classList.add("hidden");
+      }
+    });
+
+    document
+      .querySelector("#createOffresModal form")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+
+        try {
+          const url = `${ROOT}admin/Admin/addOffre`;
+          const response = await fetch(url, {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.status === "success") {
+            alert(data.message);
+            loadOffresFromBackend(
+              offrePagination.currentPage,
+              offrePagination.itemsPerPage
+            );
+            e.target.reset();
+            document
+              .getElementById("createOffresModal")
+              .classList.add("hidden");
+          } else {
+            console.error("Error managing offer:", data.message);
+            alert("Erreur: " + data.message);
+          }
+        } catch (error) {
+          console.error("Error managing offer:", error);
+          alert("Une erreur s'est produite lors de la gestion de l'offre.");
+        }
+      });
+
+    const closeOffreButtons = document.querySelectorAll(
+      '[data-modal-toggle="createOffresModal"]'
+    );
+    closeOffreButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const modal = document.getElementById("createOffresModal");
+        if (modal) {
+          modal.classList.add("hidden");
+        }
+      });
+    });
+
+    document
+      .getElementById("OffersTableBody")
+      .addEventListener("click", (e) => {
+        const target = e.target;
+        if (target.getAttribute("data-action") === "delete") {
+          const offreId = target.getAttribute("data-id");
+          deleteOffre(offreId);
+        }
+      });
+
+    document
+      .getElementById("paginationOffres")
+      .addEventListener("click", (e) => {
+        const target = e.target.closest("button");
+        if (!target) return;
+
+        if (target.hasAttribute("data-action")) {
+          const action = target.getAttribute("data-action");
+          if (action === "previous" && offrePagination.currentPage > 1) {
+            changeOffrePage(offrePagination.currentPage - 1);
+          } else if (
+            action === "next" &&
+            offrePagination.currentPage < offrePagination.totalPages
+          ) {
+            changeOffrePage(offrePagination.currentPage + 1);
+          } else if (action === "page") {
+            const page = parseInt(target.getAttribute("data-page"));
+            changeOffrePage(page);
+          }
+        }
+      });
+  }
+
+  async function loadOffresFromBackend(page = 1, limit = 10) {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+      });
+
+      const url = `${ROOT}admin/Admin/getAllOffres?${params.toString()}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "success") {
+        updateOffreTable(data.data);
+        offrePagination.totalItems = data.pagination.total;
+        offrePagination.totalPages = data.pagination.total_pages;
+        updateOffrePagination();
+        updateOffrePaginationInfo(data.pagination.total);
+      } else {
+        console.error("Error loading offers:", data.message);
+      }
+    } catch (error) {
+      console.error("Error loading offers:", error);
+    }
+  }
+
+  function updateOffreTable(offres) {
+    const tableBody = document.getElementById("OffersTableBody");
+    tableBody.innerHTML = offres
+      .map(
+        (offre) => `
+        <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+            <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                ${offre.id}
+            </td>
+            <td class="px-6 py-4">${offre.partenaire_id}</td>
+            <td class="px-6 py-4">${offre.type_offre}</td>
+            <td class="px-6 py-4">${offre.valeur}</td>
+            <td class="px-6 py-4">${offre.description}</td>
+            <td class="px-6 py-4">${offre.date_debut}</td>
+            <td class="px-6 py-4">${offre.date_fin}</td>
+            <td class="px-6 py-4">${offre.is_special ? "Oui" : "Non"}</td>
+            <td class="px-6 py-4">
+                <img src="${
+                  offre.thumbnail
+                }" alt="Thumbnail" class="w-16 h-16 object-cover rounded">
+            </td>
+            <td class="px-6 py-4">
+                <button data-action="delete" data-id="${
+                  offre.id
+                }" class="font-medium text-red-600 dark:text-red-500 hover:underline">
+                    Supprimer
+                </button>
+            </td>
+        </tr>
+    `
+      )
+      .join("");
+
+    updateOffrePaginationInfo(offrePagination.totalItems);
+  }
+
+  function updateOffrePagination() {
+    const pagination = document.getElementById("paginationOffres");
+    pagination.innerHTML = `
+        <li>
+            <button data-action="previous" class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 ${
+              offrePagination.currentPage === 1
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }" ${offrePagination.currentPage === 1 ? "disabled" : ""}>
+                <span class="sr-only">Précédent</span>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </li>`;
+
+    for (let i = 1; i <= offrePagination.totalPages; i++) {
+      pagination.innerHTML += `
+            <li>
+                <button data-action="page" data-page="${i}" class="flex items-center justify-center px-3 py-2 text-sm leading-tight ${
+        offrePagination.currentPage === i
+          ? "text-blue-600 bg-blue-50 border border-blue-300"
+          : "text-gray-500 bg-white border border-gray-300"
+      } hover:bg-gray-100">
+                    ${i}
+                </button>
+            </li>`;
+    }
+
+    pagination.innerHTML += `
+        <li>
+            <button data-action="next" class="flex items-center justify-center h-full py-1.5 px-3 text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 ${
+              offrePagination.currentPage === offrePagination.totalPages
+                ? "cursor-not-allowed opacity-50"
+                : ""
+            }" ${
+      offrePagination.currentPage === offrePagination.totalPages
+        ? "disabled"
+        : ""
+    }>
+                <span class="sr-only">Suivant</span>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+            </button>
+        </li>`;
+  }
+
+  function updateOffrePaginationInfo(totalItems) {
+    const start = Math.min(
+      (offrePagination.currentPage - 1) * offrePagination.itemsPerPage + 1,
+      totalItems
+    );
+    const end = Math.min(
+      offrePagination.currentPage * offrePagination.itemsPerPage,
+      totalItems
+    );
+
+    document.getElementById("startIndexOffres").textContent = start;
+    document.getElementById("endIndexOffres").textContent = end;
+    document.getElementById("totalItemsOffres").textContent = totalItems;
+  }
+
+  function changeOffrePage(page) {
+    if (page >= 1 && page <= offrePagination.totalPages) {
+      offrePagination.currentPage = page;
+      loadOffresFromBackend(page, offrePagination.itemsPerPage);
+    }
+  }
+
+  // Delete an offer
+  async function deleteOffre(offreId) {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cette offre ?")) {
+      try {
+        const formData = new FormData();
+        formData.append("offre_id", offreId);
+        const response = await fetch(`${ROOT}admin/Admin/deleteOffre`, {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.status === "success") {
+          alert(data.message);
+          loadOffresFromBackend(
+            offrePagination.currentPage,
+            offrePagination.itemsPerPage
+          );
+        } else {
+          console.error("Error deleting offer:", data.message);
+          alert("Erreur: " + data.message);
+        }
+      } catch (error) {
+        console.error("Error deleting offer:", error);
+        alert("Une erreur s'est produite lors de la suppression de l'offre.");
+      }
+    }
+  }
 }
