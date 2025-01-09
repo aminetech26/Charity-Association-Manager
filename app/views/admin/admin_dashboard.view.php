@@ -3,7 +3,6 @@ class Admin_dashboard_view
 {
     use AdminView;
     public function show_dashboard_page() { ?>
-        <!-- Nav bar -->
         <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
           <div class="px-3 py-3 lg:px-5 lg:pl-3">
             <div class="flex items-center justify-between">
@@ -40,10 +39,8 @@ class Admin_dashboard_view
             </div>
           </div>
         </nav>
-        <!-- Sidebar -->
         <aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0">
     <div class="h-full px-3 pb-4 overflow-y-auto bg-white flex flex-col">
-        <!-- Menu Items -->
         <ul class="space-y-2 font-medium">
             <?php 
             $menu_items = [
@@ -81,39 +78,32 @@ class Admin_dashboard_view
         </div>
     </div>
 </aside>
-<!-- Main content -->
         <main class="ml-64 p-20 bg-background-light">
             <div class="flex flex-col items-center justify-center h-full">
                 <div class="text-center">
                     <h1 class="text-4xl font-bold text-primary mb-4">Bienvenue sur le Panneau d'Administration</h1>
                     <p class="text-lg text-text-secondary mb-8">Gérez votre site efficacement grâce aux sections disponibles dans la barre latérale.</p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Gestion Partenaire -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion Partenaire</h2>
                             <p class="text-gray-200">Ajoutez, modifiez et gérez les partenaires de votre association.</p>
                         </div>
-                        <!-- Gestion des Membres -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion des Membres</h2>
                             <p class="text-gray-200">Administrez les membres de votre association.</p>
                         </div>
-                        <!-- Gestion des Dons -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion des Dons</h2>
                             <p class="text-gray-200">Suivez et gérez les dons reçus pour votre cause.</p>
                         </div>
-                        <!-- Gestion des Notifications -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion des Notifications</h2>
                             <p class="text-gray-200">Envoyez et gérez les notifications pour vos utilisateurs.</p>
                         </div>
-                        <!-- Gestion des Groupes -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Gestion des Groupes</h2>
                             <p class="text-gray-200">Créez et organisez des groupes pour structurer votre association.</p>
                         </div>
-                        <!-- Paramètres du Site -->
                         <div class="bg-primary p-6 rounded-lg shadow-md">
                             <h2 class="text-xl font-semibold text-white mb-2">Paramètres du Site</h2>
                             <p class="text-gray-200">Configurez les paramètres globaux de votre site.</p>

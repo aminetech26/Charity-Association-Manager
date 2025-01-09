@@ -9,7 +9,15 @@ class Home
 		$this->view("home","public");
         $view = new Home_view();
         $view->page_head('Association El Mountada');
+		if(isset($_SESSION['membre_id']) && isset($_SESSION['membre_photo'])){
+			$imageUrl = $_SESSION['membre_photo'];
+			$trimmedPath = (strpos($imageUrl, "public/") !== false)
+				? explode("public/", $imageUrl)[1]
+				: $imageUrl;
+			$view->nav_bar(true,$trimmedPath);
+		}else{
 		$view->nav_bar();
+		}
 		$view->show_diaporama();
 		$view->showNewsSection();
 		$view->showMemberBenefits();

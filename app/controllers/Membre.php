@@ -149,6 +149,7 @@ class Membre {
                     $_SESSION['membre_nom'] = $utilisateur->nom;
                     $_SESSION['membre_prenom'] = $utilisateur->prenom;
                     $_SESSION['membre_email'] = $utilisateur->email;
+                    $_SESSION['membre_photo'] = $utilisateur->photo;
 
                     if (!empty($utilisateur->abonnement_id)) {
                         $detailsAbonnement = $abonnement->first(['id' => $utilisateur->abonnement_id]);

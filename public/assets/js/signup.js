@@ -1,5 +1,4 @@
 const ROOT = "http://localhost/TDWProject/";
-// File validation configurations
 const fileValidationRules = {
   photo: {
     allowedTypes: ["image/jpeg", "image/png", "image/jpg"],
@@ -21,7 +20,7 @@ const fileValidationRules = {
   },
   recu_paiement: {
     allowedTypes: ["image/jpeg", "image/png", "image/jpg"],
-    maxSize: 5, // MB
+    maxSize: 5,
     messages: {
       type: "Seuls les formats JPG, PNG sont acceptés pour le reçu",
       required: "Le reçu est requis",
@@ -30,7 +29,6 @@ const fileValidationRules = {
   },
 };
 
-// Field validation configurations
 const validationRules = {
   nom: {
     pattern: /^[a-zA-ZÀ-ÿ\s]{2,}$/,
