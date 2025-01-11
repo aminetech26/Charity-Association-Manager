@@ -1187,14 +1187,14 @@ class Admin {
         if (empty($erreurs)) {
             try {
 
-                // if($_POST['is_special'] == 1){
-                //     $thumbnailPath = null;
-                //     if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === 0) {
-                //     $thumbnailPath = handleFileUpload($_FILES['thumbnail'], 'thumbnails/');
-                //     }else{
-                //      $erreurs[] = "Image requise pour les offres spéciales.";   
-                //     }
-                // }
+                if($_POST['is_special'] == 1){
+                    $thumbnailPath = null;
+                    if (isset($_FILES['thumbnail']) && $_FILES['thumbnail']['error'] === 0) {
+                    $thumbnailPath = handleFileUpload($_FILES['thumbnail'], 'thumbnails/');
+                    }else{
+                     $erreurs[] = "Image requise pour les offres spéciales.";   
+                    }
+                }
 
                 if(!empty($erreurs)){
                     echo json_encode(['status' => 'error', 'errors' => $erreurs]);

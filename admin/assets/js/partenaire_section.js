@@ -1101,12 +1101,19 @@
       .addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
+        const fileInput = document.getElementById("dropzone-file");
 
-        // if (!formData.get("is_special")) {
-        //   formData.set("is_special", "0");
-        // } else {
-        //   formData.set("is_special", "1");
-        // }
+        if (!formData.get("is_special")) {
+          formData.set("is_special", "0");
+        } else {
+          formData.set("is_special", "1");
+          if (!fileInput.files || fileInput.files.length === 0) {
+            alert("Veuillez sélectionner une image pour l'offre spéciale.");
+            return;
+          } else {
+            formData.set("thumbnail", fileInput.files[0]);
+          }
+        }
 
         console.log("Form data:", formData);
 
@@ -1209,11 +1216,20 @@
     }
   }
 
+  function ajustPath(thumbnailPath) {
+    let path = thumbnailPath;
+    let trimmedPath = thumbnailPath.includes("public/")
+      ? path.split("public/")[1]
+      : path;
+    return `${ROOT}public/${trimmedPath}`;
+  }
+
   function updateOffreTable(offres) {
     const tableBody = document.getElementById("OffersTableBody");
     tableBody.innerHTML = offres
       .map(
         (offre) => `
+
         <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
             <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                 ${offre.id}
@@ -1226,9 +1242,13 @@
             <td class="px-6 py-4">${offre.date_fin}</td>
             <td class="px-6 py-4">${offre.is_special ? "Oui" : "Non"}</td>
             <td class="px-6 py-4">
-                <img src="${
-                  offre.thumbnail
-                }" alt="Thumbnail" class="w-16 h-16 object-cover rounded">
+            ${
+              offre.thumbnail_path
+                ? `<img src="${ajustPath(
+                    offre.thumbnail_path
+                  )}" alt="Thumbnail" class="w-16 h-16 object-cover rounded">`
+                : "/"
+            }
             </td>
             <td class="px-6 py-4">
                 <button data-action="delete" data-id="${
