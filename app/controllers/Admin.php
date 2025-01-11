@@ -308,12 +308,12 @@ class Admin {
 
     // Membre management
 
-    public function approveMember(){
+    public function approveMember() {
         $this->checkIfAdminOrSuperAdmin();
         $erreurs = [];
         $this->model('Membre');
         $this->model('Abonnement');
-
+    
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             if (empty($_POST['membre_id'])) {
                 $erreurs[] = "ID du membre requis.";
@@ -321,32 +321,54 @@ class Admin {
                 try {
                     $membre = new MembreModel();
                     $abonnement = new AbonnementModel();
+                    
+                    // Use proper SQL query building with parameter binding
                     $membreToUpdate = $membre->first(['id' => $_POST['membre_id']]);
-
+    
                     if (!$membreToUpdate) {
                         $erreurs[] = "Membre non trouvé.";
                     } else {
                         $membre->update($_POST['membre_id'], ['is_approved' => 1]);
                         if (!empty($_POST['type_abonnement'])) {
                             $abonnementId = $membreToUpdate->abonnement_id;
-                            $membre->update($abonnementId, ['type_abonnement' => $_POST['type_abonnement'],'is_active' => 1,'statut' => 'EN_COURS','date_debut' => date('Y-m-d'),'date_fin' => date('Y-m-d', strtotime('+1 year'))]);
-                            echo json_encode(['status' => 'success', 'message' => 'Membre approuvé avec un abonnement commençant dès maintenant !']);
-                            exit();
+                            
+                            if ($abonnementId) {
+                                $abonnementData = [
+                                    'type_abonnement' => $_POST['type_abonnement'],
+                                    'is_active' => 1,
+                                    'statut' => 'EN_COURS',
+                                    'date_debut' => date('Y-m-d'),
+                                    'date_fin' => date('Y-m-d', strtotime('+1 year'))
+                                ];
+                                $abonnement->update($abonnementId, $abonnementData);
+                                $this->jsonResponse([
+                                    'status' => 'success',
+                                    'message' => 'Membre approuvé avec un abonnement commençant dès maintenant !'
+                                ]);
+                            }
                         }
-                        echo json_encode(['status' => 'success', 'message' => 'Membre approuvé avec succès !']);
-                        exit();
                     }
                 } catch (Exception $e) {
-                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
-                    exit();
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => 'Une erreur s\'est produite : ' . $e->getMessage()
+                    ]);
                 }
             }
         }
-
-        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+    
+        $this->jsonResponse([
+            'status' => 'error',
+            'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.'
+        ]);
+    }
+    
+    // Helper method for JSON responses
+    private function jsonResponse($data) {
+        header('Content-Type: application/json');
+        echo json_encode($data);
         exit();
     }
-
     public function deleteMember(){
         $this->checkIfAdminOrSuperAdmin();
         $erreurs = [];
