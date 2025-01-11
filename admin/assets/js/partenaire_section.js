@@ -115,6 +115,8 @@
         const form = modal.querySelector("form");
         form.reset();
         modal.classList.remove("hidden");
+        modal.setAttribute("aria-hidden", "false");
+        modal.inert = false; // Remove inert if using it
       });
 
     document
@@ -164,6 +166,7 @@
         const modal = document.getElementById("createPartnerModal");
         if (modal) {
           modal.classList.add("hidden");
+          modal.inert = true;
         }
       });
     });
@@ -233,12 +236,6 @@
             );
             categorySelect.appendChild(option);
           });
-
-          if (data.pagination) {
-            console.log("Total pages:", data.pagination.total_pages);
-            console.log("Current page:", data.pagination.page);
-            console.log("Total items:", data.pagination.total);
-          }
 
           categorySelect.addEventListener("change", function () {
             if (!this.value) {
@@ -1082,6 +1079,7 @@
       const form = modal.querySelector("form");
       form.reset();
       modal.classList.remove("hidden");
+      modal.classList.remove("area-hidden");
 
       const thumbnailSection = document.getElementById("thumbnailSection");
       thumbnailSection.classList.add("hidden");
@@ -1114,8 +1112,6 @@
             formData.set("thumbnail", fileInput.files[0]);
           }
         }
-
-        console.log("Form data:", formData);
 
         try {
           const url = `${ROOT}admin/Admin/addPartnerOffer`;
