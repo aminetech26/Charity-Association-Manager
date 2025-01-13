@@ -41,22 +41,24 @@ class Partenaire{
     }
 
     public function checkIfLoggedInAsPartner(){
-        if(isset($_SESSION['partenaire_id'])){
-            echo json_encode(['status' => 'success', 'message' => 'Vous êtes connecté en tant que partenaire.']);
-            exit();
-        }else{
-            echo json_encode(['status' => 'error', 'message' => 'Vous n\'êtes pas connecté en tant que partenaire.']);
-            exit();
+        if (!isset($_SESSION['partenaire_id'])) {
+            redirect('public/Home/signin');
         }
     }
 
     public function logout(){
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        session_unset();
         session_destroy();
-        echo json_encode(['status' => 'success', 'message' => 'Vous avez été déconnecté.']);
+        echo json_encode(['status' => 'success', 'message' => 'Déconnexion réussie !']);
+        redirect('public/Home/signin');
         exit();
     }
 
     public function checkIfMemberEligible(){
+        $this->checkIfLoggedInAsPartner();
         $erreurs = [];
         $this->model('Membre');
         $this->model('Partenaire');
@@ -107,6 +109,7 @@ class Partenaire{
 
 
     public function addRemiseObtenus(){
+        $this->checkIfLoggedInAsPartner();
         $erreurs = [];
         $this->model('Membre');
         $this->model('offre');
@@ -157,11 +160,75 @@ class Partenaire{
         }
     }
 
+    public function getPartnerInfo(){
+        $this->checkIfLoggedInAsPartner();
+        $this->model('Partenaire');
+        $partner = new PartenaireModel();
+        $partnerInfo = $partner->getPartnerInfosWithCategory($_SESSION['partenaire_id']);    
+            if(empty($partnerInfo)){
+                $partnerInfo = [];
+            }
+            echo json_encode([
+                'status' => 'success',
+                'data' => $partnerInfo,
+            ]);
+            exit();
+    }
+
+    public function getPartnerOffers(){
+        $this->checkIfLoggedInAsPartner();
+        $this->model('offre');
+        $offer = new OffreModel();
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $partnerOffers = $offer->getOffersByPartnerId($_SESSION['partenaire_id']);    
+
+        $total = $partnerOffers ? count($partnerOffers) : 0;
+        if(!$partnerOffers){
+            $partnerOffers = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $partnerOffers,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        exit();
+    }
+
     public function dashboard(){
+        $this->checkIfLoggedInAsPartner();
         $this->view("partenaire_dashboard","partenaire");
         $view = new Partenaire_dashboard_view();
         $view->page_head('Partenaire Dashboard');
-		$view->show_message();
+		$view->show_dashboard_page();
+        $view->partner_footer();
+    }
+
+    public function info_content(){
+        $this->checkIfLoggedInAsPartner();
+        $content = $this->view("info","partenaire", true);
+        echo $content;
+    }
+
+    public function verification_content(){
+        $this->checkIfLoggedInAsPartner();
+        $content = $this->view("verification","partenaire", true);
+        echo $content;
+    }
+
+    public function remise_content(){
+        $this->checkIfLoggedInAsPartner();
+        $content = $this->view("remise","partenaire", true);
+        echo $content;
     }
     
     }

@@ -10,6 +10,19 @@ class PartenaireModel{
         return $this->findAll($limit, $offset);
     }
 
+
+    public function getPartnerInfosWithCategory($id) {
+        return $this->join(
+            ['categorie' => ['id','nom']],
+            ['categorie' => 'partenaire.categorie_id = categorie.id'],
+            [
+                'type' => 'LEFT',
+                'order_column' => 'partenaire.id',
+                'where' => ['partenaire.id' => $id],
+            ]
+        );
+    }
+
     public function getPartenaireById($id){
         return $this->where(['id' => $id]);
     }

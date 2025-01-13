@@ -177,4 +177,14 @@ trait View {
         </html>
         <?php
     }
+
+    public function partner_footer($file_name = '') {
+        ?>
+        <script src="<?= ROOT ?>public/assets/js/<?= $file_name ?>"></script>
+        </body>
+        </html>
+        <?php
+    }
+
+
 }
