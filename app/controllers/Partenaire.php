@@ -136,7 +136,7 @@ public function checkIfMemberEligible() {
 }
 
 
-    public function addRemiseObtenus(){
+    public function addRemise(){
         $this->checkIfLoggedInAsPartner();
         $erreurs = [];
         $this->model('Membre');
@@ -147,12 +147,12 @@ public function checkIfMemberEligible() {
             $membre = new MembreModel();
             $offre = new OffreModel();
             $remiseObtenus = new RemiseObtenusModel();
-            if (empty($_POST['membre_id']) || empty($_POST['offre_id'])) {
-                $erreurs[] = "L'identifiant du membre et de l'offre sont requis.";
+            if (empty($_POST['member_unique_id']) || empty($_POST['offre_id'] || empty($_POST['date_benefice']))) {
+                $erreurs[] = "L'identifiant du membre et de l'offre et la date de benefice sont requis.";
                 echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
                 exit();
             } else {
-                $member = $membre->getMemberById($_POST['membre_id']);
+                $member = $membre->getMemberByUniqueId($_POST['member_unique_id']);
                 if (!$member) {
                     $erreurs[] = "Membre introuvable.";
                     echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
@@ -175,9 +175,9 @@ public function checkIfMemberEligible() {
                             exit();
                         }
                         $donnees = [
-                            'compte_membre_id' => $_POST['membre_id'],
+                            'compte_membre_id' => $member[0]->id,
                             'offre_id' => $_POST['offre_id'],
-                            'date_benefice' => date('Y-m-d')
+                            'date_benefice' => $_POST['date_benefice']
                         ];	
                         $remiseObtenus->insert($donnees);
                         echo json_encode(['status' => 'success', 'message' => 'Remise ajoutée avec succès.']);
@@ -187,6 +187,36 @@ public function checkIfMemberEligible() {
             }
         }
     }
+
+    public function getAllRemises(){
+        $this->checkIfLoggedInAsPartner();
+        $this->model('RemiseObtenus');
+        $remiseObtenus = new RemiseObtenusModel();
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $remises = $remiseObtenus->getRemiseParPartenaire($_SESSION['partenaire_id'], $limit, $offset);   
+
+        $total = $remiseObtenus->getTotalRemisesParPartenaire($_SESSION['partenaire_id']);
+        if(!$remises){
+            $remises = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $remises,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        exit();
+    }
+
 
     public function getPartnerInfo(){
         $this->checkIfLoggedInAsPartner();

@@ -8,6 +8,46 @@ class RemiseObtenusModel{
         return $this->findAll();
     }
 
+    public function getRemiseParPartenaire($id, $limit = 10, $offset = 0) {
+        return $this->join(
+            [
+                'offre' => ['id', 'partenaire_id'],
+                'compte_membre' => ['id', 'nom', 'prenom'],
+                'remise_obtenus' => ['id', 'offre_id', 'compte_membre_id', 'date_benefice']
+            ],
+            [
+                'offre' => 'offre.id = remise_obtenus.offre_id',
+                'compte_membre' => 'compte_membre.id = remise_obtenus.compte_membre_id'
+            ],
+            [
+                'offset' => $offset,
+                'limit' => $limit,
+                'type' => 'INNER',
+                'where' => ['offre.partenaire_id' => $id],
+                'order_column' => 'compte_membre.id',
+                'order_type' => 'ASC'
+            ]
+        );
+    }
+
+    public function getTotalRemisesParPartenaire($id){
+        return $this->getJoinTotalCount(
+            [
+                'offre' => ['id', 'partenaire_id'],
+                'compte_membre' => ['id', 'nom', 'prenom'],
+                'remise_obtenus' => ['id', 'offre_id', 'compte_membre_id', 'date_benefice']
+            ],
+            [
+                'offre' => 'offre.id = remise_obtenus.offre_id',
+                'compte_membre' => 'compte_membre.id = remise_obtenus.compte_membre_id'
+            ],
+            [
+                'type' => 'INNER',
+                'where' => ['offre.partenaire_id' => $id]
+            ]
+        );
+    }
+
     public function getDiscountById($id){
         return $this->where(['id' => $id]);
     }
