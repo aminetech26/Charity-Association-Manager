@@ -55,20 +55,8 @@ class Membre {
                     $membreId = $membre->first(['email' => $_POST['email']])->id;                    
                     $memberUniqueId = 'MEM-' . date('Y') . '-' . str_pad($membreId, 5, '0', STR_PAD_LEFT);
                     
-                    $qrHelper = new QRCodeHelper();
-                    
-                    $memberData = [
-                        'member_unique_id' => $memberUniqueId,
-                        'nom' => $_POST['nom'],
-                        'prenom' => $_POST['prenom'],
-                        'email' => $_POST['email']
-                    ];
-                    
-                    $qrCodePath = $qrHelper->generateMemberQR($memberData);
-                    
                     $membre->update($membreId, [
                         'member_unique_id' => $memberUniqueId,
-                        'qr_code' => $qrCodePath
                     ]);
 
                     $membre->commit();

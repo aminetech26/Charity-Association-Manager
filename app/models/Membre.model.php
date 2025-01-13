@@ -73,6 +73,10 @@ class MembreModel{
         return $this->where(['id' => $id]);
     }
 
+    public function getMemberByUniqueId($unique_id){
+        return $this->where(['member_unique_id' => $unique_id]);
+    }
+
     public function getMembersWithSubscription(){
         return $this->query("SELECT * FROM Compte_Membre WHERE abonnement_id IS NOT NULL");
     }

@@ -1,4 +1,5 @@
 <?php
+require_once(__DIR__ . '/../core/qr_code_helper.php');
 class Admin {
     use Controller;
 
@@ -321,14 +322,11 @@ class Admin {
                 try {
                     $membre = new MembreModel();
                     $abonnement = new AbonnementModel();
-                    
-                    // Use proper SQL query building with parameter binding
                     $membreToUpdate = $membre->first(['id' => $_POST['membre_id']]);
     
                     if (!$membreToUpdate) {
                         $erreurs[] = "Membre non trouvé.";
                     } else {
-                        $membre->update($_POST['membre_id'], ['is_approved' => 1]);
                         if (!empty($_POST['type_abonnement'])) {
                             $abonnementId = $membreToUpdate->abonnement_id;
                             
@@ -340,11 +338,34 @@ class Admin {
                                     'date_debut' => date('Y-m-d'),
                                     'date_fin' => date('Y-m-d', strtotime('+1 year'))
                                 ];
+                                $qrHelper = new QRCodeHelper();
                                 $abonnement->update($abonnementId, $abonnementData);
+                                $abonnementUpdated = $abonnement->first(['id' => $abonnementId]);
+                                $memberData = [
+                                    'member_unique_id' => $membreToUpdate->member_unique_id,
+                                    'nom' => $membreToUpdate->nom,
+                                    'prenom' => $membreToUpdate->prenom,
+                                    'email' => $membreToUpdate->email,
+                                    'type_abonnement' => $_POST['type_abonnement'],
+                                    'date_fin_abonnement' => $abonnementUpdated->date_fin
+                                ];
+                                $qrCodePath = $qrHelper->generateMemberQR($memberData);
+                                $membre->update($_POST['membre_id'], ['is_approved' => 1, 'qr_code' => $qrCodePath]);
                                 $this->jsonResponse([
                                     'status' => 'success',
                                     'message' => 'Membre approuvé avec un abonnement commençant dès maintenant !'
                                 ]);
+                            }else{
+                                $qrHelper = new QRCodeHelper();
+                                $memberData = [
+                                    'member_unique_id' => $membreToUpdate->member_unique_id,
+                                    'nom' => $membreToUpdate->nom,
+                                    'prenom' => $membreToUpdate->prenom,
+                                    'email' => $membreToUpdate->email,
+                                    'Ce membre n\'est pas éligible pour aucun offre'
+                                ];
+                                $qrCodePath = $qrHelper->generateMemberQR($memberData);
+                                $membre->update($_POST['membre_id'], ['is_approved' => 1, 'qr_code' => $qrCodePath]);
                             }
                         }
                     }

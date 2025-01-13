@@ -32,11 +32,21 @@ class QRCodeHelper {
             
             $filename = $this->outputDir . $memberData['member_unique_id'] . '.png';
             
-            $qrContent = json_encode([
+            $qrContent = [
                 'MEMBRE_ID' => $memberData['member_unique_id'],
                 'NOM ET PRENOM' => $memberData['nom'] . ' ' . $memberData['prenom'],
                 'EMAIL' => $memberData['email']
-            ]);
+            ];
+            
+            if (isset($memberData['type_abonnement']) && isset($memberData['date_fin_abonnement'])) {
+                $qrContent['STATUT'] = 'Abonne';
+                $qrContent['TYPE ABONNEMENT'] = $memberData['type_abonnement'];
+                $qrContent['DATE FIN ABONNEMENT'] = $memberData['date_fin_abonnement'];
+            } elseif (isset($memberData['Ce membre n\'est pas éligible pour aucun offre'])) {
+                $qrContent['STATUT'] = 'Non eligible pour aucun offre';
+            }
+            
+            $qrContentJson = json_encode($qrContent);
             
             if ($qrContent === false) {
                 throw new Exception("Failed to encode QR content");
@@ -51,7 +61,7 @@ class QRCodeHelper {
             ]);
             
             $qrcode = new QRCode($options);
-            $qrcode->render($qrContent, $filename);
+            $qrcode->render($qrContentJson, $filename);
             
             if (!file_exists($filename)) {
                 throw new Exception("Failed to generate QR code file");

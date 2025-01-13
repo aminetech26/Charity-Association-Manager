@@ -147,7 +147,6 @@
                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                     ${offre.id}
                 </td>
-                <td class="px-6 py-4">${offre.partenaire_nom}</td>
                 <td class="px-6 py-4">${offre.type_offre}</td>
                 <td class="px-6 py-4">${offre.valeur}</td>
                 <td class="px-6 py-4">${offre.description}</td>

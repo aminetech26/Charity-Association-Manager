@@ -57,55 +57,83 @@ class Partenaire{
         exit();
     }
 
-    public function checkIfMemberEligible(){
-        $this->checkIfLoggedInAsPartner();
-        $erreurs = [];
-        $this->model('Membre');
-        $this->model('Partenaire');
-        $this->model('Abonnement');
-        $this->model('offre');
+public function checkIfMemberEligible() {
+    $this->checkIfLoggedInAsPartner();
+    $this->model('Membre');
+    $this->model('Partenaire');
+    $this->model('Offre');
+    $this->model('Abonnement');
 
-        if ($_SERVER['REQUEST_METHOD'] == "POST") {
-            $membre = new MembreModel();
-            $partenaire = new PartenaireModel();
-            $offre = new OffreModel();
-            $abonnement = new AbonnementModel();
-            if (empty($_POST['membre_id'])) {
-                $erreurs[] = "L'identifiant du membre est requis.";
-                echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
-                exit();
-            } else {
-                $member = $membre->getMemberById($_POST['membre_id']);
-                if (!$member) {
-                    $erreurs[] = "Membre introuvable.";
-                    echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
-                    exit();
-                } else {
-                    $memberSubscription = $member[0]->abonnement_id;
-                    if($memberSubscription == NULL){
-                        $erreurs[] = "Ce membre n'est pas abonné.";
-                        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
-                        exit();
-                    }else{
-                        $abonnementType = $abonnement->getSubscriptionById($memberSubscription);
-                        $typeSubscription = $abonnementType[0]->type_abonnement;
-                        $partner = $partenaire->getPartenaireById($_SESSION['partenaire_id']);
-                        $offerMember = $offre->getOffersByTypeAndPartnerId($typeSubscription, $partner[0]->id);
-                        if(empty($offerMember)){
-                            $erreurs[] = "Vous ne proposez aucun offre dans la catégorie $typeSubscription.";
-                            echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
-                            exit();
-                        }
-                        if(!empty($offerMember)){
-                            echo json_encode(['status' => 'success', 'message' => 'Membre éligible pour l\'offre suivant : '.$offerMember[0]->description]);
-                            exit();
-                        }
-                    }
-                    
-                }
-            }
-            }
-        }
+    
+    if ($_SERVER['REQUEST_METHOD'] !== "POST") {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Method not allowed'
+        ]);
+        exit();
+    }
+
+    $membre = new MembreModel();
+    $partenaire = new PartenaireModel();
+    $offre = new OffreModel();
+    $abonnement = new AbonnementModel();
+
+    // Validate input
+    if (empty($_POST['member_unique_id'])) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => "L'identifiant unique du membre est requis."
+        ]);
+        exit();
+    }
+
+    $member = $membre->getMemberByUniqueId($_POST['member_unique_id']);
+    if (!$member) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => "Membre introuvable."
+        ]);
+        exit();
+    }
+
+    $memberSubscription = $member[0]->abonnement_id;
+    if ($memberSubscription === NULL) {
+        echo json_encode([
+            'qrCode' => $member[0]->qr_code,
+            'status' => 'error',
+            'message' => "Ce membre n'est pas abonné.",
+            'isSubscribed' => false
+        ]);
+        exit();
+    }
+
+    $abonnementType = $abonnement->getSubscriptionById($memberSubscription);
+    $typeSubscription = $abonnementType[0]->type_abonnement;
+    $partner = $partenaire->getPartenaireById($_SESSION['partenaire_id']);
+    $offerMember = $offre->getOffersByTypeAndPartnerId($typeSubscription, $partner[0]->id);
+
+    if (empty($offerMember)) {
+        echo json_encode([
+            'status' => 'error',
+            'qrCode' => $member[0]->qr_code,
+            'message' => "Vous ne proposez aucun offre dans la catégorie $typeSubscription.",
+            'isSubscribed' => true,
+            'noOffers' => true,
+            'memberType' => $typeSubscription
+        ]);
+        exit();
+    }
+
+    echo json_encode([
+        'status' => 'success',
+        'qrCode' => $member[0]->qr_code,
+        'message' => 'Membre éligible pour l\'offre suivant : ' . $offerMember[0]->description,
+        'isSubscribed' => true,
+        'offer' => $offerMember[0],
+        'memberType' => $typeSubscription
+    ]);
+    exit();
+}
 
 
     public function addRemiseObtenus(){
