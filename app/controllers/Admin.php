@@ -1855,4 +1855,99 @@ class Admin {
         echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
         exit();
     }
+
+    // Gestion demande aide
+
+    public function getAllDemandesAides(){
+
+        $this->model('DemandeAide');
+        $demandeAide = new DemandeAideModel();
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        $demandesAides = $demandeAide->getAllDemandeAideWithTypeAide($limit, $offset);
+
+        $total = $demandeAide->getTotalDemandeAide();
+        if(!$demandesAides){
+            $demandesAides = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $demandesAides,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        exit();
+    
+    }
+
+    public function approuverDemandeAide(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('DemandeAide');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['demande_aide_id'])) {
+                $erreurs[] = "ID de la demande d'aide requis.";
+            } else {
+                try {
+                    $demandeAide = new DemandeAideModel();
+                    $demandeAideToApprove = $demandeAide->first(['id' => $_POST['demande_aide_id']]);
+
+                    if (!$demandeAideToApprove) {
+                        $erreurs[] = "Demande d'aide non trouvée.";
+                    } else {
+                        $demandeAide->update($_POST['demande_aide_id'], ['statut' => 'accepté']);
+                        echo json_encode(['status' => 'success', 'message' => 'Demande d\'aide approuvée avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+    public function refuserDemandeAide(){
+        $this->checkIfAdminOrSuperAdmin();
+        $erreurs = [];
+        $this->model('DemandeAide');
+
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            if (empty($_POST['demande_aide_id'])) {
+                $erreurs[] = "ID de la demande d'aide requis.";
+            } else {
+                try {
+                    $demandeAide = new DemandeAideModel();
+                    $demandeAideToRefuse = $demandeAide->first(['id' => $_POST['demande_aide_id']]);
+
+                    if (!$demandeAideToRefuse) {
+                        $erreurs[] = "Demande d'aide non trouvée.";
+                    } else {
+                        $demandeAide->update($_POST['demande_aide_id'], ['statut' => 'refusé']);
+                        echo json_encode(['status' => 'success', 'message' => 'Demande d\'aide refusée avec succès !']);
+                        exit();
+                    }
+                } catch (Exception $e) {
+                    echo json_encode(['status' => 'error', 'message' => 'Une erreur s\'est produite : ' . $e->getMessage()]);
+                    exit();
+                }
+            }
+        }
+
+        echo json_encode(['status' => 'error', 'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.']);
+        exit();
+    }
+
+
 }

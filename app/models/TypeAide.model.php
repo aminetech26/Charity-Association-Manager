@@ -8,8 +8,12 @@ class TypeAideModel{
         return $this->findAll($limit,$offset);
     }
 
+    public function fetchAll(){
+        return $this->findAll();
+    }
+
     public function getTypeAideById($id){
-        return $this->find(['id' => $id]);
+        return $this->where(['id' => $id]);
     }
 
     public function getTotalTypeAide(){

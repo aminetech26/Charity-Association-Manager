@@ -574,6 +574,79 @@ class Membre {
         }
     }
 
+
+    public function getTypeAides(){
+        $this->checkIfLoggedIn();
+        $this->model('TypeAide');
+    
+        $typeAide = new TypeAideModel();
+        $types = $typeAide->fetchAll();
+    
+        echo json_encode(['status' => 'success', 'data' => $types]);
+        exit();
+    }
+
+    public function ajouterDemandeAide(){
+        $this->checkIfLoggedIn();
+        $this->model('DemandeAide');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $demandeAide = new DemandeAideModel();
+
+            if(!isset($_POST['nom']) || empty($_POST['nom'])){
+                echo json_encode(['status' => 'error', 'message' => 'Le nom est requis.']);
+                exit();
+            }
+
+            if(!isset($_POST['prenom']) || empty($_POST['prenom'])){
+                echo json_encode(['status' => 'error', 'message' => 'Le prénom est requis.']);
+                exit();
+            }
+
+            if(!isset($_POST['date_naissance']) || empty($_POST['date_naissance'])){
+                echo json_encode(['status' => 'error', 'message' => 'La date de naissance est requise.']);
+                exit();
+            }
+
+            if(!isset($_POST['type_aide']) || empty($_POST['type_aide'])){
+                echo json_encode(['status' => 'error', 'message' => 'Le type d\'aide est requis.']);
+                exit();
+            }
+
+            if(!isset($_POST['description']) || empty($_POST['description'])){
+                echo json_encode(['status' => 'error', 'message' => 'La description est requise.']);
+                exit();
+            }
+
+            if(!isset($_FILES['fichier_zip']) || $_FILES['fichier_zip']['error'] !== 0){
+                echo json_encode(['status' => 'error', 'message' => 'Le fichier ZIP est requis.']);
+                exit();
+            }
+
+            if(isset($_FILES['fichier_zip']) && $_FILES['fichier_zip']['error'] !== 0){
+                echo json_encode(['status' => 'error', 'message' => 'Erreur lors du téléchargement du fichier ZIP.']);
+                exit();
+            }
+    
+            $donnees = [
+                'nom' => $_POST['nom'],
+                'prenom' => $_POST['prenom'],
+                'date_naissance' => $_POST['date_naissance'],
+                'type_aide' => $_POST['type_aide'],
+                'description' => $_POST['description'],
+                'fichier_zip' => null
+            ];
+    
+            $zipPath = handleFileUpload($_FILES['fichier_zip'], 'dossiers_aide/');
+            $donnees['fichier_zip'] = $zipPath;
+    
+            $demandeAide->insert($donnees);
+    
+            echo json_encode(['status' => 'success', 'message' => 'Demande d\'aide enregistrée avec succès !']);
+            exit();
+        }
+    }
+
     public function dashboard(){
         $this->checkIfLoggedIn();
         $this->view("membre_dashboard","membre");

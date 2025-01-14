@@ -11,7 +11,34 @@
 <div id="tab-content">
     <div id="demande_aide" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Gestion des demandes d'aides</h2>
-        <p>Ceci est le contenu de la section demandes d'aides.</p>
+        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">Nom</th>
+                            <th scope="col" class="px-6 py-3">Prénom</th>
+                            <th scope="col" class="px-6 py-3">Date de Naissance</th>
+                            <th scope="col" class="px-6 py-3">Type d'aide</th>
+                            <th scope="col" class="px-6 py-3">Dossier soumis</th>
+                            <th scope="col" class="px-6 py-3">Description</th>
+                            <th scope="col" class="px-6 py-3">Date de demande</th>
+                            <th scope="col" class="px-6 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="demandesTableBody">
+                    </tbody>
+                </table>
+            </div>
+            <nav class="flex flex-col items-start justify-between p-4 space-y-3 md:flex-row md:items-center md:space-y-0" aria-label="Table navigation">
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    Affichage <span class="font-semibold text-gray-900 dark:text-white" id="startIndexDemandes">1</span>-<span class="font-semibold text-gray-900 dark:text-white" id="endIndexDemandes">10</span> sur <span class="font-semibold text-gray-900 dark:text-white" id="totalItemsDemandes">100</span>
+                </span>
+                <ul class="inline-flex items-stretch -space-x-px" id="paginationDemandes">
+                </ul>
+            </nav>
+        </div>
     </div>
     <div id="type_aides" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Types d'aides</h2>
