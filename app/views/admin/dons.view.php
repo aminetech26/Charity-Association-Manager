@@ -1,7 +1,7 @@
 <div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
     <ul class="flex flex-wrap -mb-px" id="tabs">
         <li class="me-2">
-            <a href="#dons" class="inline-block p-4 border-b-2  rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link active" aria-current="page">Dons</a>
+            <a href="#gestion-dons" class="inline-block p-4 border-b-2  rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link active" aria-current="page">Dons</a>
         </li>
         <li class="me-2">
             <a href="#benevolats" class="inline-block p-4 border-b-2  rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 tab-link">Bénévolats</a>
@@ -12,10 +12,36 @@
     </ul>
 </div>
 <div id="tab-content">
-    <div id="dons" class="tab-pane p-4 hidden">
-        <h2 class="text-xl font-bold mb-4">Gestion des dons</h2>
-        <p>Ceci est le contenu de la section dons.</p>
+<div id="gestion-dons" class="tab-pane p-4 hidden">
+    <h2 class="text-xl font-bold mb-4">Gestion des Dons</h2>
+    <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+        <div class="relative overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">ID</th>
+                        <th scope="col" class="px-6 py-3">Nom</th>
+                        <th scope="col" class="px-6 py-3">Prénom</th>
+                        <th scope="col" class="px-6 py-3">Montant</th>
+                        <th scope="col" class="px-6 py-3">Reçu de Paiement</th>
+                        <th scope="col" class="px-6 py-3">Date</th>
+                        <th scope="col" class="px-6 py-3">Traçable</th>
+                        <th scope="col" class="px-6 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="donsTableBody">
+                </tbody>
+            </table>
+        </div>
+        <nav class="flex flex-col items-start justify-between p-4 space-y-3 md:flex-row md:items-center md:space-y-0" aria-label="Table navigation">
+            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                Affichage <span class="font-semibold text-gray-900 dark:text-white" id="startIndex">1</span>-<span class="font-semibold text-gray-900 dark:text-white" id="endIndex">10</span> sur <span class="font-semibold text-gray-900 dark:text-white" id="totalItems">100</span>
+            </span>
+            <ul class="inline-flex items-stretch -space-x-px" id="pagination">
+            </ul>
+        </nav>
     </div>
+</div>
     <div id="benevolats" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Gestion des benevolats</h2>
         <p>Ceci est le contenu de la section benevolats.</p>

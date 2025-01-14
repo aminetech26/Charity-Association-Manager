@@ -1658,6 +1658,37 @@ class Admin {
 
     // Dons management
 
+    public function getAllDons(){
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('Dons');
+        $don = new DonsModel();
+    
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $statut = isset($_GET['statut']) ? $_GET['statut'] : null;
+        $offset = ($page - 1) * $limit;
+
+        $dons = $don->getAllDonsWithMemberUniqueIds($limit, $offset);
+
+        $total = $don->getTotalDons();
+        if(!$dons){
+            $dons = [];
+        }
+        
+        echo json_encode([
+            'status' => 'success',
+            'data' => $dons,
+            'pagination' => [
+                'total' => $total,
+                'page' => $page,
+                'limit' => $limit,
+                'total_pages' => ceil($total / $limit)
+            ]
+        ]);
+        
+        exit();
+    }
+
     public function validerDon(){
         $this->checkIfAdminOrSuperAdmin();
         $erreurs = [];
