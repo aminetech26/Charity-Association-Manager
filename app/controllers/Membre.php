@@ -257,7 +257,7 @@ class Membre {
             
             $erreurs = $this->validateDon($_POST, $_FILES);
             
-            if (isset($_POST['est_tracable']) && $_POST['est_tracable'] == true && !isset($_SESSION['membre_id'])) {
+            if (isset($_POST['est_tracable']) && $_POST['est_tracable'] == 1 && !isset($_SESSION['membre_id'])) {
                 $erreurs[] = "Vous devez être connecté pour faire un don traçable";
                 echo json_encode(['status' => 'error', 'message' => implode(', ', $erreurs)]);
                 exit();
@@ -316,11 +316,6 @@ class Membre {
     
     private function validateDon($data, $files) {
         $erreurs = [];
-
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['date'])) {
-            $erreurs[] = "Date de don invalide. Format attendu : YYYY-MM-DD.";
-            return $erreurs;
-        }
         
         if (!isset($data['montant']) || empty($data['montant'])) {
             $erreurs[] = "Le montant est requis";
