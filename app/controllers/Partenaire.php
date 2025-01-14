@@ -268,7 +268,7 @@ public function checkIfMemberEligible() {
         $view = new Partenaire_dashboard_view();
         $view->page_head('Partenaire Dashboard');
 		$view->show_dashboard_page();
-        $view->partner_footer();
+        $view->simple_footer();
     }
 
     public function info_content(){

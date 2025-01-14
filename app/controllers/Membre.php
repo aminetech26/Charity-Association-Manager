@@ -160,15 +160,20 @@ class Membre {
     }
 
     public function signOut() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         session_unset();
         session_destroy();
         echo json_encode(['status' => 'success', 'message' => 'Déconnexion réussie !']);
+        redirect('public/Home/index');
         exit();
     }
 
     public function checkIfLoggedIn() {
         if (!isset($_SESSION['membre_id'])) {
             echo json_encode(['status' => 'error', 'message' => 'Vous devez être connecté pour effectuer cette action.']);
+            redirect('public/Home/signin');
             exit();
         }
     }
@@ -515,14 +520,114 @@ class Membre {
         }
     }
 
+    public function getMemberInfos() {
+        $this->checkIfLoggedIn();
+        $this->model('Membre');
+    
+        $membre = new MembreModel();
+        $membreData = $membre->first(['id' => $_SESSION['membre_id']]);
+    
+        echo json_encode(['status' => 'success', 'data' => $membreData]);
+        exit();
+    }
+
+    public function updateMemberInfos(){
+        $this->checkIfLoggedIn();
+        $this->model('Membre');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $membre = new MembreModel();
+
+            if(!empty($_POST['mot_de_passe']) && strlen($_POST['mot_de_passe']) < 6){
+                echo json_encode(['status' => 'error', 'message' => 'Le mot de passe doit contenir au moins 6 caractères.']);
+                exit();
+            }
+            if(!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
+                echo json_encode(['status' => 'error', 'message' => 'Adresse e-mail invalide.']);
+                exit();
+            }
+            if($membre->first(['email' => $_POST['email']]) && $membre->first(['email' => $_POST['email']])->id != $_SESSION['membre_id']){
+                echo json_encode(['status' => 'error', 'message' => 'Cette adresse e-mail est déjà utilisée.']);
+                exit();
+            }
+            if(!empty($_POST['numero_de_telephone']) && !preg_match('/^\+?[0-9]{3}-?[0-9]{6,12}$/', $_POST['numero_de_telephone'])){
+                echo json_encode(['status' => 'error', 'message' => 'Numéro de téléphone invalide.']);
+                exit();
+            }
+            if(!empty($_POST['adresse']) && strlen($_POST['adresse']) < 5){
+                echo json_encode(['status' => 'error', 'message' => 'Adresse invalide
+                .']);
+                exit();
+            }
+    
+            $donnees = [
+                'email' => $_POST['email'],
+                'mot_de_passe' => password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT),
+                'adresse' => $_POST['adresse'],
+                'numero_de_telephone' => $_POST['numero_de_telephone']
+            ];
+    
+            $membre->update($_SESSION['membre_id'], $donnees);
+    
+            echo json_encode(['status' => 'success', 'message' => 'Informations mises à jour avec succès !']);
+            exit();
+        }
+    }
+
     public function dashboard(){
+        $this->checkIfLoggedIn();
         $this->view("membre_dashboard","membre");
         $view = new Membre_dashboard_view();
         $view->page_head('Membre Dashboard');
-		$view->show_message();
+		$view->show_dashboard_page();
+        $view->simple_footer();
     }
-    
 
-   
+    public function profile_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("profile_content","membre", true);
+        echo $content;
+    }
 
+    public function subscription_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("subscription_content","membre", true);
+        echo $content;
+    }
+
+    public function favorites_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("favorites_content","membre", true);
+        echo $content;
+    }
+
+    public function volunteer_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("volunteer_content","membre", true);
+        echo $content;
+    }
+
+    public function history_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("history_content","membre", true);
+        echo $content;
+    }
+
+    public function donate_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("donate_content","membre", true);
+        echo $content;
+    }
+
+    public function assistance_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("assistance_content","membre", true);
+        echo $content;
+    }
+
+    public function feedback_content(){
+        $this->checkIfLoggedIn();
+        $content = $this->view("feedback_content","membre", true);
+        echo $content;
+    }
 }

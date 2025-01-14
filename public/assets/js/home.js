@@ -96,6 +96,9 @@ class Carousel {
   }
 }
 
+const avatarButton = document.getElementById("avatarButton");
+const avatarDropdown = document.getElementById("avatarDropdown");
+
 // News section
 
 const newsData = [
@@ -356,7 +359,23 @@ function updatePaginationInfo(start, end, total) {
 }
 
 function initializeEventListeners() {
-  // Initialisation du carrousel
+  if (avatarButton && avatarDropdown) {
+    avatarButton.addEventListener("click", function () {
+      avatarDropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", function (event) {
+      if (
+        !avatarButton.contains(event.target) &&
+        !avatarDropdown.contains(event.target)
+      ) {
+        avatarDropdown.classList.add("hidden");
+      }
+    });
+  } else {
+    console.error("User menu button or dropdown element not found");
+  }
+
   const carouselElement = document.querySelector('[data-carousel="slide"]');
   if (carouselElement) {
     const carousel = new Carousel(carouselElement, {
@@ -365,11 +384,7 @@ function initializeEventListeners() {
     });
   }
 
-  // Affichage de la section des actualités
   showNewsSection();
-
-  // Affichage de la section des avantages
-
   changePage(1);
 
   const pagination = document.getElementById("pagination");
@@ -391,8 +406,6 @@ function initializeEventListeners() {
       }
     });
   }
-  // Affichage des logos des partenaires
-
   renderPartnersLogos();
 }
 

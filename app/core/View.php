@@ -12,6 +12,7 @@ trait View {
             <meta http-equiv="Pragma" content="no-cache" />
             <meta http-equiv="Expires" content="-1" />
             <title><?=$page_title?></title>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
             <link rel="stylesheet" href="<?= ROOT . "public/assets/css/main.css?v=" . time() ?>">        <body class="h-full bg-white">
         <?php
     }
@@ -28,15 +29,15 @@ trait View {
                 <div class="flex items-center space-x-6 rtl:space-x-reverse">
                     <?php if ($is_logged_in): ?>
                         <div class="relative">
-                            <img id="avatarButton" class="w-12 h-12 rounded-full cursor-pointer border-2 border-primary" src="<?= $user_avatar_url ?>" alt="User dropdown"> <!-- Utilisation de la couleur primary -->
+                            <img id="avatarButton" class="w-12 h-12 rounded-full cursor-pointer border-2 border-primary" src="<?= $user_avatar_url ?>" alt="User dropdown">
                             <div id="avatarDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
-                                <a href="<?= ROOT ?>account" class="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Aller à mon compte</a>
-                                <a href="<?= ROOT ?>logout" class="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Déconnexion</a>
+                                <a href="<?= ROOT ?>public/Membre/dashboard" class="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Aller à mon compte</a>
+                                <a href="<?= ROOT ?>public/Membre/signOut" class="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600">Déconnexion</a>
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="<?= ROOT ?>public/Home/signup" class="text-lg font-semibold text-primary hover:text-primary-hover transition duration-300">S'inscrire</a> <!-- Utilisation de la couleur primary -->
-                        <a href="<?= ROOT ?>public/Home/signin" class="text-lg font-semibold bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-hover transition duration-300">Se connecter</a> <!-- Bouton CTA -->
+                        <a href="<?= ROOT ?>public/Home/signup" class="text-lg font-semibold text-primary hover:text-primary-hover transition duration-300">S'inscrire</a>
+                        <a href="<?= ROOT ?>public/Home/signin" class="text-lg font-semibold bg-primary text-white px-6 py-2 rounded-lg hover:bg-primary-hover transition duration-300">Se connecter</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -46,7 +47,7 @@ trait View {
                 <div class="flex items-center justify-between">
                     <ul class="flex flex-row font-medium mt-0 space-x-10 rtl:space-x-reverse text-lg">
                         <li>
-                            <a href="<?= ROOT ?>public/Home/index" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300" aria-current="page">Accueil</a> <!-- Utilisation de la couleur primary -->
+                            <a href="<?= ROOT ?>public/Home/index" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300" aria-current="page">Accueil</a>
                         </li>
                         <li>
                             <a href="<?= ROOT ?>news" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">News</a>
@@ -178,7 +179,7 @@ trait View {
         <?php
     }
 
-    public function partner_footer($file_name = '') {
+    public function simple_footer($file_name = '') {
         ?>
         <script src="<?= ROOT ?>public/assets/js/<?= $file_name ?>"></script>
         </body>

@@ -1,0 +1,54 @@
+{
+    "unreadCount": 3,
+    "notifications": [
+      {
+        "id": 1,
+        "title": "Nouveau don reçu",
+        "message": "Votre don de 50€ a été bien reçu. Merci pour votre générosité !",
+        "date": "Il y a 5 minutes",
+        "read": false
+      },
+      {
+        "id": 2,
+        "title": "Événement à venir",
+        "message": "Rappel: Vous êtes inscrit comme bénévole pour l'événement 'Distribution alimentaire' ce samedi.",
+        "date": "Il y a 1 heure",
+        "read": false
+      },
+      {
+        "id": 3,
+        "title": "Mise à jour d'abonnement",
+        "message": "Votre abonnement sera renouvelé automatiquement dans 7 jours.",
+        "date": "Il y a 3 heures",
+        "read": false
+      },
+      {
+        "id": 4,
+        "title": "Nouveau partenaire",
+        "message": "Un nouveau partenaire 'Bio Market' a rejoint notre réseau. Profitez de 10% de réduction !",
+        "date": "Hier",
+        "read": true
+      },
+      {
+        "id": 5,
+        "title": "Demande d'aide acceptée",
+        "message": "Votre demande d'aide alimentaire a été acceptée. Vous pouvez la récupérer dès demain.",
+        "date": "Il y a 2 jours",
+        "read": true
+      },
+      {
+        "id": 6,
+        "title": "Feedback reçu",
+        "message": "Merci pour votre feedback sur notre dernier événement. Nous l'avons bien pris en compte.",
+        "date": "Il y a 3 jours",
+        "read": true
+      },
+      {
+        "id": 7,
+        "title": "Points de fidélité",
+        "message": "Félicitations ! Vous avez gagné 100 points de fidélité pour votre participation active.",
+        "date": "Il y a 1 semaine",
+        "read": true
+      }
+    ]
+  }
