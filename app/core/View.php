@@ -50,7 +50,7 @@ trait View {
                             <a href="<?= ROOT ?>public/Home/index" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300" aria-current="page">Accueil</a>
                         </li>
                         <li>
-                            <a href="<?= ROOT ?>news" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">News</a>
+                            <a href="<?= ROOT ?>public/Home/news" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">News</a>
                         </li>
                         <li>
                             <a href="<?= ROOT ?>reductions" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Remises et avantages</a>

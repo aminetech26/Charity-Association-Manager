@@ -9,7 +9,7 @@ class NewsModel{
     }
 
     public function getArticleById($id){
-        return $this->find(['id' => $id]);
+        return $this->where(['id' => $id]);
     }
 
     public function getTotalNewsArticles(){
