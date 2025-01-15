@@ -349,6 +349,8 @@ class Membre {
 
     // Bénévoler dans un événement
 
+    
+
     public function volunteerForEvent() {
         $this->checkIfLoggedIn();
         $this->model('benevolats');
@@ -403,7 +405,7 @@ class Membre {
             }
 
             if($abonnementMembre){
-                echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà un abonnement en cours. Vous devez demander un renouvellement.']);
+                echo json_encode(['status' => 'error', 'message' => 'Vous avez déjà un abonnement en cours.']);
                 exit();
             }
 
@@ -628,7 +630,8 @@ class Membre {
                 'date_naissance' => $_POST['date_naissance'],
                 'type_aide' => $_POST['type_aide'],
                 'description' => $_POST['description'],
-                'fichier_zip' => null
+                'fichier_zip' => null,
+                'membre_id' => $_SESSION['membre_id']
             ];
     
             $zipPath = handleFileUpload($_FILES['fichier_zip'], 'dossiers_aide/');
@@ -758,5 +761,102 @@ class Membre {
         $this->checkIfLoggedIn();
         $content = $this->view("feedback_content","membre", true);
         echo $content;
+    }
+
+    public function getMemberVolunteering() {
+        $this->checkIfLoggedIn();
+        $this->model('Benevolats');
+
+        try {
+            $benevoleModel = new BenevolatsModel();
+            $benevolats = $benevoleModel->getMemberVolunteering($_SESSION['membre_id']);
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $benevolats ?? []
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Erreur lors de la récupération des bénévolats'
+            ]);
+        }
+        exit();
+    }
+
+    public function getMemberDiscounts() {
+        $this->checkIfLoggedIn();
+        $this->model('RemiseObtenus');
+
+        try {
+            $remiseModel = new RemiseObtenusModel();
+            $remises = $remiseModel->getMemberDiscounts($_SESSION['membre_id']);
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $remises ?? []
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Erreur : ' . $e->getMessage()
+            ]);
+        }
+        exit();
+    }
+
+    public function getEvenementsDisponibles() {
+        $this->checkIfLoggedIn();
+        $this->model('Evenement');
+
+        try {
+            $evenementModel = new EvenementModel();
+            $evenements = $evenementModel->getEvenementsDisponibles($_SESSION['membre_id']);
+
+            if(!$evenements) {
+                echo json_encode([
+                    'status' => 'success',
+                    'data' => []
+                ]);
+                exit();
+            }
+
+            foreach ($evenements as &$evenement) {
+                $evenement->date_debut = date('Y-m-d', strtotime($evenement->date_debut));
+                $evenement->date_fin = date('Y-m-d', strtotime($evenement->date_fin));
+            }
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $evenements
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Erreur lors de la récupération des événements'
+            ]);
+        }
+        exit();
+    }
+
+    public function getMemberAssistanceRequests() {
+        $this->checkIfLoggedIn();
+        $this->model('DemandeAide');
+
+        try {
+            $demandeAideModel = new DemandeAideModel();
+            $demandes = $demandeAideModel->getMemberAssistanceRequests($_SESSION['membre_id']);
+
+            echo json_encode([
+                'status' => 'success',
+                'data' => $demandes ?? []
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'status' => 'error',
+                'message' => 'Erreur lors de la récupération des demandes d\'aide'
+            ]);
+        }
+        exit();
     }
 }

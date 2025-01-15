@@ -55,4 +55,23 @@ class RemiseObtenusModel{
     public function getDiscountsByOfferId($id){
         return $this->where(['offre_id' => $id]);
     }
+
+    public function getMemberDiscounts($membre_id) {
+        return $this->join(
+            [
+                'offre' => ['id', 'type_offre', 'valeur', 'partenaire_id'],
+                'partenaire' => ['id', 'nom']
+            ],
+            [
+                'offre' => 'offre.id = remise_obtenus.offre_id',
+                'partenaire' => 'partenaire.id = offre.partenaire_id'
+            ],
+            [
+                'type' => 'INNER',
+                'order_column' => 'remise_obtenus.date_benefice',
+                'order_type' => 'DESC',
+                'where' => ['remise_obtenus.compte_membre_id' => $membre_id]
+            ]
+        );
+    }
 }

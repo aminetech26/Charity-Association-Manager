@@ -85,7 +85,7 @@
 
   const loadEvents = async () => {
     try {
-      const response = await fetch(`${ROOT}/Membre/getEvenements`);
+      const response = await fetch(`${ROOT}/Membre/getEvenementsDisponibles`);
       if (!response.ok) throw new Error("Erreur réseau");
 
       const data = await response.json();

@@ -19,4 +19,17 @@ class BenevolatsModel{
         return $this->find(['compte_membre_id' => $membre_id]);
     }
 
+    public function getMemberVolunteering($membre_id) {
+        return $this->join(
+            ['evenement' => ['id', 'titre', 'date_debut', 'date_fin']],
+            ['evenement' => 'evenement.id = benevolats.evenement_id'],
+            [
+                'type' => 'INNER',
+                'order_column' => 'evenement.date_debut',
+                'order_type' => 'DESC',
+                'where' => ['benevolats.compte_membre_id' => $membre_id]
+            ]
+        );
+    }
+
 }
