@@ -59,7 +59,7 @@ trait View {
                             <a href="<?= ROOT ?>public/Home/catalogue_partenaire" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Catalogue des partenaires</a>
                         </li>
                         <li>
-                            <a href="<?= ROOT ?>donate" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Faire un don</a>
+                            <a href="<?= ROOT ?>public/Home/donate" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Faire un don</a>
                         </li>
                     </ul>
                     <div class="flex items-center space-x-6">

@@ -130,4 +130,91 @@ class Home
             'articles' => $articles
         ]);
     }
+
+    public function donate()
+    {
+        $this->view("donate", "public");
+        $view = new Donate_view();
+        $view->page_head('Faire un Don');
+        
+        if(isset($_SESSION['membre_id']) && isset($_SESSION['membre_photo'])){
+            $imageUrl = $_SESSION['membre_photo'];
+            $trimmedPath = (strpos($imageUrl, "public/") !== false)
+                ? explode("public/", $imageUrl)[1]
+                : $imageUrl;
+            $view->nav_bar(true, $trimmedPath);
+        } else {
+            $view->nav_bar();
+        }
+        
+        $view->showDonationForm();
+        $view->footer("public_donations.js");
+    }
+
+    public function processDonation()
+    {
+        $erreurs = [];
+        $this->model('DonS');
+        
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $donModel = new DonSModel();
+            
+            if (!isset($_POST['montant']) || empty($_POST['montant'])) {
+                $erreurs[] = "Le montant est requis";
+            } elseif (!is_numeric($_POST['montant']) || $_POST['montant'] <= 0) {
+                $erreurs[] = "Le montant doit être un nombre positif";
+            }
+            
+            if (!isset($_FILES['recu_paiement']) || $_FILES['recu_paiement']['error'] !== 0) {
+                $erreurs[] = "Le reçu de paiement est obligatoire";
+            }
+            
+            if (empty($erreurs)) {
+                $donModel->beginTransaction();
+                
+                try {
+                    $recuPath = handleFileUpload($_FILES['recu_paiement'], 'recus_dons/');
+                    
+                    $donneesDon = [
+                        'montant' => $_POST['montant'],
+                        'date' => date('Y-m-d H:i:s'),
+                        'est_tracable' => 0,
+                        'statut' => 'EN_ATTENTE',
+                        'recu_paiement' => $recuPath,
+                        'membre_id' => null
+                    ];
+                    
+                    $don = $donModel->insert($donneesDon);
+                    $donId = $donModel->first(['recu_paiement' => $recuPath])->id;
+                    
+                    if ($donId) {
+                        $donModel->commit();
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => 'Don enregistré avec succès !',
+                            'don_id' => $donId
+                        ]);
+                        exit();
+                    } else {
+                        throw new Exception("Erreur lors de l'enregistrement du don");
+                    }
+                    
+                } catch (Exception $e) {
+                    $donModel->rollback();
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => 'Une erreur s\'est produite : ' . $e->getMessage()
+                    ]);
+                    exit();
+                }
+            }
+        }
+        
+        echo json_encode([
+            'status' => 'error',
+            'message' => $erreurs ? implode(', ', $erreurs) : 'Erreur inconnue.'
+        ]);
+        exit();
+    }
+	
 }
