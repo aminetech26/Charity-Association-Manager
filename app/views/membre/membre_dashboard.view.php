@@ -67,7 +67,6 @@ class Membre_dashboard_view
                 ['icon' => 'https://api.iconify.design/mdi:history.svg', 'text' => 'Historique d\'activité', 'href' => 'history', 'target' => 'history_content'],
                 ['icon' => 'https://api.iconify.design/mdi:charity.svg', 'text' => 'Faire un don', 'href' => 'donate', 'target' => 'donate_content'],
                 ['icon' => 'https://api.iconify.design/mdi:cash.svg', 'text' => 'Demander une aide', 'href' => 'assistance', 'target' => 'assistance_content'],
-                ['icon' => 'https://api.iconify.design/mdi:comment-text.svg', 'text' => 'Soumettre un feedback', 'href' => 'feedback', 'target' => 'feedback_content'],
             ];
             
             foreach ($menu_items as $item): ?>

@@ -54,7 +54,7 @@
         </form>
     </div>
     <div id="offres" class="tab-pane p-4 hidden">
-        <h2 class="text-xl font-bold mb-4">Offres du Partenaire</h2>
+        <h2 class="text-xl font-bold mb-4">Vos offres</h2>
         <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
             <div class="relative overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
