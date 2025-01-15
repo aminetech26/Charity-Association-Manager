@@ -4,17 +4,15 @@
             <a href="#general" class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-link active" aria-current="page">Informations Générales</a>
         </li>
         <li class="me-2">
-            <a href="#carte" class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-link">Carte de Membre</a>
+            <a href="#carte" class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 tab-link">Carte Abonné</a>
         </li>
     </ul>
 </div>
 
 <div id="tab-content">
-    <!-- Tab Informations Générales -->
     <div id="general" class="tab-pane p-4">
         <h2 class="text-xl font-bold mb-4">Informations Générales du Membre</h2>
         <form class="max-w-2xl mx-auto" id="memberForm">
-            <!-- Informations non modifiables -->
             <div class="grid gap-4 mb-6 sm:grid-cols-2">
                 <div>
                     <label class="block mb-1 text-sm font-medium text-gray-900">Identifiant Unique</label>
@@ -34,7 +32,6 @@
                 </div>
             </div>
 
-            <!-- Informations modifiables -->
             <div class="grid gap-4 mb-6 sm:grid-cols-2">
                 <div class="sm:col-span-2">
                     <label class="block mb-1 text-sm font-medium text-gray-900">Mot de Passe</label>
@@ -62,30 +59,48 @@
     </div>
 
     <div id="carte" class="tab-pane p-4 hidden">
-        <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center space-x-4">
-                <img id="association-logo" src="" alt="Logo Association" class="w-24 h-24 object-contain">
-                <p>Association El Mountada</p>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900">Carte de Membre</h2>
-            </div>
-            
-            <div class="border-2 border-gray-200 rounded-lg p-6 mb-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-sm text-gray-600">Identifiant Membre:</p>
-                        <p class="text-lg font-semibold" id="card-member-id"></p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600">Nom et Prénom:</p>
-                        <p class="text-lg font-semibold" id="card-member-name"></p>
-                    </div>
-                </div>
+        <div class="flex justify-center items-center min-h-[60vh]">
+            <div id="no-subscription-message" class="hidden max-w-md w-full p-4 bg-yellow-50 rounded-lg text-center">
+                <p class="text-yellow-800">Vous devez avoir un abonnement actif pour accéder à votre carte de membre.</p>
+                <a href="<?= ROOT ?>public/Membre/subscription_content" class="inline-block mt-2 text-blue-600 hover:underline">
+                    Souscrire à un abonnement
+                </a>
             </div>
 
-            <div class="flex justify-center">
-                <div id="qrcode"></div>
+            <div id="member-card" class="hidden max-w-md w-full bg-white rounded-lg shadow-lg overflow-hidden h-[320px]">
+                <div class="bg-secondary p-3 flex items-center justify-between border-b border-blue-100">
+                    <div class="flex items-center space-x-3">
+                        <img id="association-logo" src="" alt="Logo Association" class="w-12 h-12 object-contain">
+                        <p class="text-lg font-semibold text-white">El Mountada</p>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">Carte Abonné</h2>
+                </div>
+                
+                <div class="p-4 flex flex-col justify-between h-[calc(100%-64px)]">
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                            <p class="text-gray-500">ID Membre</p>
+                            <p class="font-semibold" id="card-member-id"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Nom et Prénom</p>
+                            <p class="font-semibold" id="card-member-name"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Type d'Abonnement</p>
+                            <p class="font-semibold text-blue-600" id="card-subscription-type"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-500">Expire le</p>
+                            <p class="font-semibold text-red-600" id="card-expiry-date"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center py-2 border-t border-gray-100">
+                        <div id="qrcode" class="flex justify-center items-center">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

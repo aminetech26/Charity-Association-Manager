@@ -379,7 +379,7 @@ class Membre {
             }
             
             $benevoleModel->insert($donnees);
-            echo json_encode(['status' => 'success', 'message' => 'Vous êtes désormais bénévole pour cet événement.']);
+            echo json_encode(['status' => 'success', 'message' => 'Demande de bénévolat envoyée avec succès !']);
             exit();
         }
     }
@@ -477,7 +477,6 @@ class Membre {
                 exit();
             }
     
-            // Prepare new abonnement data
             $donnees = [
                 'type_abonnement' => $_POST['type_abonnement'],
                 'date_debut' => date('Y-m-d'),
@@ -520,7 +519,7 @@ class Membre {
         $this->model('Membre');
     
         $membre = new MembreModel();
-        $membreData = $membre->first(['id' => $_SESSION['membre_id']]);
+        $membreData = $membre->getMemberInfoWithSubscription($_SESSION['membre_id']);
     
         echo json_encode(['status' => 'success', 'data' => $membreData]);
         exit();
@@ -641,6 +640,68 @@ class Membre {
             exit();
         }
     }
+
+    public function getAllPartenaires() {
+        $this->checkIfLoggedIn();
+        $this->model('Partenaire');
+        $this->model('PartenaireFavori');
+    
+        $partenaire = new PartenaireModel();
+        $favori = new PartenaireFavoriModel();
+    
+        $partenaires = $partenaire->getAllPartners() ?? [];
+    
+        if (empty($partenaires)) {
+            echo json_encode(['status' => 'success', 'data' => []]);
+            exit();
+        }
+    
+        $favoris = $favori->getPartenaireFavorisByUtilisateur($_SESSION['membre_id']) ?? [];
+        
+        $favoriteIds = [];
+        if (!empty($favoris)) {
+            $favoriteIds = array_map(function($f) { 
+                return $f->partenaire_id; 
+            }, $favoris);
+        }
+    
+        $partenaires = array_map(function($p) use ($favoriteIds) {
+            $p->isFavorite = in_array($p->id, $favoriteIds);
+            return $p;
+        }, $partenaires);
+    
+        echo json_encode(['status' => 'success', 'data' => $partenaires]);
+        exit();
+    }
+
+    public function toggleFavorite(){
+        $this->checkIfLoggedIn();
+        $this->model('PartenaireFavori');
+    
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            $favori = new PartenaireFavoriModel();
+    
+            $donnees = [
+                'compte_membre_id' => $_SESSION['membre_id'],
+                'partenaire_id' => $_POST['partenaire_id'],
+            ];
+
+            if($_POST['is_favorite'] == 'true'){
+                $favori->insert($donnees);
+                echo json_encode(['status' => 'success', 'message' => 'Partenaire ajouté à vos favoris.']);
+                exit();
+            }else{
+                if ($favori->first($donnees)) {
+                    $favoriId = $favori->first($donnees)->id;
+                    $favori->delete($favoriId);
+                    echo json_encode(['status' => 'success', 'message' => 'Partenaire retiré de vos favoris.']);
+                    exit();
+                }
+            }
+        }
+    }
+
+
 
     public function dashboard(){
         $this->checkIfLoggedIn();

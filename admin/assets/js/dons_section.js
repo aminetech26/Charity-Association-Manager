@@ -55,18 +55,19 @@
   }
 
   // Gestion des événements
-  initializeEventListeners();
+  initializeEventListenersForEvents();
   loadEventsFromBackend(
     eventPagination.currentPage,
     eventPagination.itemsPerPage
   );
 
-  function initializeEventListeners() {
+  function initializeEventListenersForEvents() {
     document.getElementById("btnCreerEvent").addEventListener("click", () => {
       const modal = document.getElementById("createEventModal");
       const form = modal.querySelector("form");
       form.reset();
       modal.classList.remove("hidden");
+      modal.classList.remove("area-hidden");
     });
 
     document
@@ -111,6 +112,7 @@
         const modal = document.getElementById("createEventModal");
         if (modal) {
           modal.classList.add("hidden");
+          modal.classList.add("area-hidden");
         }
       });
     });

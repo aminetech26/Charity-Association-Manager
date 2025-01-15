@@ -10,6 +10,10 @@ class PartenaireModel{
         return $this->findAll($limit, $offset);
     }
 
+    public function getAllPartners(){
+        return $this->findAll();
+    }
+
 
     public function getPartnerInfosWithCategory($id) {
         return $this->join(

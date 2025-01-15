@@ -8,7 +8,7 @@ class MembreModel{
 
     public function getApprovedMembersWithSubscriptionType($date_inscription, $searchTerm, $limit = 10, $offset = 0) {
         return $this->join(
-            ['abonnement' => ['id', 'type_abonnement']],
+            ['abonnement' => ['id', 'type_abonnement','date_debut','date_fin']],
             ['abonnement' => 'abonnement.id = Compte_Membre.abonnement_id'],
             [
                 'type' => 'LEFT',
@@ -51,6 +51,19 @@ class MembreModel{
                 'order_column' => 'Compte_Membre.created_at',
                 'order_type' => 'ASC',
                 'where' => ['Compte_Membre.is_approved' => 0],
+            ]
+        );
+    }
+
+    public function getMemberInfoWithSubscription($memberId) {
+        return $this->join(
+            ['abonnement' => ['id','type_abonnement','date_debut','date_fin']],
+            ['abonnement' => 'Compte_Membre.abonnement_id = abonnement.id'],
+            [
+                'type' => 'LEFT',
+                'order_column' => 'Compte_Membre.created_at',
+                'order_type' => 'ASC',
+                'where' => ['Compte_Membre.id' => $memberId],
             ]
         );
     }
