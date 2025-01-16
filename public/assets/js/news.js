@@ -18,10 +18,7 @@ function createArticleElement(article) {
   div.innerHTML = `
         <a href="${ROOT}news/article/${article.id}" class="block">
             <img 
-                src="${
-                  article.thumbnail_url ||
-                  ROOT + "public/assets/images/default-news.jpg"
-                }" 
+                src="${article.thumbnail_url || ""}" 
                 alt="${escapeHtml(article.titre)}"
                 class="w-full h-48 object-cover"
             >

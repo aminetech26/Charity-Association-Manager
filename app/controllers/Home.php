@@ -79,7 +79,7 @@ class Home
         
         foreach ($news as $item) {
             $slides[] = [
-                'src' => $item->thumbnail_url ?? ROOT . 'public/assets/images/default-news.jpg',
+                'src' => $item->thumbnail_url ?? '',
                 'alt' => $item->titre,
                 'title' => $item->titre,
                 'link' => ROOT . 'public/Home/article/' . $item->id,

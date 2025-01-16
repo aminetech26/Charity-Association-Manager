@@ -8,7 +8,7 @@ class News_view
         $finalImageUrl = $imageUrl ? (strpos($imageUrl, "../public/") !== false 
             ? ROOT . str_replace("../public/", "public/", $imageUrl)
             : ROOT . "public/thumbnails/" . basename($imageUrl)) 
-            : ROOT . 'public/assets/images/default-news.jpg';
+            : '';
         ?>
         <div class="max-w-4xl mx-auto px-4 py-8">
             <article class="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -51,7 +51,7 @@ class News_view
                     $finalImageUrl = $imageUrl ? (strpos($imageUrl, "../public/") !== false 
                         ? ROOT . str_replace("../public/", "public/", $imageUrl)
                         : ROOT . "public/thumbnails/" . basename($imageUrl)) 
-                        : ROOT . 'public/assets/images/default-news.jpg';
+                        : ''
                 ?>
                     <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                         <a href="<?= ROOT ?>public/Home/article/<?= $article->id ?>" class="block">

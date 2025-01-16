@@ -118,7 +118,7 @@ async function fetchNewsData() {
 }
 
 function trimPath(imageUrl) {
-  if (!imageUrl) return ROOT + "public/assets/images/default-news.jpg";
+  if (!imageUrl) return "";
 
   return imageUrl.includes("public/")
     ? ROOT + imageUrl.replace("../public", "public/")
@@ -126,9 +126,7 @@ function trimPath(imageUrl) {
 }
 
 function createNewsItem(item, index) {
-  const imageUrl = item.thumbnail_url
-    ? trimPath(item.thumbnail_url)
-    : ROOT + "public/assets/images/default-news.jpg";
+  const imageUrl = item.thumbnail_url ? trimPath(item.thumbnail_url) : "";
 
   return `
           <div class="${index === 0 ? "md:col-span-2" : ""} relative group">
@@ -211,7 +209,7 @@ function updateTable(data) {
           index % 2 === 0 ? "bg-white" : "bg-gray-50"
         }">
             <td class="px-6 py-4 font-medium text-text-primary">
-                ${item.nom || ""}
+                ${item.partenaire_nom || ""}
             </td>
             <td class="px-6 py-4 text-text-secondary">${
               item.type_offre || ""
@@ -341,7 +339,7 @@ async function fetchCarouselData() {
             <img src="${trimPath(slide.src)}" 
                  class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 object-cover h-full" 
                  alt="${slide.alt}"
-                 onerror="this.src='${ROOT}public/assets/images/default-news.jpg'">
+                 onerror="this.src='">
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
               <h3 class="text-white text-xl font-bold">${slide.title}</h3>
               <span class="text-white/80 text-sm">${
