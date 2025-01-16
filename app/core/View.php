@@ -54,7 +54,7 @@ trait View {
                             <a href="<?= ROOT ?>public/Home/news" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">News</a>
                         </li>
                         <li>
-                            <a href="<?= ROOT ?>reductions" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Remises et avantages</a>
+                            <a href="<?= ROOT ?>public/Home/remises_avantages" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Remises et avantages</a>
                         </li>
                         <li>
                             <a href="<?= ROOT ?>public/Home/catalogue_partenaire" class="text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-hover transition duration-300">Catalogue des partenaires</a>

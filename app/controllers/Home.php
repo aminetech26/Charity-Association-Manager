@@ -295,5 +295,52 @@ class Home
         ]);
         exit();
     }
+
+    public function remises_avantages() {
+        $this->view("remise_avantages", "public");
+        $view = new RemiseAvantages_view();
+        $view->page_head('Remises et Avantages');
+        
+        if(isset($_SESSION['membre_id']) && isset($_SESSION['membre_photo'])){
+            $imageUrl = $_SESSION['membre_photo'];
+            $trimmedPath = (strpos($imageUrl, "public/") !== false)
+                ? explode("public/", $imageUrl)[1]
+                : $imageUrl;
+            $view->nav_bar(true, $trimmedPath);
+        } else {
+            $view->nav_bar();
+        }
+        
+        $view->showOffersSection();
+        $view->footer("remises_avantages.js"); // Make sure this matches the filename exactly
+    }
+
+    public function fetchOffers() {
+        $this->model("Offre");
+        $offreModel = new OffreModel();
+        
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = 9;
+        $offset = ($page - 1) * $limit;
+        
+        $filters = [
+            'type_offre' => $_GET['type_offre'] ?? null,
+            'partenaire_id' => $_GET['partenaire'] ?? null,
+            'sort' => $_GET['sort'] ?? 'date_desc'
+        ];
+        
+        $offers = $offreModel->getFilteredOffers($filters, $limit, $offset);
+        $total = $offreModel->getTotalFilteredOffers($filters);
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => [
+                'offers' => $offers,
+                'total' => $total,
+                'pages' => ceil($total / $limit)
+            ]
+        ]);
+    }
 	
 }
