@@ -27,7 +27,7 @@ class BenevolatsModel{
                 'type' => 'INNER',
                 'order_column' => 'evenement.date_debut',
                 'order_type' => 'DESC',
-                'where' => ['benevolats.compte_membre_id' => $membre_id, 'benevolats.statut' => 'EN_ATTENTE']
+                'where' => ['benevolats.compte_membre_id' => $membre_id]
             ]
         );
     }
