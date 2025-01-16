@@ -64,21 +64,20 @@
     });
 
     document.getElementById("simple-search").addEventListener("input", (e) => {
-      const searchTerm = e.target.value;
-      partnerPagination.currentPage = 1;
-      loadPartnersFromBackend(
-        partnerPagination.currentPage,
-        partnerPagination.itemsPerPage,
-        searchTerm
-      );
+      const searchTerm = e.target.value.toLowerCase();
+      const tableRows = document.querySelectorAll('#partnersTableBody tr');
+      
+      tableRows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? "" : "none";
+      });
     });
 
-    document
-      .getElementById("filterVille")
-      .addEventListener("input", applyFilters);
-    document
-      .getElementById("filterCategorie")
-      .addEventListener("input", applyFilters);
+    document.getElementById("sortPartners").addEventListener("change", (e) => {
+      const sortValue = e.target.value;
+      currentFilters = { sort: sortValue };
+      loadPartnersFromBackend(1, partnerPagination.itemsPerPage);
+    });
 
     document.getElementById("selectAll").addEventListener("change", (e) => {
       const checkboxes = document.querySelectorAll(
@@ -90,22 +89,6 @@
     document
       .getElementById("deleteAllButton")
       .addEventListener("click", deleteSelected);
-
-    document.getElementById("clearVille").addEventListener("click", () => {
-      document.getElementById("filterVille").value = null;
-      applyFilters();
-    });
-
-    document.getElementById("clearCategorie").addEventListener("click", () => {
-      document.getElementById("filterCategorie").value = null;
-      applyFilters();
-    });
-
-    document.getElementById("clearAllFilters").addEventListener("click", () => {
-      document.getElementById("filterVille").value = null;
-      document.getElementById("filterCategorie").value = null;
-      applyFilters();
-    });
 
     document
       .getElementById("btnAjouterPartenaire")
@@ -373,19 +356,6 @@
           console.error("Error deleting partners:", error);
         });
     }
-  }
-
-  function applyFilters() {
-    const villeFilter = document.getElementById("filterVille").value;
-    const categorieFilter = document.getElementById("filterCategorie").value;
-    partnerPagination.currentPage = 1;
-    loadPartnersFromBackend(
-      partnerPagination.currentPage,
-      partnerPagination.itemsPerPage,
-      null,
-      villeFilter,
-      categorieFilter
-    );
   }
 
   function updateTable(partners) {
@@ -1099,7 +1069,7 @@
       .addEventListener("submit", async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const fileInput = document.getElementById("dropzone-file");
+        const fileInput = document.getElementById("dropzone-file-thumbnail"); // Changed from dropzone-file to dropzone-file-thumbnail
 
         if (!formData.get("is_special")) {
           formData.set("is_special", "0");

@@ -232,17 +232,16 @@ Trait Model
     }
     
     if (!empty($options['search'])) {
+        $searchConditions = [];
         foreach ($options['search'] as $key => $value) {
             if ($value !== null && $value !== '') {
                 $paramKey = str_replace('.', '_', $key);
-                if (!empty($options['exact_match']) && in_array($key, $options['exact_match'])) {
-                    $whereConditions[] = "$key = :search_$paramKey";
-                    $queryParams["search_$paramKey"] = $value;
-                } else {
-                    $whereConditions[] = "$key LIKE :search_$paramKey";
-                    $queryParams["search_$paramKey"] = '%' . $value . '%';
-                }
+                $searchConditions[] = "$key LIKE :search_$paramKey";
+                $queryParams["search_$paramKey"] = '%' . $value . '%';
             }
+        }
+        if (!empty($searchConditions)) {
+            $whereConditions[] = "(" . implode(' OR ', $searchConditions) . ")";
         }
     }
     

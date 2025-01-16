@@ -48,16 +48,9 @@ class OffreModel{
     }
 
     public function getFilteredOffers($filters, $limit = 10, $offset = 0) {
-        $conditions = ['Partenaire.statut' => 'ACTIF'];
+        $where = ['Partenaire.statut' => 'ACTIF'];
         
-        if (!empty($filters['type_offre'])) {
-            $conditions['offre.type_offre'] = $filters['type_offre'];
-        }
-        
-        if (!empty($filters['partenaire_id'])) {
-            $conditions['offre.partenaire_id'] = $filters['partenaire_id'];
-        }
-
+        // Only handle sorting
         $orderBy = match($filters['sort'] ?? 'date_desc') {
             'date_asc' => 'offre.date_debut ASC',
             'value_desc' => 'CAST(REPLACE(offre.valeur, "%", "") AS DECIMAL(10,2)) DESC',
@@ -72,27 +65,30 @@ class OffreModel{
                 'type' => 'LEFT',
                 'limit' => $limit,
                 'offset' => $offset,
-                'where' => $conditions,
+                'where' => $where,
                 'order_by' => $orderBy
             ]
         );
     }
 
     public function getTotalFilteredOffers($filters) {
-        $conditions = ['Partenaire.statut' => 'ACTIF'];
+        $search = [];
+        $where = ['Partenaire.statut' => 'ACTIF'];
         
-        if (!empty($filters['type_offre'])) {
-            $conditions['offre.type_offre'] = $filters['type_offre'];
-        }
-        
-        if (!empty($filters['partenaire_id'])) {
-            $conditions['offre.partenaire_id'] = $filters['partenaire_id'];
+        if (!empty($filters['search'])) {
+            $search = [
+                'offre.description' => $filters['search'],
+                'partenaire.nom' => $filters['search']
+            ];
         }
 
         return $this->getJoinTotalCount(
             ['partenaire' => ['nom']],
             ['partenaire' => 'offre.partenaire_id = partenaire.id'],
-            ['where' => $conditions]
+            [
+                'where' => $where,
+                'search' => $search
+            ]
         );
     }
 

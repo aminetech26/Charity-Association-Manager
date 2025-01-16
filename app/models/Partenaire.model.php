@@ -55,4 +55,21 @@ class PartenaireModel{
         return $this->getTotalCount($conditions);
     }
 
+    public function getFilteredPartners($filters, $limit = 10, $offset = 0) {
+        $orderBy = match($filters['sort'] ?? 'nom_asc') {
+            'nom_desc' => 'nom DESC',
+            'ville_asc' => 'ville ASC',
+            'ville_desc' => 'ville DESC',
+            default => 'nom ASC'
+        };
+
+        return $this->search(
+            [],
+            [],
+            $limit,
+            $offset,
+            $orderBy
+        );
+    }
+
 }

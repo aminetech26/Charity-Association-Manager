@@ -6,39 +6,29 @@ class RemiseAvantages_view {
         ?>
         <div class="min-h-screen py-12 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="mb-8 bg-white p-4 rounded-lg shadow">
-                    <form id="filterForm" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Type d'offre</label>
-                            <select name="type_offre" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
-                                <option value="">Tous</option>
-                                <option value="REDUCTION">Réduction</option>
-                                <option value="CADEAU">Cadeau</option>
-                                <option value="SPECIAL">Offre Spéciale</option>
-                            </select>
+                <div class="mb-8">
+                    <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <div class="relative w-full md:w-96">
+                            <input type="text" 
+                                   id="offerSearch" 
+                                   class="w-full px-4 py-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-primary-500 focus:border-primary-500" 
+                                   placeholder="Rechercher une offre...">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Partenaire</label>
-                            <select name="partenaire" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
-                                <option value="">Tous</option>
-                                <!-- Will be populated by JS -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Trier par</label>
-                            <select name="sort" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary">
+                        
+                        <div class="w-full md:w-64">
+                            <select id="sortValue" class="w-full px-4 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-primary-500 focus:border-primary-500">
+                                <option value="value_desc">Prix (Plus élevé)</option>
+                                <option value="value_asc">Prix (Plus bas)</option>
                                 <option value="date_desc">Plus récent</option>
                                 <option value="date_asc">Plus ancien</option>
-                                <option value="value_desc">Valeur (décroissant)</option>
-                                <option value="value_asc">Valeur (croissant)</option>
                             </select>
                         </div>
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full bg-primary text-white px-4 py-2 rounded-md hover:bg-primary-dark">
-                                Filtrer
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
 
                 <div class="mb-8">
