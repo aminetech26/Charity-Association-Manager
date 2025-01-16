@@ -25,6 +25,85 @@ class Home
         $view->footer("home.js");
     }
 
+    public function fetchHomeNews()
+    {
+        $this->model("News");
+        $newsModel = new NewsModel();
+        $news = $newsModel->getAllNewsArticles(5, 0);
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $news
+        ]);
+    }
+
+    public function fetchMemberBenefits()
+    {
+        $this->model("Offre");
+        $offreModel = new OffreModel();
+        $offers = $offreModel->getAllOffers(10, 0); 
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $offers
+        ]);
+    }
+
+    public function fetchPartnerLogos()
+    {
+        $this->model("Partenaire");
+        $partenaireModel = new PartenaireModel();
+        $partners = $partenaireModel->where(['statut' => 'ACTIF']);
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $partners
+        ]);
+    }
+
+    public function fetchCarouselData()
+    {
+        $this->model("News");
+        $this->model("Offre");
+        
+        $newsModel = new NewsModel();
+        $offreModel = new OffreModel();
+        
+        $news = $newsModel->getAllNewsArticles(10, 0);
+        $offers = $offreModel->getSpecialOffers();
+        
+        $slides = [];
+        
+        foreach ($news as $item) {
+            $slides[] = [
+                'src' => $item->thumbnail_url ?? ROOT . 'public/assets/images/default-news.jpg',
+                'alt' => $item->titre,
+                'title' => $item->titre,
+                'link' => ROOT . 'public/Home/article/' . $item->id,
+                'type' => 'news'
+            ];
+        }
+        
+        // Add offers slides
+        foreach ($offers as $item) {
+            $slides[] = [
+                'src' => $item->thumbnail_path ?? ROOT . 'public/assets/images/default-offer.jpg',
+                'alt' => $item->type_offre,
+                'title' => $item->description,
+                'type' => 'offer'
+            ];
+        }
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'status' => 'success',
+            'data' => $slides
+        ]);
+    }
+
     public function catalogue_partenaire()
     {
         $this->view("catalogue_partenaire","public");

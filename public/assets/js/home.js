@@ -1,3 +1,5 @@
+const ROOT = "http://localhost/TDWProject/";
+
 class Carousel {
   constructor(element, options = {}) {
     this.carousel = element;
@@ -99,80 +101,62 @@ class Carousel {
 const avatarButton = document.getElementById("avatarButton");
 const avatarDropdown = document.getElementById("avatarDropdown");
 
-// News section
-
-const newsData = [
-  {
-    title:
-      "Les grandes banques obtiennent un répit face à la règle Volcker de l'ère de crise",
-    author: "Don Howard",
-    readTime: "99,7 %",
-    image: "/placeholder.jpg",
-  },
-  {
-    title:
-      "Comment un contrat avec le Pentagone est devenu une crise identitaire pour Google",
-    author: "Lauren Gregory",
-    readTime: "98,7 %",
-    image: "/placeholder.jpg",
-  },
-  {
-    title:
-      "Les comédies sur la maternité s'accrochent à la réalité brute de la nouvelle maternité",
-    author: "Charlie Bell",
-    readTime: "99,7 %",
-    image: "/placeholder.jpg",
-  },
-  {
-    title: "Pourquoi vous devriez arrêter d'être si dur avec vous-même",
-    author: "Craig Estrada",
-    readTime: "99,7 %",
-    image: "/placeholder.jpg",
-  },
-  {
-    title: "Pusha-T, un conférencier à la recherche d'une cible, en trouve une",
-    author: "Henry Larson",
-    readTime: "99,1 %",
-    image: "/placeholder.jpg",
-  },
-];
+let currentPage = 1;
+const itemsPerPage = 10;
+let totalItems = 0;
+let totalPages = 0;
+let benefitsData = [];
 
 async function fetchNewsData() {
   try {
-    const response = await fetch("");
-    return await response.json();
+    const response = await fetch(`${ROOT}public/Home/fetchHomeNews`);
+    const result = await response.json();
+    return result.data;
   } catch (error) {
-    console.error("Erreur lors de la récupération des actualités :", error);
-    return newsData;
+    return [];
   }
 }
 
+function trimPath(imageUrl) {
+  if (!imageUrl) return ROOT + "public/assets/images/default-news.jpg";
+
+  return imageUrl.includes("public/")
+    ? ROOT + imageUrl.replace("../public", "public/")
+    : ROOT + imageUrl;
+}
+
 function createNewsItem(item, index) {
+  const imageUrl = item.thumbnail_url
+    ? trimPath(item.thumbnail_url)
+    : ROOT + "public/assets/images/default-news.jpg";
+
   return `
           <div class="${index === 0 ? "md:col-span-2" : ""} relative group">
             <div class="relative h-80 overflow-hidden rounded-lg shadow-lg">
-              <img src="${item.image}" alt="${
-    item.title
-  }" class="w-full h-full object-cover">
+              <img src="${imageUrl}" 
+                   alt="${item.titre}" 
+                   class="w-full h-full object-cover"
+                   >
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
                 <div class="absolute bottom-6 left-6 right-6 text-white">
                   <h3 class="${
                     index === 0 ? "text-2xl" : "text-lg"
-                  } font-bold mb-3">${item.title}</h3>
+                  } font-bold mb-3">${item.titre}</h3>
                   <div class="flex justify-between items-center">
-                    <span class="${index === 0 ? "text-sm" : "text-xs"}">${
-    item.author
-  }</span>
-                    <span class="${index === 0 ? "text-sm" : "text-xs"}">${
-    item.readTime
-  }</span>
+                    <span class="${
+                      index === 0 ? "text-sm" : "text-xs"
+                    }">${new Date(
+    item.date_publication
+  ).toLocaleDateString()}</span>
                   </div>
-                  <button class="mt-4 bg-secondary hover:bg-secondary-hover text-white px-4 py-2 rounded-full flex items-center">
+                  <a href="${ROOT}public/Home/article/${
+    item.id
+  }" class="mt-4 bg-secondary hover:bg-secondary-hover text-white px-4 py-2 rounded-full flex items-center">
                     <span>Lire la suite</span>
                     <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -186,114 +170,60 @@ async function showNewsSection() {
   if (!newsSection) return;
 
   newsSection.innerHTML = `
-          <div class="bg-background-light p-8 max-w-6xl mx-auto">
-            <h2 class="text-2xl font-semibold text-primary mb-8">Publications récentes</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              ${data.map((item, index) => createNewsItem(item, index)).join("")}
-            </div>
+        <div class="bg-background-light p-8 max-w-6xl mx-auto">
+          <h2 class="text-2xl font-semibold text-primary mb-8">Publications récentes</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${data.map((item, index) => createNewsItem(item, index)).join("")}
           </div>
-        `;
+        </div>
+      `;
 }
 
-// Section avantages
+async function fetchBenefitsData() {
+  try {
+    const response = await fetch(`${ROOT}public/Home/fetchMemberBenefits`);
+    const result = await response.json();
+    if (result.status === "success") {
+      benefitsData = result.data;
+      totalItems = result.data.length;
+      totalPages = Math.ceil(totalItems / itemsPerPage);
 
-const benefitsData = [
-  {
-    partenaire: "Amazon",
-    type_offre: "Réduction",
-    valeur: "10%",
-    description:
-      "Profitez d'une réduction de 10% sur tous les produits Amazon Prime.",
-  },
-  {
-    partenaire: "Netflix",
-    type_offre: "Essai gratuit",
-    valeur: "1 mois",
-    description: "Bénéficiez d'un mois d'essai gratuit sur Netflix.",
-  },
-  {
-    partenaire: "Spotify",
-    type_offre: "Abonnement premium",
-    valeur: "3 mois gratuits",
-    description: "Profitez de 3 mois d'abonnement premium gratuit sur Spotify.",
-  },
-  {
-    partenaire: "Uber",
-    type_offre: "Code promo",
-    valeur: "5€ de réduction",
-    description:
-      "Utilisez ce code promo pour obtenir 5€ de réduction sur votre prochaine course Uber.",
-  },
-  {
-    partenaire: "Airbnb",
-    type_offre: "Crédit voyage",
-    valeur: "25€",
-    description:
-      "Recevez un crédit voyage de 25€ pour votre première réservation Airbnb.",
-  },
-  {
-    partenaire: "Deliveroo",
-    type_offre: "Réduction",
-    valeur: "20%",
-    description:
-      "Obtenez 20% de réduction sur votre première commande Deliveroo.",
-  },
-  {
-    partenaire: "Apple",
-    type_offre: "Cadeau",
-    valeur: "AirPods",
-    description:
-      "Recevez des AirPods gratuits lors de l'achat d'un nouvel iPhone.",
-  },
-  {
-    partenaire: "Google",
-    type_offre: "Crédit",
-    valeur: "50€",
-    description:
-      "Bénéficiez d'un crédit de 50€ à utiliser sur le Google Store.",
-  },
-  {
-    partenaire: "Microsoft",
-    type_offre: "Essai gratuit",
-    valeur: "1 mois",
-    description: "Profitez d'un mois d'essai gratuit sur Microsoft 365.",
-  },
-  {
-    partenaire: "Adobe",
-    type_offre: "Réduction",
-    valeur: "30%",
-    description:
-      "Obtenez 30% de réduction sur votre abonnement Adobe Creative Cloud.",
-  },
-];
-
-let currentPage = 1;
-const itemsPerPage = 10;
-let totalItems = benefitsData.length;
-let totalPages = Math.ceil(totalItems / itemsPerPage);
+      const start = 0;
+      const end = Math.min(itemsPerPage, totalItems);
+      const firstPageData = benefitsData.slice(start, end);
+      updateTable(firstPageData);
+      updatePaginationInfo(start + 1, end, totalItems);
+      updatePagination();
+    }
+  } catch (error) {
+    console.error("Erreur lors de la récupération des avantages :", error);
+  }
+}
 
 function updateTable(data) {
   const tableBody = document.getElementById("benefitsTableBody");
+  if (!tableBody) return;
+
   tableBody.innerHTML = data
     .map(
       (item, index) => `
-            <tr class="border-b hover:bg-background-light transition-colors duration-200 ${
-              index % 2 === 0 ? "bg-white" : "bg-gray-50"
-            }">
-                <td class="px-6 py-4 font-medium text-text-primary">
-                    ${item.partenaire}
-                </td>
-                <td class="px-6 py-4 text-text-secondary">${
-                  item.type_offre
-                }</td>
-                <td class="px-6 py-4 font-semibold text-state-success">${
-                  item.valeur
-                }</td>
-                <td class="px-6 py-4 max-w-xs overflow-hidden overflow-ellipsis line-clamp-2 text-text-secondary">
-                    ${item.description}
-                </td>
-            </tr>
-        `
+        <tr class="border-b hover:bg-background-light transition-colors duration-200 ${
+          index % 2 === 0 ? "bg-white" : "bg-gray-50"
+        }">
+            <td class="px-6 py-4 font-medium text-text-primary">
+                ${item.nom || ""}
+            </td>
+            <td class="px-6 py-4 text-text-secondary">${
+              item.type_offre || ""
+            }</td>
+            <td class="px-6 py-4 font-semibold text-state-success">${
+              item.valeur || ""
+            }</td>
+            <td class="px-6 py-4 max-w-xs overflow-hidden overflow-ellipsis line-clamp-2 text-text-secondary">
+                ${item.description || ""}
+            </td>
+        </tr>
+    `
     )
     .join("");
 }
@@ -344,7 +274,7 @@ function changePage(page) {
   if (page >= 1 && page <= totalPages) {
     currentPage = page;
     const start = (page - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
+    const end = Math.min(start + itemsPerPage, totalItems);
     const paginatedData = benefitsData.slice(start, end);
     updateTable(paginatedData);
     updatePaginationInfo(start + 1, end, totalItems);
@@ -356,6 +286,96 @@ function updatePaginationInfo(start, end, total) {
   document.getElementById("startIndex").textContent = start;
   document.getElementById("endIndex").textContent = end;
   document.getElementById("totalItems").textContent = total;
+}
+
+async function fetchPartnersLogos() {
+  try {
+    const response = await fetch(`${ROOT}public/Home/fetchPartnerLogos`);
+    const result = await response.json();
+    if (result.status === "success") {
+      const logosContainer = document.querySelector('[x-ref="logos"]');
+      if (logosContainer) {
+        logosContainer.innerHTML = result.data
+          .map(
+            (partner) => `
+          <li>
+            <img src="${trimPath(partner.logo)}" 
+                 alt="${partner.nom}" 
+                 class="w-32 h-16 object-contain"
+                >
+          </li>
+        `
+          )
+          .join("");
+      }
+    }
+  } catch (error) {
+    console.error("Erreur lors de la récupération des logos :", error);
+  }
+}
+
+async function fetchCarouselData() {
+  try {
+    const response = await fetch(`${ROOT}public/Home/fetchCarouselData`);
+    const result = await response.json();
+
+    if (result.status === "success" && result.data.length > 0) {
+      const carouselContainer = document.querySelector(
+        '[data-carousel="slide"] .overflow-hidden'
+      );
+      const indicatorsContainer = document.querySelector(
+        '[data-carousel="slide"] .rtl\\:space-x-reverse'
+      );
+
+      if (!carouselContainer || !indicatorsContainer) return;
+
+      carouselContainer.innerHTML = result.data
+        .map(
+          (slide, index) => `
+        <div class="hidden duration-3000 ease-in-out" data-carousel-item>
+          ${
+            slide.link
+              ? `<a href="${slide.link}" class="block">`
+              : '<div class="block">'
+          }
+            <img src="${trimPath(slide.src)}" 
+                 class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 object-cover h-full" 
+                 alt="${slide.alt}"
+                 onerror="this.src='${ROOT}public/assets/images/default-news.jpg'">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+              <h3 class="text-white text-xl font-bold">${slide.title}</h3>
+              <span class="text-white/80 text-sm">${
+                slide.type === "news" ? "Actualité" : "Offre spéciale"
+              }</span>
+            </div>
+          ${slide.link ? "</a>" : "</div>"}
+        </div>
+      `
+        )
+        .join("");
+
+      indicatorsContainer.innerHTML = result.data
+        .map(
+          (_, index) => `
+        <button type="button" 
+                class="w-3 h-3 rounded-full bg-white" 
+                aria-current="${index === 0 ? "true" : "false"}" 
+                aria-label="Slide ${index + 1}" 
+                data-carousel-slide-to="${index}">
+        </button>
+      `
+        )
+        .join("");
+
+      return new Carousel(document.querySelector('[data-carousel="slide"]'), {
+        autoplayInterval: 3000,
+        pauseOnHover: true,
+      });
+    }
+  } catch (error) {
+    console.error("Error initializing carousel:", error);
+  }
+  return null;
 }
 
 function initializeEventListeners() {
@@ -373,15 +393,6 @@ function initializeEventListeners() {
       }
     });
   } else {
-    console.error("User menu button or dropdown element not found");
-  }
-
-  const carouselElement = document.querySelector('[data-carousel="slide"]');
-  if (carouselElement) {
-    const carousel = new Carousel(carouselElement, {
-      autoplayInterval: 3000,
-      pauseOnHover: true,
-    });
   }
 
   showNewsSection();
@@ -406,59 +417,19 @@ function initializeEventListeners() {
       }
     });
   }
-  renderPartnersLogos();
+  fetchBenefitsData();
+  fetchPartnersLogos();
+
+  fetchCarouselData().then((carousel) => {
+    if (carousel) {
+    }
+  });
 }
 
-// partners logos section
-
-const partnersData = [
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1024px-Facebook_Logo_%282019%29.png",
-    alt: "Facebook",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Disney%2B_logo.svg/2560px-Disney%2B_logo.svg.png",
-    alt: "Disney",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/2560px-Airbnb_Logo_B%C3%A9lo.svg.png",
-    alt: "Airbnb",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/488px-Apple_logo_black.svg.png",
-    alt: "Apple",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Vanamo_Logo.png/600px-Vanamo_Logo.png",
-    alt: "Spark",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Samsung_Logo.svg/2560px-Samsung_Logo.svg.png",
-    alt: "Samsung",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Quora_logo_2015.svg/250px-Quora_logo_2015.svg.png",
-    alt: "Quora",
-  },
-  {
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Sass_Logo_Color.svg/1280px-Sass_Logo_Color.svg.png",
-    alt: "Sass",
-  },
-];
-
-function renderPartnersLogos() {
-  const logosContainer = document.querySelector('[x-ref="logos"]');
-  if (!logosContainer) return;
-
-  logosContainer.innerHTML = partnersData
-    .map(
-      (partner) => `
-                <li>
-                    <img src="${partner.src}" alt="${partner.alt}" class="w-32 h-16 object-contain" />
-                </li>
-            `
-    )
-    .join("");
-}
-
-document.addEventListener("DOMContentLoaded", initializeEventListeners);
+document.addEventListener("DOMContentLoaded", () => {
+  initializeEventListeners();
+  fetchCarouselData();
+  showNewsSection();
+  fetchBenefitsData();
+  fetchPartnersLogos();
+});

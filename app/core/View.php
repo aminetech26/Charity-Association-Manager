@@ -8,6 +8,7 @@ trait View {
         <head>
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta name="root" content="<?= ROOT ?>">
             <meta http-equiv="cache-control" content="no-cache" />
             <meta http-equiv="Pragma" content="no-cache" />
             <meta http-equiv="Expires" content="-1" />
