@@ -1656,6 +1656,63 @@ class Admin {
         exit();
     }
 
+    public function getAllBenevolats()
+    {
+        $this->checkIfAdminOrSuperAdmin();
+        $this->model('Benevolats');
+        $benevolatsModel = new BenevolatsModel();
+        $benevolats = $benevolatsModel->getAllWithEventAndMember();
+        echo json_encode(["status" => "success", "data" => $benevolats]);
+    }
+
+    public function approveBenevolat() 
+{
+    $this->checkIfAdminOrSuperAdmin();
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $benevolatId = $_POST['benevolat_id'] ?? null;
+
+        if (!$benevolatId) {
+            echo json_encode(['status'=>'error','message'=>'ID bénévole requis']);
+            exit();
+        }
+
+        $this->model('Benevolats');
+        $benevolatsModel = new BenevolatsModel();
+        $success = $benevolatsModel->approveBenevolat($benevolatId);
+
+        echo json_encode(['status'=>'success','message'=>'Bénévolat approuvé']);
+
+    }else{
+        echo json_encode(['status'=>'error','message'=>'Méthode non autorisée']);
+        exit();
+    }
+}
+
+public function refuseBenevolat() 
+{
+    $this->checkIfAdminOrSuperAdmin();
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $benevolatId = $_POST['benevolat_id'] ?? null;
+
+        if (!$benevolatId) {
+            echo json_encode(['status'=>'error','message'=>'ID bénévole requis']);
+            exit();
+        }
+
+        $this->model('Benevolats');
+        $benevolatsModel = new BenevolatsModel();
+        $success = $benevolatsModel->refuseBenevolat($benevolatId);
+
+        echo json_encode(['status'=>'success','message'=>'Bénévolat refusé']);
+
+    }else{
+        echo json_encode(['status'=>'error','message'=>'Méthode non autorisée']);
+        exit();
+    }
+}
+
     // Dons management
 
     public function getAllDons(){
@@ -1980,5 +2037,31 @@ class Admin {
         exit();
     }
 
+    public function blockMember()
+{
+    $this->checkIfAdminOrSuperAdmin();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $membreId = $_POST['membre_id'] ?? null;
+
+        if (!$membreId) {
+            echo json_encode(['status' => 'error', 'message' => 'ID membre requis']);
+            exit();
+        }
+
+        $this->model('Membre');
+        $membreModel = new MembreModel();
+        $result = $membreModel->blockMember($membreId);
+
+        echo json_encode(
+            ['status' => 'success', 'message' => 'Membre bloqué avec succès']
+        );
+
+        exit();
+    }
+
+    echo json_encode(['status' => 'error', 'message' => 'Méthode non autorisée.']);
+    exit();
+}
 
 }

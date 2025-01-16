@@ -106,4 +106,9 @@ class MembreModel{
         return $this->getTotalCount($conditions);
     }
 
+    public function blockMember($id) 
+    {
+        return $this->update($id, ['is_approved' => 0]);
+    }
+
 }

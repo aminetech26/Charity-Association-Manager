@@ -395,6 +395,18 @@
       }
     });
 
+    document.addEventListener("click", function (e) {
+      const blockBtn = e.target.closest(".block-button");
+      if (blockBtn) {
+        const memberId = blockBtn.getAttribute("data-id");
+        blockMember(memberId);
+        loadRegistrationsFromBackend(
+          inscriptionPagination.currentPage,
+          inscriptionPagination.itemsPerPage
+        );
+      }
+    });
+
     document
       .getElementById("filterMembersByDate")
       .addEventListener("change", (e) => {
@@ -475,6 +487,9 @@
                     <button class="text-red-600 hover:text-red-800 delete-button" data-id="${
                       member.id
                     }">Supprimer</button>
+                    <button class="text-yellow-600 hover:text-yellow-800 block-button" data-id="${
+                      member.id
+                    }">Bloquer</button>
                 </td>
             </tr>
         `
@@ -584,6 +599,30 @@
       }
     } catch (error) {
       console.error("Error loading members:", error);
+    }
+  }
+
+  async function blockMember(memberId) {
+    try {
+      const formData = new FormData();
+      formData.append("membre_id", memberId);
+
+      const response = await fetch(`${ROOT}admin/Admin/blockMember`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        alert("Membre bloqué avec succès.");
+        loadMembersFromBackend(
+          memberPagination.currentPage,
+          memberPagination.itemsPerPage
+        );
+      } else {
+        console.error("Error blocking member:", data.message);
+      }
+    } catch (error) {
+      console.error("Error blocking member:", error);
     }
   }
 }

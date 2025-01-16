@@ -15,6 +15,9 @@
       this.classList.add("active", "text-blue-600", "border-blue-600");
       const target = this.getAttribute("href");
       document.querySelector(target).classList.remove("hidden");
+      if (target === "#benevolats") {
+        loadBenevolats();
+      }
     });
   });
 
@@ -54,7 +57,6 @@
       .classList.remove("hidden");
   }
 
-  // Gestion des événements
   initializeEventListenersForEvents();
   loadEventsFromBackend(
     eventPagination.currentPage,
@@ -574,6 +576,92 @@
       }
     } catch (error) {
       console.error("Erreur lors du chargement des dons:", error);
+    }
+  }
+
+  async function loadBenevolats() {
+    try {
+      const response = await fetch(`${ROOT}admin/Admin/getAllBenevolats`);
+      const data = await response.json();
+      if (data.status === "success") {
+        updateBenevolatsTable(data.data);
+      }
+    } catch (error) {
+      console.error("Error loading benevolats:", error);
+    }
+  }
+
+  function updateBenevolatsTable(benevolats) {
+    const tableBody = document.getElementById("benevolatsTableBody");
+    tableBody.innerHTML = benevolats
+      .map(
+        (b) => `
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-6 py-4">${b.id}</td>
+          <td class="px-6 py-4">${b.membre_nom} ${b.membre_prenom}</td>
+          <td class="px-6 py-4">${b.evenement_titre}</td>
+          <td class="px-6 py-4">${b.statut}</td>
+          <td class="px-6 py-4">
+            <button data-action="approveBenevolat" data-id="${b.id}" class="text-green-600 hover:underline">
+              Approuver
+            </button>
+            <button data-action="refuseBenevolat" data-id="${b.id}" class="text-red-600 hover:underline">
+              Refuser
+            </button>
+          </td>
+        </tr>
+      `
+      )
+      .join("");
+  }
+
+  document
+    .getElementById("benevolatsTableBody")
+    .addEventListener("click", (e) => {
+      const action = e.target.getAttribute("data-action");
+      const benevolatId = e.target.getAttribute("data-id");
+      if (!action || !benevolatId) return;
+
+      if (action === "approveBenevolat") {
+        approveBenevolat(benevolatId);
+      } else if (action === "refuseBenevolat") {
+        refuseBenevolat(benevolatId);
+      }
+    });
+
+  async function approveBenevolat(id) {
+    try {
+      const response = await fetch(ROOT + "admin/Admin/approveBenevolat", {
+        method: "POST",
+        body: new URLSearchParams({ benevolat_id: id }),
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        alert("Bénévolat approuvé avec succès.");
+        loadBenevolats();
+      } else {
+        alert("Erreur lors de l'approbation du bénévolat.");
+      }
+    } catch (error) {
+      console.error("Error approving benevolat:", error);
+    }
+  }
+
+  async function refuseBenevolat(id) {
+    try {
+      const response = await fetch(ROOT + "admin/Admin/refuseBenevolat", {
+        method: "POST",
+        body: new URLSearchParams({ benevolat_id: id }),
+      });
+      const data = await response.json();
+      if (data.status === "success") {
+        alert("Bénévolat refusé avec succès.");
+        loadBenevolats();
+      } else {
+        alert("Erreur lors du refus du bénévolat.");
+      }
+    } catch (error) {
+      console.error("Error refusing benevolat:", error);
     }
   }
 

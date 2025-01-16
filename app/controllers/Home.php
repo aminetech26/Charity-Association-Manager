@@ -87,7 +87,6 @@ class Home
             ];
         }
         
-        // Add offers slides
         foreach ($offers as $item) {
             $slides[] = [
                 'src' => $item->thumbnail_path ?? ROOT . 'public/assets/images/default-offer.jpg',
@@ -312,7 +311,7 @@ class Home
         }
         
         $view->showOffersSection();
-        $view->footer("remises_avantages.js"); // Make sure this matches the filename exactly
+        $view->footer("remises_avantages.js");
     }
 
     public function fetchOffers() {

@@ -43,8 +43,22 @@
     </div>
 </div>
     <div id="benevolats" class="tab-pane p-4 hidden">
-        <h2 class="text-xl font-bold mb-4">Gestion des benevolats</h2>
-        <p>Ceci est le contenu de la section benevolats.</p>
+        <h2 class="text-xl font-bold mb-4">Gestion des Bénévolats</h2>
+        <div class="relative bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+            <div class="relative overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">ID</th>
+                            <th scope="col" class="px-6 py-3">Membre</th>
+                            <th scope="col" class="px-6 py-3">Évènement</th>
+                            <th scope="col" class="px-6 py-3">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody id="benevolatsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div id="events" class="tab-pane p-4 hidden">
         <h2 class="text-xl font-bold mb-4">Gestion des evenements</h2>
