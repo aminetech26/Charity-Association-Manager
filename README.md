@@ -71,7 +71,7 @@ charity-association-manager/
 ### Sample Screenshots
 
 #### Landing Pages
-![Homepage](screenshots/landing/Capture%20d'écran%202025-04-09%20120802.png)
+![Homepage](screenshots/landing/Capture%20d'écran%202025-04-09%20120818.png)
 *Homepage with news carousel and featured partners*
 
 #### Member Interface
