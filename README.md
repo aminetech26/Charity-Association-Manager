@@ -68,6 +68,31 @@ charity-association-manager/
 
 ## 🖥️ Screenshots
 
+### Sample Screenshots
+
+#### Landing Pages
+![Homepage](screenshots/landing/Capture%20d'écran%202025-04-09%20120802.png)
+*Homepage with news carousel and featured partners*
+
+#### Member Interface
+![Member Dashboard](screenshots/member/Capture%20d'écran%202025-04-09%20121021.png)
+*Member dashboard showing benefits and notifications*
+
+#### Partner Interface
+![Partner Dashboard](screenshots/partner/Capture%20d'écran%202025-04-09%20121236.png)
+*Partner management interface*
+
+#### Admin Interface
+![Admin Dashboard](screenshots/admin/Capture%20d'écran%202025-04-09%20121318.png)
+*Administrative overview with key metrics*
+
+### Full Screenshot Collection
+
+For the complete set of application screenshots, browse the [screenshots directory](./screenshots):
+- [Landing pages](./screenshots/landing)
+- [Member interfaces](./screenshots/member)
+- [Partner interfaces](./screenshots/partner)
+- [Admin dashboards](./screenshots/admin)
 
 ## 🔜 Future Improvements
 
